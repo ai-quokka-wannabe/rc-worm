@@ -43,8 +43,10 @@ namespace
     //! Creatures rezzed and not yet derezzed: what library_shutdown must find at zero.
     std::atomic<std::uint32_t> g_rezzed{0u};
 
-    //! The Qt the panel was built against, or an empty string for a worm built without one.
+#if defined(RC_WORM_HAS_PANEL)
+    //! The Qt the panel was built against, as its runtime reports it from inside the host process.
     const char* g_panel_qt{""};
+#endif
 
     void libraryInit(const TglLibraryInfo* info) TGL_NOEXCEPT
     {
