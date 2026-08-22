@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Formatting is a gate, under a pinned formatter.** Adopted from the owner's
+  `claude-chats-browser`: quick-checks installs `clang-format~=22.1` and runs it `--dry-run
+  --Werror` over every tracked C and C++ file, so STYLE.md's claim that the tree is
+  clang-format clean is enforced rather than hoped for. The desk runs the same major.
 - **Every internal link and anchor is checked per pull request, the external ones weekly.**
   Adopted from the owner's `altium-designer-mcp`: `lychee --offline --include-fragments` in
   quick-checks, installed from its pinned release with a checksum rather than through a
