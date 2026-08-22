@@ -52,7 +52,7 @@ We welcome feature suggestions! Before submitting:
 
 1. Check [existing issues](https://github.com/ai-quokka-wannabe/rc-worm/issues) and
    [discussions](https://github.com/ai-quokka-wannabe/rc-worm/discussions) for similar ideas
-2. Consider how the feature fits the project's [roadmap](TODO.md#roadmap-phases)
+2. Consider how the feature fits the project's [roadmap](TODO.md)
 3. Prefer the simplest thing that works — the project is pre-1.0 and owes nobody compatibility
 
 When submitting:
@@ -130,15 +130,16 @@ cmake --build build/linux-gcc --config Debug
 - Use C++20 features where appropriate
 - Allman braces for functions and namespaces, attached for classes/structs/enums
 - 4-space indentation, 170-column limit
-- See [STYLE.md](STYLE.md) for the full style guide
+- See the flagship's [STYLE.md](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/STYLE.md) for the full style guide - this repository follows it wholesale
 
 ### Naming Conventions
 
-See [STYLE.md](STYLE.md) § Naming Conventions for the full table. Key rules:
+See the flagship's [STYLE.md](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/STYLE.md) § Naming Conventions for the full table. Key rules:
 camelCase functions, PascalCase types, `m_` member prefix, SCREAMING_SNAKE_CASE constants.
 
 What things in this world are called — the Grid, Programs, creatures, the User, ticks, senses and
-actions — is settled in [STYLE.md](STYLE.md) § Tron Naming, which also records why *Program* and
+actions — is settled in the flagship's
+[STYLE.md](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/STYLE.md) § Tron Naming, which also records why *Program* and
 *programme* are both correct here and neither is to be "corrected" into the other.
 
 ### Code Comments
@@ -225,7 +226,7 @@ chore: update Qt to 6.11.1
 | `README.md` | User-facing overview and quick start |
 | `CONTRIBUTING.md` | This file — contributor guidelines |
 | `SECURITY.md` | Security policy and vulnerability reporting |
-| `STYLE.md` | Code style conventions |
+| the flagship's [`STYLE.md`](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/STYLE.md) | Code style conventions, followed here wholesale |
 | `CHANGELOG.md` | User-facing change history |
 | `docs/PERCEPTION.md` | How creatures perceive: sensor resolutions and the biology behind them |
 | `docs/RELATED_WORK.md` | Prior art: what research labs build in this area, and what is unusual here |
