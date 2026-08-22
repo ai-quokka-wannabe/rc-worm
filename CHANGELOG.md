@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Every internal link and anchor is checked per pull request, the external ones weekly.**
+  Adopted from the owner's `altium-designer-mcp`: `lychee --offline --include-fragments` in
+  quick-checks, installed from its pinned release with a checksum rather than through a
+  third-party action, so a dead anchor is a red pull request; and `links.yml`, a scheduled
+  workflow that follows the external links too, never blocking a merge on a site elsewhere.
 - **The Program that loads.** `rc_worm.dll` / `librc_worm.so`, one exported symbol, a worm
   rezzed, ticked and derezzed behind it exactly as the Program ABI states - vanilla C++20,
   `noexcept` throughout, standing still. The flagship's presets adopted (plus
