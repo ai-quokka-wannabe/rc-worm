@@ -22,8 +22,13 @@ names only its repository); `link` - the wire (the library is **Link**).
 
 ## Rules
 
-- **Language: C++20, CMake 3.25+, Ninja; Qt 6.11 Widgets for the panel.** Warnings are errors
-  (`/WX`, `-Werror`), as in the flagship. `.clang-format` and `.clang-tidy` are the flagship's.
+- **Language: C++20, CMake 3.25+, Ninja.** Warnings are errors (`/WX`, `-Werror`), as in the
+  flagship. `.clang-format` and `.clang-tidy` are the flagship's.
+- **Qt lives in the panel and nowhere else** (the owner's ruling, 2026-08-23). Only the GUI
+  module (`src/panel/`) may include a Qt header or name a Qt class; the Program, the body, the
+  ABI boundary and the thread seam are vanilla C++20 with the standard library alone -
+  `std::thread`, `std::atomic`, `std::mutex`, plain structs across the seam. The worm without
+  its panel is a worm that builds and loads with no Qt at all, and a CMake option says so.
 - **The Program ABI is the flagship's to move.** `tgl_program_abi.h` is vendored verbatim with
   its fingerprint, and a check refuses a vendor copy that drifted from the flagship's. Never
   edit the vendored header here; change it in the flagship and re-vendor.

@@ -35,6 +35,9 @@ and its first life on the Grid, recorded to a Disk.
   panel sees exactly that and nothing more.
 - **The body is the Program's own.** `program_rez` brings the worm's shape to the Grid, and the
   Grid validates it whole or refuses it by name.
+- **Vanilla C++20, Qt only in the panel.** The Program, its body and the seam between the tick
+  and the window are standard C++; Qt classes live in the panel module alone, and the worm
+  builds and loads without it.
 - **Remote-controlled first.** The User is the brain. A worm whose every action has a human
   behind it is the creature a world is debugged with; a thinking one comes after, in its own
   repository, wearing this body.

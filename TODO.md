@@ -15,6 +15,11 @@ flagship's; a copy that drifts is the defect the mirroring exists to prevent.
 
 ## Etape 2 — the Program that loads
 
+**Vanilla C++20 everywhere but the panel** (the owner's ruling, 2026-08-23): only `src/panel/`
+may include Qt; the Program, the body, the ABI boundary and the thread seam use the standard
+library alone, the seam crossed by plain structs, and the worm builds and loads with Qt
+switched off (`RC_WORM_PANEL=OFF`), which CI proves beside the full build.
+
 A C++20 shared library, `rc_worm`, built with CMake against the Program ABI header vendored
 verbatim from the flagship (`libs/program-abi/include/tgl/tgl_program_abi.h`, its fingerprint
 beside it, and a check that the vendored copy still matches the flagship's - the ABI is the
@@ -66,8 +71,9 @@ its own business; the Grid provides nothing and the tick never waits for a windo
   `TglActions` - from keys or sliders, staged into the next `program_tick`'s answer. Nothing
   else: the ABI carries no more, and the panel shows no more than the worm knows.
 - **The thread seam.** `program_tick` runs on the Grid's tick thread and must never block; the
-  panel runs on the Qt thread. One mailbox each way: senses published to the panel, intent read
-  by the tick, both lock-free or under a lock held for a copy and nothing else. A tick that
+  panel runs on the Qt thread. One mailbox each way, in vanilla C++20 (`std::mutex` held for a
+  copy and nothing else, or `std::atomic`), carrying plain structs - the Qt side converts at
+  its edge: senses published to the panel, intent read by the tick. A tick that
   finds no new intent repeats the last - the panel's silence, like the network's, is a repeat
   and then a brake.
 
