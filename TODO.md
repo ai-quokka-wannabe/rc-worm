@@ -98,6 +98,14 @@ its own business; the Grid provides nothing and the tick never waits for a windo
 
 Tested deviceless: the mailbox's ordering and the repeat rule, without a window.
 
+**Adopted from the owner's `claude-chats-browser`** (a Qt 6 / C++20 desktop app, 2026-08-23):
+`qt_standard_project_setup()` and `qt_add_*` for the panel's own targets; Qt Test (`Qt6::Test`,
+one `tst_*` executable per unit) for the panel's own tests, beside the flagship's `testing` for
+everything vanilla; deployment by `qt_generate_deploy_app_script` / `windeployqt` with
+`--compiler-runtime`, pointed at the Program library so the Qt runtime lands beside
+`rc_worm.dll` in the Grid's `programs/` directory - the answer to "the Grid's process must find
+Qt"; and the offscreen-QPA note for headless tests.
+
 ## Etape 5 — the first life on the Grid
 
 Master Control with `--disk` and `--log`, one `--window` to watch, one `--program rc_worm` host,
@@ -108,9 +116,13 @@ whose every action a human chose is the creature a world is debugged with.
 
 ## Etape 6 — CI with Qt
 
-The build matrix (MinGW on Windows, GCC on Linux) with Qt fetched by a script of this
-repository's own, because the organisation runs GitHub-owned actions only - no third-party
-installer action. Cached between runs. The deviceless tests run there; the Grid-in-the-loop
+The Qt legs of the build matrix with Qt fetched by a composite action of this repository's
+own - adopted from the owner's `claude-chats-browser`: `.github/actions/setup-qt` runs
+`aqtinstall` through `pipx` (a tool, not a third-party action, so the GitHub-owned-actions policy
+holds), caches `~/Qt/<version>` restore-only on pull requests and save on main, and installs the
+Linux runtime packages (`libgl1-mesa-dev libxkbcommon-x11-0 libxcb-* libfontconfig1 xvfb`). The
+MSVC kit on Windows, the GCC kit on Linux; MinGW and LLVM-MinGW kits stay local presets. Cached
+between runs. The deviceless tests run there; the Grid-in-the-loop
 proof of Etape 2 stays a local, recorded check until the flagship publishes release binaries a
 workflow may download.
 
