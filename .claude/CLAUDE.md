@@ -55,10 +55,12 @@ names only its repository); `link` - the wire (the library is **Link**).
 
 ## CI today
 
-`quick-checks` (markdown lint + stray carriage returns) feeding the `CI Success` gate - the
-ruleset requires that check by its exact name. The build matrix (MinGW on Windows, GCC on
-Linux, Qt fetched by this repository's own script because the organisation runs GitHub-owned
-actions only) arrives with the first code.
+`quick-checks` (markdown lint, stray carriage returns, the vendored ABI drift check) feeding
+`Build (<preset>)` on windows-msvc, windows-clang-cl, windows-mingw, linux-gcc and linux-clang
+with the panel off, `Sanitiser (ASan+UBSan)` and `Sanitiser (TSan)`, and the `CI Success` gate
+the ruleset requires by its exact name. The Qt legs (Qt fetched by this repository's own
+script, GitHub-owned actions only) are Etape 6; LLVM-MinGW is not on the runners and stays a
+local preset.
 
 ## Process
 
