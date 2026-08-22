@@ -23,10 +23,15 @@ one table, kept in one place, pointed at from everywhere.
 
 ## What Lives Here Today
 
-The furniture: the organisation's settings, lint, governance and CI shape, mirrored from the
-flagship as every repository's are. The worm itself is staged in [TODO.md](TODO.md) and arrives
-etape by etape - the Program that loads, the body it brings, the panel the User steers from,
-and its first life on the Grid, recorded to a Disk.
+**The Program that loads.** `rc_worm.dll` / `librc_worm.so`: one exported symbol,
+`tglGetProgramVTable`, behind which a worm is rezzed, ticked and derezzed exactly as the Program
+ABI states - vanilla C++20, `noexcept` at every boundary, standing still for now. It builds on
+every compiler the flagship supports with every Qt kit on the owner's machine, and every one of
+those libraries loads in the MSVC-built Grid: `TronGridLite --list-programs` says USABLE at ABI
+version 6 for all of them, and a `--program rc_worm` host run against Master Control rezzed the
+worm, ticked it two hundred times and left with BYE - a first life, recorded to a Disk, that Clu
+re-simulates and agrees with. The body, the panel and the life somebody lives are staged in
+[TODO.md](TODO.md).
 
 ## The Doctrine
 
@@ -48,8 +53,19 @@ and its first life on the Grid, recorded to a Disk.
 
 ## Building
 
-Nothing to build yet. The first code brings the CMake presets (Windows and Linux, the
-flagship's compilers, Qt 6.11 per kit), the vendored Program ABI header, and the panel.
+CMake 3.25+, Ninja, a C++20 compiler, and - for the panel - Qt 6.11 for the kit of the preset
+(`RC_WORM_PANEL=OFF` builds the worm with no Qt at all). The presets are the flagship's:
+`windows-msvc`, `windows-clang-cl`, `windows-mingw`, `windows-llvm-mingw`, `linux-gcc`,
+`linux-clang`, with `linux-clang-asan` and `linux-clang-tsan` beside them.
+
+```text
+cmake --workflow --preset windows-mingw     # configure, build and test, Debug and Release
+```
+
+The library lands in `build/<preset>/bin/<config>/`; copy it into the Grid's `programs/`
+directory beside `TronGridLite` and run `TronGridLite --program rc_worm`. With the panel built,
+the Qt runtime of the kit must be findable by the Grid's process (its `bin` on the PATH) until
+Etape 4 settles deployment.
 
 ## Licence
 

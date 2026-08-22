@@ -15,6 +15,17 @@ flagship's; a copy that drifts is the defect the mirroring exists to prevent.
 
 ## Etape 2 — the Program that loads
 
+**Done (2026-08-23).** `src/worm/` (the `Worm` class and the C boundary in `abi.cpp`, the
+library `rc_worm`), `src/panel/` (a stub that links `Qt6::Core` and answers `qVersion()` at
+`library_init`, so every kit is proven at load; the window is Etape 4), `libs/` adopted from
+the flagship (`testing`, `math`, the vendored `program-abi` with `tools/check_abi_vendor.py`
+refusing a drifted copy), the flagship's presets plus `windows-llvm-mingw`, each Windows preset
+naming its Qt kit. Built and tested on all four Windows kits and with the panel off; every
+library USABLE in the MSVC Grid; a 200-tick host run against Master Control with the MinGW
+build, recorded, and Clu agreed with every hash. CI builds the panel-off worm on the five
+runner compilers plus ASan and TSan; the Qt legs and LLVM-MinGW (not on the runners) are
+Etape 6 and local.
+
 **Vanilla C++20 everywhere but the panel** (the owner's ruling, 2026-08-23): only `src/panel/`
 may include Qt; the Program, the body, the ABI boundary and the thread seam use the standard
 library alone, the seam crossed by plain structs, and the worm builds and loads with Qt
@@ -49,6 +60,14 @@ of the segment rings; the materials the flagship's MATERIALS.md documents), vali
 the Grid and by Master Control (vertex count, triangle indices, extent under four metres, no
 subnormal). **One rigid segment** for the first worm, per the flagship's Etape 13 decision: a
 body that bends needs a solver able to bend it, and the world's physics is rigid and kinematic.
+**The segment is a Platonic solid** (the owner's shape, 2026-08-23): an **icosahedron first** -
+twelve vertices and twenty faces that are already triangles, the Grid's own primitive, so no
+face is cut and no interior edge is invented; convex, so its hull is itself - with the
+dodecahedron (twenty vertices, twelve pentagons cut to thirty-six triangles) as the alternative
+if the look in the window wants flatter plates. A near-black mirror for the faces and **green neon tubes along the edges** (the owner's
+colour, 2026-08-23 - a visitor's colour beside the Grid's own orange accents), which is where a
+glass-neon mecha-worm glows. A chain of them waits for a physics
+that can bend.
 The Grid decides the senses - the first body's two eyes and two ears, placed by the
 `TglCreatureDesc` the Grid hands over - and the worm's nose sits where those eyes are.
 
@@ -79,6 +98,14 @@ its own business; the Grid provides nothing and the tick never waits for a windo
 
 Tested deviceless: the mailbox's ordering and the repeat rule, without a window.
 
+**Adopted from the owner's `claude-chats-browser`** (a Qt 6 / C++20 desktop app, 2026-08-23):
+`qt_standard_project_setup()` and `qt_add_*` for the panel's own targets; Qt Test (`Qt6::Test`,
+one `tst_*` executable per unit) for the panel's own tests, beside the flagship's `testing` for
+everything vanilla; deployment by `qt_generate_deploy_app_script` / `windeployqt` with
+`--compiler-runtime`, pointed at the Program library so the Qt runtime lands beside
+`rc_worm.dll` in the Grid's `programs/` directory - the answer to "the Grid's process must find
+Qt"; and the offscreen-QPA note for headless tests.
+
 ## Etape 5 — the first life on the Grid
 
 Master Control with `--disk` and `--log`, one `--window` to watch, one `--program rc_worm` host,
@@ -89,9 +116,13 @@ whose every action a human chose is the creature a world is debugged with.
 
 ## Etape 6 — CI with Qt
 
-The build matrix (MinGW on Windows, GCC on Linux) with Qt fetched by a script of this
-repository's own, because the organisation runs GitHub-owned actions only - no third-party
-installer action. Cached between runs. The deviceless tests run there; the Grid-in-the-loop
+The Qt legs of the build matrix with Qt fetched by a composite action of this repository's
+own - adopted from the owner's `claude-chats-browser`: `.github/actions/setup-qt` runs
+`aqtinstall` through `pipx` (a tool, not a third-party action, so the GitHub-owned-actions policy
+holds), caches `~/Qt/<version>` restore-only on pull requests and save on main, and installs the
+Linux runtime packages (`libgl1-mesa-dev libxkbcommon-x11-0 libxcb-* libfontconfig1 xvfb`). The
+MSVC kit on Windows, the GCC kit on Linux; MinGW and LLVM-MinGW kits stay local presets. Cached
+between runs. The deviceless tests run there; the Grid-in-the-loop
 proof of Etape 2 stays a local, recorded check until the flagship publishes release binaries a
 workflow may download.
 

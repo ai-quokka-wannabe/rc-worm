@@ -71,16 +71,120 @@ jobs:
                     exit 1
                 fi
 
+            # The Program ABI is vendored from the flagship; a header that drifted from the
+            # fingerprint beside it is a Program the Grid would refuse as stale.
+            - name: Check the vendored Program ABI
+              run: python3 tools/check_abi_vendor.py check
+
+    build:
+        name: Build (${{ matrix.preset }})
+        needs: quick-checks
+        timeout-minutes: 30
+
+        strategy:
+            fail-fast: false
+
+            matrix:
+                include:
+                    - preset: windows-msvc
+                      os: windows-latest
+                      msvc-setup-needed: true
+                    - preset: windows-clang-cl
+                      os: windows-latest
+                    - preset: windows-mingw
+                      os: windows-latest
+                    - preset: linux-gcc
+                      os: ubuntu-latest
+                    - preset: linux-clang
+                      os: ubuntu-latest
+
+        runs-on: ${{ matrix.os }}
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: Setup MSVC environment
+              if: matrix.msvc-setup-needed
+              shell: pwsh
+              run: |
+                  # Visual Studio ships on the Windows runners, so the developer environment is
+                  # imported directly rather than through a third-party action: the repository
+                  # policy allows GitHub-owned actions only.
+                  $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+                  $install_path = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+                  if (-not $install_path) { throw "No Visual Studio installation with the C++ toolset was found." }
+                  $vcvars = Join-Path $install_path "VC\Auxiliary\Build\vcvars64.bat"
+                  if (-not (Test-Path $vcvars)) { throw "vcvars64.bat not found at $vcvars." }
+                  # Run vcvars64 in cmd, then carry the resulting environment into later steps.
+                  cmd /c "call `"$vcvars`" && set" | ForEach-Object {
+                      if ($_ -match '^([^=]+)=(.*)$') {
+                          $name = $matches[1]
+                          $value = $matches[2]
+                          # GITHUB_* are owned by the runner and must not be overwritten.
+                          if ($name -notmatch '^(GITHUB_|RUNNER_)') {
+                              "$name=$value" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+                          }
+                      }
+                  }
+
+            # The panel is off here: a worm without its window builds and loads with no Qt at all,
+            # which is a property the build must keep. The Qt legs arrive with Etape 6, with Qt
+            # fetched by this repository's own script (GitHub-owned actions only).
+            - name: Configure (panel off)
+              run: cmake --preset=${{ matrix.preset }} -DRC_WORM_PANEL=OFF
+
+            - name: Build and test (Debug)
+              run: |
+                cmake --build --preset=${{ matrix.preset }}-debug
+                ctest --preset=${{ matrix.preset }}-debug
+
+            - name: Build and test (Release)
+              run: |
+                cmake --build --preset=${{ matrix.preset }}-release
+                ctest --preset=${{ matrix.preset }}-release
+
+    sanitisers:
+        name: Sanitiser (${{ matrix.name }})
+        needs: quick-checks
+        timeout-minutes: 30
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - name: ASan+UBSan
+                      preset: linux-clang-asan
+                    - name: TSan
+                      preset: linux-clang-tsan
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: Configure (panel off)
+              run: cmake --preset=${{ matrix.preset }} -DRC_WORM_PANEL=OFF
+
+            - name: Build (Debug)
+              run: cmake --build --preset=${{ matrix.preset }}-debug
+
+            - name: Test (Debug)
+              run: ctest --preset=${{ matrix.preset }}-debug
+
     ci-success:
         name: CI Success
-        needs: [quick-checks]
+        needs: [quick-checks, build, sanitisers]
         runs-on: ubuntu-latest
         if: always()
 
         steps:
             - name: Check if all jobs succeeded
               run: |
-                if [[ "${{ needs.quick-checks.result }}" != "success" ]]; then
+                if [[ "${{ needs.quick-checks.result }}" != "success" ]] || \
+                   [[ "${{ needs.build.result }}" != "success" ]] || \
+                   [[ "${{ needs.sanitisers.result }}" != "success" ]]; then
                     echo "One or more jobs failed"
                     exit 1
                 fi
