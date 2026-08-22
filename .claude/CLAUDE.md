@@ -27,8 +27,11 @@ names only its repository); `link` - the wire (the library is **Link**).
 - **The Program ABI is the flagship's to move.** `tgl_program_abi.h` is vendored verbatim with
   its fingerprint, and a check refuses a vendor copy that drifted from the flagship's. Never
   edit the vendored header here; change it in the flagship and re-vendor.
-- **Built with the MinGW Qt kit, on purpose.** The Grid is MSVC; the C ABI between them is
-  proven across compilers here. MSVC stays a configured preset so the pairing is a choice.
+- **Every compiler the flagship supports, every Qt kit on the owner's machine** (the owner's
+  ruling): `windows-msvc`, `windows-clang-cl`, `windows-mingw`, `windows-llvm-mingw`,
+  `linux-gcc`, `linux-clang`, plus ASan/TSan on Linux. The Grid is MSVC, so the MinGW and
+  LLVM-MinGW builds prove the C ABI across compilers for real; every preset's DLL must load in
+  the MSVC Grid alike.
 - **`program_tick` never blocks and never throws.** It runs on the Grid's tick thread;
   `noexcept` throughout, a `catch (...)` at every boundary the Grid calls into. The panel lives
   on its own thread and talks through a mailbox each way.

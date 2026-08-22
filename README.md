@@ -38,14 +38,15 @@ and its first life on the Grid, recorded to a Disk.
 - **Remote-controlled first.** The User is the brain. A worm whose every action has a human
   behind it is the creature a world is debugged with; a thinking one comes after, in its own
   repository, wearing this body.
-- **Cross-toolchain, deliberately.** The Grid is built with MSVC; this Program is built with the
-  MinGW Qt kit, so the C ABI between them is proven across compilers rather than assumed within
-  one.
+- **Cross-toolchain, deliberately.** The Grid is built with MSVC; this Program builds on every
+  compiler the flagship supports and every Qt kit on the owner's machine - MSVC, clang-cl,
+  MinGW, LLVM-MinGW, GCC and Clang - so the C ABI between a Program and the Grid is proven
+  across compilers rather than assumed within one.
 
 ## Building
 
-Nothing to build yet. The first code brings CMake presets, the vendored Program ABI header and
-a Qt 6.11 kit with it.
+Nothing to build yet. The first code brings the CMake presets (Windows and Linux, the
+flagship's compilers, Qt 6.11 per kit), the vendored Program ABI header, and the panel.
 
 ## Licence
 

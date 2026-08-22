@@ -97,12 +97,13 @@ When submitting:
 - C++20 compiler (MSVC 19.30+, GCC 12+, or Clang 15+)
 - CMake 3.25+
 - Ninja build system
-- Qt 6.11+ (Widgets) for the telemetry GUI
+- Qt 6.11+ (Widgets) for the panel - on Windows the kit matching the preset (`msvc2022_64`,
+  `mingw_64` or `llvm-mingw_64` under `C:\Qt.11.1`), on Linux the distribution's Qt 6
 
 ### Setup
 
-Install Qt 6.11 (the MinGW kit is the one this repository proves the cross-toolchain case
-with), a C++20 compiler, CMake and Ninja.
+Install Qt 6.11 with the kits for the presets you build, a C++20 compiler, CMake and Ninja.
+On Linux: `sudo apt-get install qt6-base-dev`.
 
 Quick start (prerequisites already installed):
 
@@ -110,11 +111,11 @@ Quick start (prerequisites already installed):
 git clone https://github.com/ai-quokka-wannabe/rc-worm.git
 cd rc-worm
 
-# Windows
+# Windows - windows-msvc, windows-clang-cl, windows-mingw or windows-llvm-mingw
 cmake --preset windows-mingw
 cmake --build build/windows-mingw --config Debug
 
-# Linux
+# Linux - linux-gcc or linux-clang
 cmake --preset linux-gcc
 cmake --build build/linux-gcc --config Debug
 ```

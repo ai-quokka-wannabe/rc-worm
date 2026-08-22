@@ -27,9 +27,14 @@ a worm that stands still is a worm that loaded. Proven by `TronGridLite --list-p
 reporting it USABLE at ABI version 6, and by a `--program rc_worm` host run against Master
 Control that rezzes it, ticks it, and leaves with BYE.
 
-Built with the **MinGW Qt 6.11.1 kit**, deliberately: the Grid is MSVC, so the C ABI between a
-Program and the Grid is proven across compilers here, once, rather than assumed within one.
-MSVC stays a configured preset so the pairing is a choice that exists.
+Built on **every compiler the flagship supports and every Qt kit on the owner's machine**
+(the owner's ruling, 2026-08-23): `windows-msvc` (Qt `msvc2022_64`), `windows-clang-cl` (the
+same kit - clang-cl is MSVC-ABI), `windows-mingw` (Qt `mingw_64`, the flagship's own MinGW
+13.1), `windows-llvm-mingw` (Qt `llvm-mingw_64`, LLVM-MinGW 17), `linux-gcc` and `linux-clang`
+(the distribution's Qt 6), with the flagship's ASan and TSan variants on Linux. The Grid is
+MSVC, so the MinGW and LLVM-MinGW builds prove the C ABI between a Program and the Grid across
+compilers, for real, rather than assuming it within one - and every preset's DLL must load in
+the MSVC Grid alike.
 
 ## Etape 3 — the body
 
