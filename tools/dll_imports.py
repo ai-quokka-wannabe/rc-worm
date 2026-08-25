@@ -12,6 +12,7 @@ worm imports must be beside it or in the system, never in a Qt kit's directory o
 tree.
 """
 
+import os
 import struct
 import sys
 from pathlib import Path
@@ -72,14 +73,15 @@ def main(argv: list[str]) -> int:
     if len(argv) != 2:
         print("usage: dll_imports.py <file.dll|file.exe>", file=sys.stderr)
         return 1
-    # An operator's path, judged rather than trusted: resolved, then required to sit inside
+    # An operator's path, judged rather than trusted: normalised, then required to sit inside
     # the working directory - the tool reads build outputs of this checkout and nothing else -
     # and a file rather than a directory or a device.
-    root = Path.cwd().resolve()
-    path = Path(argv[1]).resolve()
-    if root not in path.parents:
+    root = os.path.realpath(os.getcwd())
+    full = os.path.realpath(os.path.normpath(os.path.join(root, argv[1])))
+    if not full.startswith(root + os.sep):
         print(f"{argv[1]}: refusing a path outside the working directory {root}", file=sys.stderr)
         return 1
+    path = Path(full)
     if not path.is_file():
         print(f"{argv[1]}: not a file", file=sys.stderr)
         return 1
