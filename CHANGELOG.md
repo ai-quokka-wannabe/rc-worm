@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The panel: the User is the brain.** Etape 4. A Qt Widgets window on the Program's own thread
+  shows what the worm senses - each eye's samples where they look on a map of the body frame,
+  each ear as the band-by-bin histogram it is with the arrivals' onsets and radial velocities
+  marked, every contact where it happened on the body with the vestibular numbers beside - and
+  takes the three controls the ABI carries, from keys or sliders scaled to the body's own bounds.
+  The seam between the tick and the window is vanilla C++20 (`src/worm/seam.hpp`): one mailbox
+  per creature, plain structs copied whole under a mutex held for the copy, senses latest-wins,
+  intent latest-wins with a call latched until a tick hears it, fixed capacities with every drop
+  counted and shown by name. The tick never waits for a window; a tick that finds no new intent
+  repeats the last for four ticks and then brakes. The Qt thread starts in `library_init`, joins
+  in `library_shutdown`, opens a window at rez and closes it to completion at derez; a headless
+  Linux is refused rather than aborted. Tested deviceless (`seam_tests`), on Qt Test's thread
+  (`tst_panel`) and through the DLL with real windows (`vtable_tests`). Deployed by
+  `windeployqt --compiler-runtime` at install and judged by `tools/check_deploy.py`, a closed
+  set beside `rc_worm.dll` on every Windows kit; the Grid loads it with no Qt on the PATH
+  (tron-grid-lite #117). `docs/PANEL.md` carries the threads, the seam, the silence rule and the
+  why. Three catches on the way, all found by running the real thing: `qt_add_executable`
+  under clang-cl embeds a side-by-side manifest Windows refuses, so the Qt Test target is a
+  plain executable with moc on; Qt looks for its platform plugin beside the host executable,
+  never beside the DLL, so the panel adds its own directory to Qt's library paths first; and a
+  Qt that cannot find that plugin aborts the host, so the panel checks for it before any
+  `QApplication` exists and refuses rather than starts. Then the first steered ticks: with the
+  deployed worm hosted in the Grid (no Qt on the PATH), `W` held three seconds moved the body
+  three metres along its -Z, one second of `A` turned it to exactly a right angle, and it braked
+  when the keys were released - recorded to a Disk that Clu re-simulated and agreed with.
 - **`/check-coherence`.** A documentation audit for contradictions between clauses that were
   each right when written, orphaned claims about the tree, facts stated twice against the
   single-source-of-truth table, scope drift and stale "today" sections - and one that is willing

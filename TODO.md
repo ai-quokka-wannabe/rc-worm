@@ -90,6 +90,28 @@ the later `brain-elegans` can wear the same body knowing what it is.
 
 ## Etape 4 — the panel
 
+**Done (2026-08-25).** `src/worm/seam.{hpp,cpp}`: the mailbox, one slot each way, copied whole
+under a mutex held for the copy - `SensesSnapshot` (every eye's samples, every ear's band-by-bin
+energy and arrivals, every contact, the vestibular numbers; fixed capacities, every drop
+COUNTED and shown by name), `BodySnapshot` at rez, `Intent` latest-wins with the call LATCHED
+until a tick hears it. `Worm::tick` publishes, takes, and keeps the silence rule: fresh, repeated
+for `PANEL_REPEAT_TICKS` (four), then braked; `Applied` names which. `src/panel/`: the Qt thread
+(`QApplication` built inside the thread's entry, an anchor for blocking posts; started in
+`library_init`, joined in `library_shutdown`; refuses a headless Linux rather than abort) and
+`PanelWindow` (eyes on an equirectangular map, ears as band x bin histograms with arrivals,
+the feel from above; W/S A/D Space X and sliders scaled to the body's bounds; stylesheet scoped
+to the window). Tests: `seam_tests` deviceless, `tst_panel` on Qt Test's thread (draws, offers,
+latches, two thousand publishes never wait), `vtable_tests` through the DLL opening real
+windows. Deployment: `cmake --install` + `windeployqt --compiler-runtime` on the DLL,
+`tools/check_deploy.py` judging a closed set (six libraries on MSVC, nine on MinGW, eight on
+LLVM-MinGW), run on every Windows Qt leg; the Grid loads it with no Qt on the PATH since
+tron-grid-lite #117 (`LoadLibraryEx` with the library's own directory), and the panel puts its
+own directory on Qt's library paths and refuses to start unless a platform plugin is reachable
+(Qt would abort the host otherwise). Proven on all five Windows builds, and steered: the
+deployed worm hosted in the Grid, `W` three seconds = three metres along -Z, `A` one second =
+a right angle, released = braked; Clu agreed with the Disk. `docs/PANEL.md` carries the
+threads, the seam, the rule and the why.
+
 The User is the brain. A Qt Widgets window on the Program's own thread (a Program's window is
 its own business; the Grid provides nothing and the tick never waits for a window):
 

@@ -289,17 +289,19 @@ jobs:
                 fi
 
             # Every library the worm ships must be found beside it or in the system, never in
-            # the Qt kit's directory or the build tree - this is what the panel's deployment
-            # (Etape 4, windeployqt) will be judged by, so the inventory is recorded from today:
-            # the import table read by this repository's own script on Windows (dumpbin needs
-            # the MSVC environment, which the clang-cl leg does not have), ldd on Linux.
-            - name: Record the worm's dynamic dependencies
+            # the Qt kit's directory or the build tree. On Windows the install runs windeployqt
+            # on the DLL and tools/check_deploy.py judges what it produced: a closed set beside
+            # rc_worm.dll, the platform plugin and the style included (docs/PANEL.md). On Linux
+            # the Qt is the kit's or the distribution's, and ldd is recorded for the day that
+            # changes.
+            - name: Deploy the worm and judge what it needs
               shell: bash
               run: |
                 if [[ "${{ runner.os }}" == "Linux" ]]; then
                     ldd build/${{ matrix.preset }}/bin/Release/librc_worm.so
                 else
-                    python3 tools/dll_imports.py build/${{ matrix.preset }}/bin/Release/rc_worm.dll
+                    cmake --install build/${{ matrix.preset }} --config Release --prefix build/${{ matrix.preset }}-deploy
+                    python3 tools/check_deploy.py build/${{ matrix.preset }}-deploy/programs
                 fi
 
     sanitisers:

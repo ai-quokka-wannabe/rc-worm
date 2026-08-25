@@ -18,10 +18,8 @@
 namespace WormLib
 {
 
-    Worm::Worm(const TglCreatureDesc& desc) noexcept :
-        m_creature_id(desc.creature_id),
-        m_eye_count(desc.eye_count),
-        m_ear_count(desc.ear_count)
+    Worm::Worm(const TglCreatureDesc& desc, const float nominal_dt_seconds) noexcept :
+        m_body(snapshotBody(desc, nominal_dt_seconds))
     {
     }
 
@@ -30,9 +28,30 @@ namespace WormLib
         ++m_ticks_seen;
         m_last_tick = senses.tick;
 
-        // Etape 2: the worm stands. The Grid zeroed the actions; they stay zeroed. The panel, when
-        // it arrives, is what puts a number here - and nothing else ever will.
-        (void)actions;
+        // What the Grid lent is copied whole before anything else looks at it: the panel reads
+        // the copy, on its own thread, long after this call has returned.
+        snapshotSenses(senses, m_snapshot);
+        m_mailbox.publishSenses(m_snapshot);
+
+        // The User's word, the last word repeated, or silence: the panel's silence rule.
+        if (const std::optional<Intent> fresh{m_mailbox.takeIntent()}) {
+            m_last_intent = *fresh;
+            m_repeat_budget = PANEL_REPEAT_TICKS;
+            m_last_applied = Applied::Fresh;
+        } else if (m_repeat_budget > 0u) {
+            --m_repeat_budget;
+            // A call is one burst per tick; a repeat repeats the motion, never the voice.
+            m_last_intent.vocalisation = 0.0f;
+            m_last_applied = Applied::Repeated;
+        } else {
+            m_last_intent = Intent{};
+            m_last_applied = Applied::Braked;
+        }
+
+        // The Grid zeroed the actions; a braked worm leaves them so and stands.
+        actions.desired_forward_speed = m_last_intent.forward_speed;
+        actions.desired_turn_rate = m_last_intent.turn_rate;
+        actions.vocalisation_strength = m_last_intent.vocalisation;
     }
 
 } // namespace WormLib
