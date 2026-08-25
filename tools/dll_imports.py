@@ -46,7 +46,9 @@ def imports(path: Path) -> list[str]:
     section_offset = optional_offset + optional_size
     for index in range(section_count):
         base = section_offset + (index * 40)
-        virtual_size, virtual_address, _raw_size, raw_pointer = struct.unpack_from("<IIII", data, base + 8)
+        virtual_size, virtual_address, _raw_size, raw_pointer = struct.unpack_from(
+            "<IIII", data, base + 8
+        )
         sections.append((virtual_address, virtual_size, raw_pointer))
 
     names: list[str] = []
@@ -54,7 +56,9 @@ def imports(path: Path) -> list[str]:
         return names
     descriptor = _rva_to_offset(import_rva, sections)
     while True:
-        _lookup, _stamp, _forwarder, name_rva, _thunk = struct.unpack_from("<IIIII", data, descriptor)
+        _lookup, _stamp, _forwarder, name_rva, _thunk = struct.unpack_from(
+            "<IIIII", data, descriptor
+        )
         if name_rva == 0:
             break
         name_offset = _rva_to_offset(name_rva, sections)
@@ -69,6 +73,14 @@ def main(argv: list[str]) -> int:
         print("usage: dll_imports.py <file.dll|file.exe>", file=sys.stderr)
         return 1
     path = Path(argv[1])
+    # An operator's path, judged rather than trusted: no climbing, and a file rather than a
+    # directory or a device, so the one thing this reads is the image it was pointed at.
+    if ".." in path.parts:
+        print(f"{path}: refusing a path that climbs ('..')", file=sys.stderr)
+        return 1
+    if not path.is_file():
+        print(f"{path}: not a file", file=sys.stderr)
+        return 1
     try:
         names = imports(path)
     except (OSError, ValueError, struct.error) as error:
