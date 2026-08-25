@@ -406,7 +406,7 @@ namespace PanelLib
         rows->addLayout(buttons);
         column->addWidget(controls);
 
-        m_status = new QLabel{this};
+        m_status = new QLabel{QStringLiteral("senses: none yet   waiting for the first tick"), this};
         column->addWidget(m_status);
 
         updateHeader();

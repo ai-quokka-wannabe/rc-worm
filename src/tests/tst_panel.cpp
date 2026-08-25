@@ -106,6 +106,8 @@ private slots:
         PanelLib::PanelWindow window{mailbox, body};
         window.show();
         QVERIFY(QTest::qWaitForWindowExposed(&window));
+        // Said from the first paint, before any poll: a window exposed faster than its timer
+        // (Linux under Xvfb) must not read as one that said nothing.
         QVERIFY2(window.statusText().contains(QStringLiteral("waiting for the first tick")), qPrintable(window.statusText()));
 
         // A tick published from the worm's side: the window takes it on its next poll.
