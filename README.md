@@ -34,6 +34,15 @@ version 6 for all of them, and a `--program rc_worm` host run against Master Con
 worm, ticked it two hundred times and left with BYE - a first life, recorded to a Disk, that Clu
 re-simulates and agrees with.
 
+**The panel.** The User is the brain: a Qt Widgets window on the Program's own thread shows
+what the worm senses - eyes where they look, ears as the histograms they are with every
+arrival marked, the feel of the floor from above - and takes forward, turn and voice from keys
+or sliders scaled to the body's bounds. The tick never waits for it: a vanilla-C++20 mailbox of
+plain structs sits between them, and a worm nobody steers repeats four ticks and brakes. It
+deploys beside `rc_worm.dll` with `windeployqt`, judged a closed set by `tools/check_deploy.py`,
+and the Grid loads it with no Qt on the PATH. [docs/PANEL.md](docs/PANEL.md) carries the
+threads, the seam and the why.
+
 **The body.** One rigid segment: a regular icosahedron a quarter metre in circumradius, near-black
 mirror faces and a green neon tube along every one of its thirty edges, built from the golden
 ratio in vanilla C++20 and lent to the Grid at `program_rez`. It rests on a face with its nose

@@ -39,7 +39,15 @@ names only its repository); `link` - the wire (the library is **Link**).
   the MSVC Grid alike.
 - **`program_tick` never blocks and never throws.** It runs on the Grid's tick thread;
   `noexcept` throughout, a `catch (...)` at every boundary the Grid calls into. The panel lives
-  on its own thread and talks through a mailbox each way.
+  on its own thread and talks through a mailbox each way (`src/worm/seam.hpp`; docs/PANEL.md
+  carries the threads table, the silence rule and the lost-wakeup rule). The Qt thread starts
+  in `library_init` and joins in `library_shutdown`; a window opens at rez and closes to
+  completion at derez; the tick never posts to it. `QApplication` is built inside the thread's
+  entry function, never with `QThread`. A headless Linux is refused, never aborted.
+- **Deployment is judged, not hoped.** `cmake --install` runs `windeployqt --compiler-runtime`
+  on the DLL; `tools/check_deploy.py` refuses a `programs/` whose imports are not a closed set
+  beside `rc_worm.dll` or Windows' own. The Grid finds it because it loads a Program with the
+  library's own directory on the search path (tron-grid-lite #117).
 - **A Program touches its state in `program_derez`, never after `library_shutdown`.** The
   flagship's fixtures hold the Grid to this; this Program holds itself to it.
 - **Spelling:** British English everywhere. The LICENCE file content is untouchable (legal
@@ -63,7 +71,9 @@ windows-msvc, windows-clang-cl, linux-gcc and linux-clang (Qt fetched by
 cached restore-only on pull requests; Linux tests under `xvfb-run` with a real font),
 `Sanitiser (ASan+UBSan)`, `Sanitiser (TSan)` and `Sanitiser (ASan+UBSan with Qt)` (leaks not
 counted: the un-instrumented Qt stack reports its own), and the `CI Success` gate the ruleset
-requires by its exact name. The MinGW kits stay local presets (the runners have no MinGW Qt),
+requires by its exact name. Every Windows Qt leg installs the worm, runs windeployqt and judges
+the deployment with `tools/check_deploy.py`; the Linux Qt legs run the window tests under
+`xvfb-run` (real windows open in Xvfb, including from `vtable_tests` through the DLL). The MinGW kits stay local presets (the runners have no MinGW Qt),
 as does LLVM-MinGW. Dependabot does not see the pins inside the composite action from the
 workflows' scan, so `.github/dependabot.yml` lists the action's directory as well - and a bump
 to `actions/cache` in a workflow is checked against the action by hand.

@@ -19,6 +19,10 @@
     is noexcept and the ones that run C++ do so inside a catch (...) - and the Grid's contract is
     kept to the letter: a Program touches its state in program_derez and never after
     library_shutdown.
+
+    The panel's lifetime is pinned to the ABI's: the Qt thread starts in library_init and is joined
+    before library_shutdown returns; a window opens at rez and is gone before derez returns, so no
+    window ever outlives the worm whose mailbox it reads. program_tick never touches the panel.
 */
 
 #define TGL_PROGRAM_IMPLEMENTATION
@@ -44,10 +48,13 @@ namespace
     //! Creatures rezzed and not yet derezzed: what library_shutdown must find at zero.
     std::atomic<std::uint32_t> g_rezzed{0u};
 
+    //! One rezzed creature: the worm, and the window that steers it (null when there is none).
+    struct Rezzed {
+        WormLib::Worm worm;
 #if defined(RC_WORM_HAS_PANEL)
-    //! The Qt the panel was built against, as its runtime reports it from inside the host process.
-    const char* g_panel_qt{""};
+        PanelLib::Window* window{nullptr};
 #endif
+    };
 
     void libraryInit(const TglLibraryInfo* info) TGL_NOEXCEPT
     {
@@ -55,8 +62,9 @@ namespace
             g_nominal_dt_seconds = info->nominal_dt_seconds;
         }
 #if defined(RC_WORM_HAS_PANEL)
-        // Etape 2: the kit, proven at load - the panel answers from inside the host process.
-        g_panel_qt = PanelLib::qtVersion();
+        // The Qt thread, up before the first rez; a runner with no display to draw into (a
+        // headless Linux) answers false and the worm stands unsteered, which is a worm still.
+        (void)PanelLib::start();
 #endif
     }
 
@@ -71,9 +79,12 @@ namespace
             if (model != nullptr) {
                 WormLib::Body::theWorm().lend(*model);
             }
-            WormLib::Worm* const worm{new WormLib::Worm{*desc}};
+            Rezzed* const rezzed{new Rezzed{WormLib::Worm{*desc, g_nominal_dt_seconds}}};
+#if defined(RC_WORM_HAS_PANEL)
+            rezzed->window = PanelLib::open(rezzed->worm.mailbox(), rezzed->worm.body());
+#endif
             g_rezzed.fetch_add(1u);
-            return reinterpret_cast<TglProgram*>(worm);
+            return reinterpret_cast<TglProgram*>(rezzed);
         } catch (...) {
             // Out of memory is the only thing that can throw here, and a refusal is the honest
             // answer to it: the Grid treats NULL as "this Program cannot take this body".
@@ -87,7 +98,7 @@ namespace
             return;
         }
         try {
-            reinterpret_cast<WormLib::Worm*>(program)->tick(*senses, *actions);
+            reinterpret_cast<Rezzed*>(program)->worm.tick(*senses, *actions);
         } catch (...) {
             // Worm::tick is noexcept itself; this is the boundary's own belt over those braces.
         }
@@ -98,12 +109,23 @@ namespace
         if (program == nullptr) {
             return;
         }
-        delete reinterpret_cast<WormLib::Worm*>(program);
+        Rezzed* const rezzed{reinterpret_cast<Rezzed*>(program)};
+#if defined(RC_WORM_HAS_PANEL)
+        // The window first, and to completion: it reads the worm's mailbox until it is gone.
+        PanelLib::close(rezzed->window);
+        rezzed->window = nullptr;
+#endif
+        delete rezzed;
         g_rezzed.fetch_sub(1u);
     }
 
     void libraryShutdown() TGL_NOEXCEPT
     {
+#if defined(RC_WORM_HAS_PANEL)
+        // The Qt thread quits and is joined here, so nothing of the panel's runs after this
+        // returns and the host may unload the library.
+        PanelLib::stop();
+#endif
         // Every creature was derezzed before this, or the Grid broke its word; either way, nothing
         // of the worm's is touched here. The counter is reset so a reloaded library starts clean.
         g_rezzed.store(0u);

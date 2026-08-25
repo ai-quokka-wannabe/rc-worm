@@ -25,7 +25,8 @@ TEST_CASE(a_worm_that_loads_stands_still_and_counts_its_ticks)
     desc.creature_id = 42u;
     desc.eye_count = 2u;
     desc.ear_count = 2u;
-    WormLib::Worm worm{desc};
+    WormLib::Worm worm{desc, 0.03125f};
+    TEST_CHECK_EQUAL(worm.body().nominal_dt_seconds, 0.03125f);
     TEST_CHECK_EQUAL(worm.creatureId(), 42u);
     TEST_CHECK_EQUAL(worm.eyeCount(), 2u);
     TEST_CHECK_EQUAL(worm.earCount(), 2u);
@@ -38,7 +39,8 @@ TEST_CASE(a_worm_that_loads_stands_still_and_counts_its_ticks)
     worm.tick(senses, actions);
     TEST_CHECK_EQUAL(worm.ticksSeen(), 1u);
     TEST_CHECK_EQUAL(worm.lastTick(), 1000u);
-    // The Grid zeroed the actions; a worm with nothing to say leaves them so.
+    // The Grid zeroed the actions; a worm nobody steers leaves them so and stands.
+    TEST_CHECK(worm.lastApplied() == WormLib::Applied::Braked);
     TEST_CHECK_EQUAL(actions.desired_forward_speed, 0.0f);
     TEST_CHECK_EQUAL(actions.desired_turn_rate, 0.0f);
     TEST_CHECK_EQUAL(actions.vocalisation_strength, 0.0f);

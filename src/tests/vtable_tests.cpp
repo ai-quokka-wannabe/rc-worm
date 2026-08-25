@@ -23,6 +23,7 @@
 
 #include <testing/testing.hpp>
 
+#include <chrono>
 #include <cstdint>
 
 TEST_CASE(the_one_symbol_refuses_every_version_but_its_own_and_names_its_table)
@@ -67,10 +68,14 @@ TEST_CASE(the_whole_lifecycle_through_the_table_rezzes_ticks_and_derezzes_two_wo
     TEST_CHECK(second != nullptr);
     TEST_CHECK(second != first);
 
+    // Nobody steers either worm - with the panel built, each has a window open and polling, and
+    // an untouched window asks for nothing - so every answer is the zeroed brake. And the tick
+    // never waits for a window: two hundred ticks of two worms, drawn or not, are quick.
     TglSenses senses{};
     senses.dt_seconds = info.nominal_dt_seconds;
     TglActions actions{};
-    for (std::uint32_t tick{0u}; tick < 10u; ++tick) {
+    const auto started{std::chrono::steady_clock::now()};
+    for (std::uint32_t tick{0u}; tick < 200u; ++tick) {
         senses.tick = 5u + tick;
         table->program_tick(first, &senses, &actions);
         table->program_tick(second, &senses, &actions);
@@ -78,6 +83,8 @@ TEST_CASE(the_whole_lifecycle_through_the_table_rezzes_ticks_and_derezzes_two_wo
         TEST_CHECK_EQUAL(actions.desired_turn_rate, 0.0f);
         TEST_CHECK_EQUAL(actions.vocalisation_strength, 0.0f);
     }
+    const auto took{std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - started)};
+    TEST_CHECK(took.count() < 2000);
 
     // A null anywhere is nothing, never a crash: the Grid never sends one, but a boundary that
     // survives a null is a boundary that was written with care.
