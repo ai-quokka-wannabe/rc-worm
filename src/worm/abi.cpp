@@ -24,6 +24,7 @@
 #define TGL_PROGRAM_IMPLEMENTATION
 #include <tgl/tgl_program_abi.h>
 
+#include "body.hpp"
 #include "worm.hpp"
 
 #if defined(RC_WORM_HAS_PANEL)
@@ -61,13 +62,15 @@ namespace
 
     TglProgram* programRez(const TglCreatureDesc* desc, TglRenderModel* model) TGL_NOEXCEPT
     {
-        // Etape 2: no body yet. The Grid zeroed the model, and a zeroed model is a legitimate,
-        // invisible body. Etape 3 fills it.
-        (void)model;
         if (desc == nullptr) {
             return nullptr;
         }
         try {
+            // The body: the icosahedron, lent to the Grid from the worm's own storage for the
+            // length of this call, exactly as the ABI states. The Grid copies before returning.
+            if (model != nullptr) {
+                WormLib::Body::theWorm().lend(*model);
+            }
             WormLib::Worm* const worm{new WormLib::Worm{*desc}};
             g_rezzed.fetch_add(1u);
             return reinterpret_cast<TglProgram*>(worm);

@@ -30,8 +30,15 @@ every compiler the flagship supports with every Qt kit on the owner's machine, a
 those libraries loads in the MSVC-built Grid: `TronGridLite --list-programs` says USABLE at ABI
 version 6 for all of them, and a `--program rc_worm` host run against Master Control rezzed the
 worm, ticked it two hundred times and left with BYE - a first life, recorded to a Disk, that Clu
-re-simulates and agrees with. The body, the panel and the life somebody lives are staged in
-[TODO.md](TODO.md).
+re-simulates and agrees with.
+
+**The body.** One rigid segment: a regular icosahedron a quarter metre in circumradius, near-black
+mirror faces and a green neon tube along every one of its thirty edges, built from the golden
+ratio in vanilla C++20 and lent to the Grid at `program_rez`. It rests on a face with its nose
+where the eyes look, passes every rule the Grid and the world judge a model by before either sees
+it, stands grounded in Master Control's world, and in the window it is a green-edged icosahedron
+mirrored in the floor. [docs/BODY.md](docs/BODY.md) carries the numbers and the why. The panel
+and the life somebody lives are staged in [TODO.md](TODO.md).
 
 ## The Doctrine
 

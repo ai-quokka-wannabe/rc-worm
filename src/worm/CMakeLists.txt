@@ -4,6 +4,7 @@
 # shared library links, not something the worm knows about.
 
 add_library(worm STATIC
+    body.cpp
     worm.cpp
 )
 
