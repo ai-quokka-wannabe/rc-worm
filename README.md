@@ -26,8 +26,10 @@ one table, kept in one place, pointed at from everywhere.
 **The Program that loads.** `rc_worm.dll` / `librc_worm.so`: one exported symbol,
 `tglGetProgramVTable`, behind which a worm is rezzed, ticked and derezzed exactly as the Program
 ABI states - vanilla C++20, `noexcept` at every boundary, standing still for now. It builds on
-every compiler the flagship supports with every Qt kit on the owner's machine, and every one of
-those libraries loads in the MSVC-built Grid: `TronGridLite --list-programs` says USABLE at ABI
+every compiler the flagship supports with every Qt kit on the owner's machine - and, on the
+runners, with Qt fetched by the repository's own composite action (aqtinstall through `pipx`,
+pinned; GitHub-owned actions only) - and every one of those libraries loads in the MSVC-built
+Grid: `TronGridLite --list-programs` says USABLE at ABI
 version 6 for all of them, and a `--program rc_worm` host run against Master Control rezzed the
 worm, ticked it two hundred times and left with BYE - a first life, recorded to a Disk, that Clu
 re-simulates and agrees with.

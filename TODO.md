@@ -127,6 +127,17 @@ whose every action a human chose is the creature a world is debugged with.
 
 ## Etape 6 — CI with Qt
 
+**Done (2026-08-25), pulled forward before Etape 4 so the panel is provable the day it lands.**
+`.github/actions/setup-qt` (aqtinstall through `pipx run`, pinned to the commit that taught it
+Qt 6.11's Windows layout, from `download.qt.io`, every archive checked against Qt's SHA-256;
+cache restore-only on pull requests, saved on main; `QTDIR` exported and passed as
+`CMAKE_PREFIX_PATH` over the presets' desk paths); `Build with Qt` on windows-msvc,
+windows-clang-cl (the MSVC kit), linux-gcc and linux-clang (the GCC kit) with the Linux runtime
+packages, `xvfb-run` and a real font; an ASan+UBSan-with-Qt sanitiser leg with
+`ASAN_OPTIONS=detect_leaks=0`; a quick-check that `QT_VERSION` in the workflows and the kit
+paths in the presets agree; the worm's dynamic dependencies recorded per build for Etape 4's
+deployment check to judge. TSan with the panel on waits for the panel's thread (Etape 4).
+
 The Qt legs of the build matrix with Qt fetched by a composite action of this repository's
 own - adopted from the owner's `claude-chats-browser`: `.github/actions/setup-qt` runs
 `aqtinstall` through `pipx` (a tool, not a third-party action, so the GitHub-owned-actions policy

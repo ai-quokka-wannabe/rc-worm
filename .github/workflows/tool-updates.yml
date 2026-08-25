@@ -33,7 +33,7 @@ jobs:
                 include:
                     - key: qt
                       name: Qt
-                      where: 'the kit paths in `CMakePresets.json` (and the kits installed on the desk)'
+                      where: 'the kit paths in `CMakePresets.json`, `QT_VERSION` in `ci_pr.yml` and `ci_main.yml` (and the kits installed on the desk)'
                       current: 'grep -ohP ''C:/Qt/\K[0-9.]+'' CMakePresets.json | head -1'
                       latest: 'gh api ''repos/qt/qtbase/tags?per_page=100'' --jq ''.[].name'' | grep -E ''^v[0-9]+\.[0-9]+\.[0-9]+$'' | sed ''s/^v//'' | sort -V | tail -1'
                       notes: https://www.qt.io/blog/tag/releases

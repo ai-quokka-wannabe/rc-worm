@@ -1,0 +1,133 @@
+name: Setup Qt
+
+# Qt on a runner without a third-party action: the organisation runs GitHub-owned actions only,
+# so the SDK is fetched by aqtinstall - a tool, run through pipx and pinned to a commit - from
+# Qt's own server, and cached between runs. Adopted from the owner's claude-chats-browser.
+#
+# Dependabot does not look inside a composite action, so the actions/cache pins below are bumped
+# by hand whenever a Dependabot pull request bumps the same action in the workflows - and
+# .github/dependabot.yml lists this directory so it is at least tried.
+description: Downloads, caches and configures a Qt kit on the runner via aqtinstall.
+
+inputs:
+    version:
+        description: Qt version, e.g. 6.11.1 - the same one the kit paths in CMakePresets.json name.
+        required: true
+    kit:
+        description: >
+            The kit, named as its install directory: msvc2022_64, mingw_64 or llvm-mingw_64 on
+            Windows, gcc_64 on Linux. Defaults to msvc2022_64 on Windows and gcc_64 on Linux.
+        required: false
+        default: ""
+
+outputs:
+    prefix:
+        description: The kit's prefix (CMAKE_PREFIX_PATH), also exported as QTDIR.
+        value: ${{ steps.env.outputs.prefix }}
+
+runs:
+    using: composite
+
+    steps:
+        - name: Compute platform parameters
+          id: params
+          shell: bash
+          run: |
+            # aqtinstall wants host / arch; the install lands in a directory named after the kit.
+            # (Qt >= 6.7 renamed the Linux arch from gcc_64 to linux_gcc_64; the directory kept
+            # the old name.)
+            kit="${{ inputs.kit }}"
+            case "${{ runner.os }}" in
+                Linux)
+                    host=linux
+                    kit="${kit:-gcc_64}"
+                    ;;
+                Windows)
+                    host=windows
+                    kit="${kit:-msvc2022_64}"
+                    ;;
+                *)
+                    echo "::error::Unsupported runner OS ${{ runner.os }}: this repository builds on Windows and Linux."
+                    exit 1
+                    ;;
+            esac
+            case "$kit" in
+                gcc_64)        arch=linux_gcc_64 ;;
+                msvc2022_64)   arch=win64_msvc2022_64 ;;
+                mingw_64)      arch=win64_mingw ;;
+                llvm-mingw_64) arch=win64_llvm_mingw ;;
+                *)
+                    echo "::error::Unknown Qt kit '$kit': one of gcc_64, msvc2022_64, mingw_64, llvm-mingw_64."
+                    exit 1
+                    ;;
+            esac
+            {
+                echo "host=$host"
+                echo "arch=$arch"
+                echo "dir=$kit"
+                echo "key=qt-${{ runner.os }}-${{ inputs.version }}-$kit"
+            } >> "$GITHUB_OUTPUT"
+
+        # Pull requests restore the cache and never write it, so a fork cannot poison what main
+        # builds against; main restores and saves.
+        - name: Restore Qt cache
+          if: github.ref != 'refs/heads/main'
+          uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+          with:
+            path: ~/Qt/${{ inputs.version }}/${{ steps.params.outputs.dir }}
+            key: ${{ steps.params.outputs.key }}
+
+        - name: Restore and save Qt cache
+          if: github.ref == 'refs/heads/main'
+          uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+          with:
+            path: ~/Qt/${{ inputs.version }}/${{ steps.params.outputs.dir }}
+            key: ${{ steps.params.outputs.key }}
+
+        - name: Check whether the kit is already there
+          id: check-qt
+          shell: bash
+          run: |
+            if [ -x "$HOME/Qt/${{ inputs.version }}/${{ steps.params.outputs.dir }}/bin/qmake" ] || \
+               [ -x "$HOME/Qt/${{ inputs.version }}/${{ steps.params.outputs.dir }}/bin/qmake.exe" ]; then
+                echo "exists=true" >> "$GITHUB_OUTPUT"
+            else
+                echo "exists=false" >> "$GITHUB_OUTPUT"
+            fi
+
+        - name: Download and install Qt
+          if: steps.check-qt.outputs.exists != 'true'
+          shell: bash
+          run: |
+            # pipx is preinstalled on every runner and keeps the tool out of the system Python.
+            # aqtinstall is pinned to the miurahr/aqtinstall commit that merged PR #1000 "Support
+            # Qt 6.11+ for Windows x64" - Qt changed the Windows repository layout in 6.11 and no
+            # PyPI release carried the fix when this was written. Move to a plain "aqtinstall==x.y.z"
+            # spec once a release newer than 3.3.0 ships (tool-updates.yml watches the pin).
+            # --base names Qt's own server: mirrors lag on fresh releases and fail metadata
+            # resolution. aqt verifies every archive against the SHA-256 in Qt's metadata.
+            pipx run --spec "git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b" aqt install-qt \
+                "${{ steps.params.outputs.host }}" desktop "${{ inputs.version }}" "${{ steps.params.outputs.arch }}" \
+                --base https://download.qt.io/ \
+                --outputdir "$HOME/Qt"
+
+        - name: Export the kit
+          id: env
+          shell: bash
+          run: |
+            prefix="$HOME/Qt/${{ inputs.version }}/${{ steps.params.outputs.dir }}"
+            # CMake on Windows cannot use the POSIX-style path git-bash gives $HOME; make it
+            # C:/Users/... instead.
+            if [ "${{ runner.os }}" == "Windows" ]; then
+                prefix=$(cygpath -m "$prefix")
+            fi
+            if [ ! -f "$prefix/lib/cmake/Qt6/Qt6Config.cmake" ]; then
+                echo "::error::No Qt6Config.cmake under $prefix - the kit did not install where this action expects it."
+                exit 1
+            fi
+            echo "prefix=$prefix" >> "$GITHUB_OUTPUT"
+            # Workflows pass -DCMAKE_PREFIX_PATH=$QTDIR to the configure step: the presets name
+            # the desk's kit paths, and this overrides them on the runner.
+            echo "QTDIR=$prefix" >> "$GITHUB_ENV"
+            echo "$prefix/bin" >> "$GITHUB_PATH"
+            "$prefix/bin/qmake" -query QT_VERSION
