@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`/check-coherence`.** A documentation audit for contradictions between clauses that were
+  each right when written, orphaned claims about the tree, facts stated twice against the
+  single-source-of-truth table, scope drift and stale "today" sections - and one that is willing
+  to conclude the documents are coherent. Adopted from the owner's `setonix-os`; the same file
+  in every repository of the organisation.
 - **CI with Qt.** Etape 6, pulled forward so the panel is provable the day it lands. Adopted
   from the owner's `claude-chats-browser`: `.github/actions/setup-qt`, a composite action of
   this repository's own (GitHub-owned actions only), runs aqtinstall through `pipx run` pinned
