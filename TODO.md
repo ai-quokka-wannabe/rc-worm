@@ -54,6 +54,17 @@ the MSVC Grid alike.
 
 ## Etape 3 — the body
 
+**Done (2026-08-25).** `src/worm/body.{hpp,cpp}`: the icosahedron from the golden ratio, turned
+face-down and nose-forward, a triangular neon prism proud of every edge - 192 vertices, 200
+triangles, two materials, lent to the Grid from the body's own storage. `body_tests` holds it to
+every rule the Grid and the world judge by (caps, indices, finite floats, area, outward winding,
+extent, materials) and to face-down, nose-forward, same-bytes-twice; `vtable_tests` sees the
+rez fill the model. Proven on all four Windows kits and panel-off: `--list-programs` USABLE, a
+host run in Master Control (192 vertices, 200 triangles, 2 materials; grounded on four contacts
+for two hundred ticks; Clu agreed with the Disk), and looked at in `--window`: a green-edged
+icosahedron mirrored in the floor, the owner's shape and colour (`docs/BODY.md` carries the
+numbers and the why; the dodecahedron stays the recorded alternative).
+
 `program_rez` brings the worm's shape: a glass-neon mecha-worm as a `TglRenderModel` -
 vertices, triangles and materials in the Grid's own continuous model (the mirror hull, the neon
 of the segment rings; the materials the flagship's MATERIALS.md documents), validated whole by

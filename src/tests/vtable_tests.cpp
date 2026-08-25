@@ -55,9 +55,13 @@ TEST_CASE(the_whole_lifecycle_through_the_table_rezzes_ticks_and_derezzes_two_wo
     TglRenderModel model{};
     TglProgram* const first{table->program_rez(&desc, &model)};
     TEST_CHECK(first != nullptr);
-    // Etape 2: no body offered - the model stays as the Grid zeroed it.
-    TEST_CHECK_EQUAL(model.vertex_count, 0u);
-    TEST_CHECK(model.vertex_positions == nullptr);
+    // The body comes with the rez: the icosahedron and its tubes, lent from the worm's storage.
+    TEST_CHECK_EQUAL(model.vertex_count, 12u + (30u * 6u));
+    TEST_CHECK_EQUAL(model.triangle_count, 20u + (30u * 6u));
+    TEST_CHECK_EQUAL(model.material_count, 2u);
+    TEST_CHECK(model.vertex_positions != nullptr);
+    TEST_CHECK(model.triangles != nullptr);
+    TEST_CHECK(model.materials != nullptr);
     desc.creature_id = 8u;
     TglProgram* const second{table->program_rez(&desc, &model)};
     TEST_CHECK(second != nullptr);

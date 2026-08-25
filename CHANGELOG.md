@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The body.** `program_rez` brings a regular icosahedron - twelve vertices on a 0.25 m
+  circumsphere, twenty faces wound outward, turned to rest on a face with its nose on -Z where
+  the first body's eyes look - with a green neon tube along every one of its thirty edges: a
+  triangular prism standing a little proud of the shell, 192 vertices and 200 triangles in all,
+  a near-black mirror for the shell and green neon at the Grid's own intensities. Built once
+  from the golden ratio in vanilla C++20 (`src/worm/body.{hpp,cpp}`) and lent from the body's
+  own storage, exactly as the ABI states. `body_tests` holds it to every rule the Grid and the
+  world judge a model by before either sees it, plus face-down, nose-forward and same-bytes-
+  twice; `docs/BODY.md` carries the numbers and the why. Proven on every Windows kit and
+  panel-off: USABLE in the Grid, grounded on four contacts for two hundred ticks in Master
+  Control with Clu agreeing, and seen in the window - a green-edged icosahedron mirrored in the
+  floor. Two red-first catches on the way: a mis-listed face (the last face of the standard
+  icosahedron table wound inward) and a nose turn the wrong way round, both found by the tests
+  before the Grid saw the body.
 - **The pins Dependabot cannot see are watched weekly.** Adopted from the owner's `arm-dev-env`:
   `tool-updates.yml` reads each pinned tool version out of the tree, resolves the latest
   release from the tool's own feed, and opens one tracking issue per tool that is behind -

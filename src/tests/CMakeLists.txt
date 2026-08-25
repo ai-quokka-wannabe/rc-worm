@@ -4,6 +4,10 @@ add_executable(worm_tests worm_tests.cpp)
 target_link_libraries(worm_tests PRIVATE worm testing)
 add_test(NAME worm_tests COMMAND worm_tests)
 
+add_executable(body_tests body_tests.cpp)
+target_link_libraries(body_tests PRIVATE worm testing)
+add_test(NAME body_tests COMMAND body_tests)
+
 add_executable(vtable_tests vtable_tests.cpp)
 target_link_libraries(vtable_tests PRIVATE rc_worm program_abi testing)
 add_test(NAME vtable_tests COMMAND vtable_tests)
