@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`/check-coherence`.** A documentation audit for contradictions between clauses that were
+  each right when written, orphaned claims about the tree, facts stated twice against the
+  single-source-of-truth table, scope drift and stale "today" sections - and one that is willing
+  to conclude the documents are coherent. Adopted from the owner's `setonix-os`; the same file
+  in every repository of the organisation.
+- **CI with Qt.** Etape 6, pulled forward so the panel is provable the day it lands. Adopted
+  from the owner's `claude-chats-browser`: `.github/actions/setup-qt`, a composite action of
+  this repository's own (GitHub-owned actions only), runs aqtinstall through `pipx run` pinned
+  to a commit, fetches the kit from Qt's own server with every archive checked against Qt's
+  SHA-256, caches it restore-only on pull requests and saved on main, and exports `QTDIR`,
+  which the workflows pass as `CMAKE_PREFIX_PATH` over the presets' desk paths. `Build with Qt`
+  runs the MSVC kit on windows-msvc and windows-clang-cl and the GCC kit on linux-gcc and
+  linux-clang - Linux tests under `xvfb-run` with a real font, because the offscreen platform
+  ships none and lays text out pathologically slowly - and a third sanitiser leg runs ASan+UBSan
+  with the panel on, leaks not counted since the un-instrumented Qt stack reports its own. A
+  quick-check refuses a tree where the workflows' `QT_VERSION` and the presets' kit paths
+  disagree; Dependabot is pointed at the action's directory, whose pins the workflow scan does
+  not see. Each Qt build records the worm's dynamic dependencies, for Etape 4's deployment
+  check to judge.
 - **The body.** `program_rez` brings a regular icosahedron - twelve vertices on a 0.25 m
   circumsphere, twenty faces wound outward, turned to rest on a face with its nose on -Z where
   the first body's eyes look - with a green neon tube along every one of its thirty edges: a

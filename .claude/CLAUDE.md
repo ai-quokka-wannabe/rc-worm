@@ -55,12 +55,18 @@ names only its repository); `link` - the wire (the library is **Link**).
 
 ## CI today
 
-`quick-checks` (markdown lint, stray carriage returns, the vendored ABI drift check) feeding
-`Build (<preset>)` on windows-msvc, windows-clang-cl, windows-mingw, linux-gcc and linux-clang
-with the panel off, `Sanitiser (ASan+UBSan)` and `Sanitiser (TSan)`, and the `CI Success` gate
-the ruleset requires by its exact name. The Qt legs (Qt fetched by this repository's own
-script, GitHub-owned actions only) are Etape 6; LLVM-MinGW is not on the runners and stays a
-local preset.
+`quick-checks` (markdown lint, stray carriage returns, the vendored ABI drift check, the Qt pin
+agreeing with the presets) feeding `Build, panel off (<preset>)` on windows-msvc,
+windows-clang-cl, windows-mingw, linux-gcc and linux-clang, `Build with Qt (<preset>)` on
+windows-msvc, windows-clang-cl, linux-gcc and linux-clang (Qt fetched by
+`.github/actions/setup-qt` - aqtinstall through pipx pinned to a commit, from Qt's own server,
+cached restore-only on pull requests; Linux tests under `xvfb-run` with a real font),
+`Sanitiser (ASan+UBSan)`, `Sanitiser (TSan)` and `Sanitiser (ASan+UBSan with Qt)` (leaks not
+counted: the un-instrumented Qt stack reports its own), and the `CI Success` gate the ruleset
+requires by its exact name. The MinGW kits stay local presets (the runners have no MinGW Qt),
+as does LLVM-MinGW. Dependabot does not see the pins inside the composite action from the
+workflows' scan, so `.github/dependabot.yml` lists the action's directory as well - and a bump
+to `actions/cache` in a workflow is checked against the action by hand.
 
 ## Process
 

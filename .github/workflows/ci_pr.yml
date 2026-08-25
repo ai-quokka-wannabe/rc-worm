@@ -3,6 +3,11 @@ name: CI - Pull Request
 permissions:
     contents: read
 
+# The Qt the runners fetch (.github/actions/setup-qt); the presets name the same version for the
+# desk, and quick-checks refuses a tree where the two disagree.
+env:
+    QT_VERSION: 6.11.1
+
 on:
     pull_request:
         branches: ["**"]
@@ -94,8 +99,19 @@ jobs:
             - name: Check the vendored Program ABI
               run: python3 tools/check_abi_vendor.py check
 
+            # One Qt version, named twice: the kit paths in CMakePresets.json for the desk and
+            # QT_VERSION above for the runners. They agree, or this says which one moved.
+            - name: The Qt pin agrees with the presets
+              shell: bash
+              run: |
+                presets=$(grep -ohP 'C:/Qt/\K[0-9.]+' CMakePresets.json | sort -u)
+                if [[ "$presets" != "$QT_VERSION" ]]; then
+                    echo "::error::CMakePresets.json names Qt '$presets' but this workflow pins QT_VERSION=$QT_VERSION - move both together."
+                    exit 1
+                fi
+
     build:
-        name: Build (${{ matrix.preset }})
+        name: Build, panel off (${{ matrix.preset }})
         needs: quick-checks
         timeout-minutes: 30
 
@@ -147,8 +163,8 @@ jobs:
                   }
 
             # The panel is off here: a worm without its window builds and loads with no Qt at all,
-            # which is a property the build must keep. The Qt legs arrive with Etape 6, with Qt
-            # fetched by this repository's own script (GitHub-owned actions only).
+            # which is a property the build must keep. The Qt legs are the job below. LLVM-MinGW
+            # is not on the runners and stays a local preset.
             - name: Configure (panel off)
               run: cmake --preset=${{ matrix.preset }} -DRC_WORM_PANEL=OFF
 
@@ -161,6 +177,114 @@ jobs:
               run: |
                 cmake --build --preset=${{ matrix.preset }}-release
                 ctest --preset=${{ matrix.preset }}-release
+
+
+    build-qt:
+        name: Build with Qt (${{ matrix.preset }})
+        needs: quick-checks
+        timeout-minutes: 45
+
+        strategy:
+            fail-fast: false
+
+            matrix:
+                include:
+                    - preset: windows-msvc
+                      os: windows-latest
+                      kit: msvc2022_64
+                      msvc-setup-needed: true
+                    - preset: windows-clang-cl
+                      os: windows-latest
+                      kit: msvc2022_64
+                    - preset: linux-gcc
+                      os: ubuntu-latest
+                      kit: gcc_64
+                    - preset: linux-clang
+                      os: ubuntu-latest
+                      kit: gcc_64
+
+        runs-on: ${{ matrix.os }}
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: Setup MSVC environment
+              if: matrix.msvc-setup-needed
+              shell: pwsh
+              run: |
+                  $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+                  $install_path = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+                  if (-not $install_path) { throw "No Visual Studio installation with the C++ toolset was found." }
+                  $vcvars = Join-Path $install_path "VC\Auxiliary\Build\vcvars64.bat"
+                  if (-not (Test-Path $vcvars)) { throw "vcvars64.bat not found at $vcvars." }
+                  cmd /c "call `"$vcvars`" && set" | ForEach-Object {
+                      if ($_ -match '^([^=]+)=(.*)$') {
+                          $name = $matches[1]
+                          $value = $matches[2]
+                          if ($name -notmatch '^(GITHUB_|RUNNER_)') {
+                              "$name=$value" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+                          }
+                      }
+                  }
+
+            # What Qt needs of the platform, and what a windowed test needs: an X server to draw
+            # into (the offscreen platform ships no fonts and lays text out pathologically slowly)
+            # and a font for it to draw with. libxcb-cursor0 is the one Qt 6.5+ wants and lists
+            # nowhere obvious.
+            - name: Install the Linux runtime packages
+              if: runner.os == 'Linux'
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y --no-install-recommends \
+                    libgl1-mesa-dev libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+                    libxcb-render-util0 libxcb-shape0 libxcb-cursor0 libxcb-xinerama0 libfontconfig1 \
+                    xvfb fonts-dejavu-core
+
+            - name: Setup Qt
+              uses: ./.github/actions/setup-qt
+              with:
+                version: ${{ env.QT_VERSION }}
+                kit: ${{ matrix.kit }}
+
+            # The presets name the desk's kit paths; the runner's kit overrides them.
+            - name: Configure (panel on)
+              shell: bash
+              run: cmake --preset=${{ matrix.preset }} -DRC_WORM_PANEL=ON -DCMAKE_PREFIX_PATH="$QTDIR"
+
+            - name: Build and test (Debug)
+              shell: bash
+              run: |
+                cmake --build --preset=${{ matrix.preset }}-debug
+                if [[ "${{ runner.os }}" == "Linux" ]]; then
+                    xvfb-run -a ctest --preset=${{ matrix.preset }}-debug
+                else
+                    ctest --preset=${{ matrix.preset }}-debug
+                fi
+
+            - name: Build and test (Release)
+              shell: bash
+              run: |
+                cmake --build --preset=${{ matrix.preset }}-release
+                if [[ "${{ runner.os }}" == "Linux" ]]; then
+                    xvfb-run -a ctest --preset=${{ matrix.preset }}-release
+                else
+                    ctest --preset=${{ matrix.preset }}-release
+                fi
+
+            # Every library the worm ships must be found beside it or in the system, never in
+            # the Qt kit's directory or the build tree - this is what the panel's deployment
+            # (Etape 4, windeployqt) will be judged by, so the inventory is recorded from today:
+            # the import table read by this repository's own script on Windows (dumpbin needs
+            # the MSVC environment, which the clang-cl leg does not have), ldd on Linux.
+            - name: Record the worm's dynamic dependencies
+              shell: bash
+              run: |
+                if [[ "${{ runner.os }}" == "Linux" ]]; then
+                    ldd build/${{ matrix.preset }}/bin/Release/librc_worm.so
+                else
+                    python3 tools/dll_imports.py build/${{ matrix.preset }}/bin/Release/rc_worm.dll
+                fi
 
     sanitisers:
         name: Sanitiser (${{ matrix.name }})
@@ -175,6 +299,12 @@ jobs:
                       preset: linux-clang-asan
                     - name: TSan
                       preset: linux-clang-tsan
+                    # The Qt leg: the panel on, under ASan. Leaks are not counted - the
+                    # un-instrumented Qt, fontconfig and glib stack reports its one-time
+                    # allocations as leaks, and every one of them is somebody else's.
+                    - name: ASan+UBSan with Qt
+                      preset: linux-clang-asan
+                      qt: true
 
         runs-on: ubuntu-latest
 
@@ -182,18 +312,46 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+            - name: Install the Linux runtime packages
+              if: matrix.qt
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y --no-install-recommends \
+                    libgl1-mesa-dev libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+                    libxcb-render-util0 libxcb-shape0 libxcb-cursor0 libxcb-xinerama0 libfontconfig1 \
+                    xvfb fonts-dejavu-core
+
+            - name: Setup Qt
+              if: matrix.qt
+              uses: ./.github/actions/setup-qt
+              with:
+                version: ${{ env.QT_VERSION }}
+                kit: gcc_64
+
             - name: Configure (panel off)
+              if: ${{ !matrix.qt }}
               run: cmake --preset=${{ matrix.preset }} -DRC_WORM_PANEL=OFF
+
+            - name: Configure (panel on)
+              if: matrix.qt
+              run: cmake --preset=${{ matrix.preset }} -DRC_WORM_PANEL=ON -DCMAKE_PREFIX_PATH="$QTDIR"
 
             - name: Build (Debug)
               run: cmake --build --preset=${{ matrix.preset }}-debug
 
             - name: Test (Debug)
+              if: ${{ !matrix.qt }}
               run: ctest --preset=${{ matrix.preset }}-debug
+
+            - name: Test (Debug, with Qt)
+              if: matrix.qt
+              env:
+                ASAN_OPTIONS: detect_leaks=0
+              run: xvfb-run -a ctest --preset=${{ matrix.preset }}-debug
 
     ci-success:
         name: CI Success
-        needs: [quick-checks, build, sanitisers]
+        needs: [quick-checks, build, build-qt, sanitisers]
         runs-on: ubuntu-latest
         timeout-minutes: 5
         if: always()
@@ -203,6 +361,7 @@ jobs:
               run: |
                 if [[ "${{ needs.quick-checks.result }}" != "success" ]] || \
                    [[ "${{ needs.build.result }}" != "success" ]] || \
+                   [[ "${{ needs.build-qt.result }}" != "success" ]] || \
                    [[ "${{ needs.sanitisers.result }}" != "success" ]]; then
                     echo "One or more jobs failed"
                     exit 1

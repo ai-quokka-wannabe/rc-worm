@@ -9,6 +9,15 @@ updates:
         time: "00:00"
         timezone: "Europe/Ljubljana"
 
+    # The composite action has pins of its own that a scan of the workflows does not see.
+    - package-ecosystem: "github-actions"
+      directory: "/.github/actions/setup-qt"
+      schedule:
+        interval: weekly
+        day: saturday
+        time: "00:00"
+        timezone: "Europe/Ljubljana"
+
     # The markdown linter pinned in package-lock.json: a bump is a pull request, never a surprise.
     - package-ecosystem: "npm"
       directory: "/"
