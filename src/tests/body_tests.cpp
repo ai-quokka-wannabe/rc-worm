@@ -48,9 +48,9 @@ TEST_CASE(the_body_is_an_icosahedron_with_a_tube_on_every_edge)
 {
     const WormLib::Body& body{WormLib::Body::theWorm()};
     // Twelve shell vertices and twenty faces; thirty edges, each a prism of six vertices and
-    // six triangles.
-    TEST_CHECK_EQUAL(body.vertexCount(), 12u + (30u * 6u));
-    TEST_CHECK_EQUAL(static_cast<std::uint32_t>(body.triangles().size()), 20u + (30u * 6u));
+    // six triangles; two joint stubs, the same prism each.
+    TEST_CHECK_EQUAL(body.vertexCount(), 12u + (30u * 6u) + (2u * 6u));
+    TEST_CHECK_EQUAL(static_cast<std::uint32_t>(body.triangles().size()), 20u + (30u * 6u) + (2u * 6u));
     TEST_CHECK_EQUAL(static_cast<std::uint32_t>(body.materials().size()), 2u);
     TEST_CHECK(body.vertexCount() <= REZ_MAX_VERTICES);
     TEST_CHECK(body.triangles().size() <= REZ_MAX_TRIANGLES);
@@ -154,6 +154,34 @@ TEST_CASE(the_body_rests_on_a_face_with_its_nose_forward_and_is_the_same_bytes_e
     }
     TEST_CHECK(nose);
 
+    // The chain: eight segments joined stub to stub. The nose spike is on -Z, its antipode on +Z,
+    // and the two stubs stand out of them along their own directions, half a joint each, so the
+    // spacing is a diameter plus two stubs. The model says so when lent.
+    TEST_CHECK_EQUAL(WormLib::BODY_SEGMENTS, 8u);
+    TEST_CHECK_CLOSE(WormLib::SEGMENT_SPACING, (2.0f * WormLib::BODY_CIRCUMRADIUS) + (2.0f * WormLib::JOINT_STUB_LENGTH), 1e-6f);
+    const float* const nose_at{&body.positions()[body.noseVertex() * 3u]};
+    const float* const tail_at{&body.positions()[body.tailVertex() * 3u]};
+    TEST_CHECK(nose_at[2] < -0.2f);
+    TEST_CHECK(tail_at[2] > 0.2f);
+    TEST_CHECK_CLOSE(nose_at[0] + tail_at[0], 0.0f, 1e-5f); // antipodal
+    TEST_CHECK_CLOSE(nose_at[1] + tail_at[1], 0.0f, 1e-5f);
+    TEST_CHECK_CLOSE(nose_at[2] + tail_at[2], 0.0f, 1e-5f);
+    // The stubs are the last twelve vertices: every one within a stub's reach of its spike, and
+    // the far end of each rail a stub length further out along the spike than the near end.
+    const std::uint32_t stubs_from{12u + (30u * 6u)};
+    for (std::uint32_t stub{0u}; stub < 2u; ++stub) {
+        const float* const spike{stub == 0u ? nose_at : tail_at};
+        const float spike_length{std::sqrt((spike[0] * spike[0]) + (spike[1] * spike[1]) + (spike[2] * spike[2]))};
+        for (std::uint32_t rail{0u}; rail < 3u; ++rail) {
+            const float* const near{&body.positions()[(stubs_from + (stub * 6u) + (rail * 2u)) * 3u]};
+            const float* const far{&body.positions()[(stubs_from + (stub * 6u) + (rail * 2u) + 1u) * 3u]};
+            const float near_along{((near[0] * spike[0]) + (near[1] * spike[1]) + (near[2] * spike[2])) / spike_length};
+            const float far_along{((far[0] * spike[0]) + (far[1] * spike[1]) + (far[2] * spike[2])) / spike_length};
+            TEST_CHECK_CLOSE(near_along, spike_length, 1e-4f);
+            TEST_CHECK_CLOSE(far_along - near_along, WormLib::JOINT_STUB_LENGTH, 1e-4f);
+        }
+    }
+
     // Deterministic: the same body twice is the same bytes, and lending fills a model whole.
     const WormLib::Body& again{WormLib::Body::theWorm()};
     TEST_CHECK(&again == &body);
@@ -163,6 +191,8 @@ TEST_CASE(the_body_rests_on_a_face_with_its_nose_forward_and_is_the_same_bytes_e
     TEST_CHECK_EQUAL(model.vertex_count, body.vertexCount());
     TEST_CHECK_EQUAL(model.triangle_count, static_cast<std::uint32_t>(body.triangles().size()));
     TEST_CHECK_EQUAL(model.material_count, 2u);
+    TEST_CHECK_EQUAL(model.segment_count, WormLib::BODY_SEGMENTS);
+    TEST_CHECK_CLOSE(model.segment_spacing, WormLib::SEGMENT_SPACING, 1e-6f);
     TEST_CHECK_EQUAL(model.padding0, 0u);
 }
 

@@ -57,9 +57,11 @@ TEST_CASE(the_whole_lifecycle_through_the_table_rezzes_ticks_and_derezzes_two_wo
     TglProgram* const first{table->program_rez(&desc, &model)};
     TEST_CHECK(first != nullptr);
     // The body comes with the rez: the icosahedron and its tubes, lent from the worm's storage.
-    TEST_CHECK_EQUAL(model.vertex_count, 12u + (30u * 6u));
-    TEST_CHECK_EQUAL(model.triangle_count, 20u + (30u * 6u));
+    TEST_CHECK_EQUAL(model.vertex_count, 12u + (30u * 6u) + (2u * 6u));
+    TEST_CHECK_EQUAL(model.triangle_count, 20u + (30u * 6u) + (2u * 6u));
     TEST_CHECK_EQUAL(model.material_count, 2u);
+    TEST_CHECK_EQUAL(model.segment_count, 8u); // The chain, declared with the body.
+    TEST_CHECK(model.segment_spacing > 0.5f);
     TEST_CHECK(model.vertex_positions != nullptr);
     TEST_CHECK(model.triangles != nullptr);
     TEST_CHECK(model.materials != nullptr);

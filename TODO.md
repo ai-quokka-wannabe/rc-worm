@@ -182,6 +182,12 @@ workflow may download.
 
 ## Etape 7 — the chain
 
+**Done (2026-08-26), across the four repositories in the order below.** Link #25 (protocol v7),
+master-control #32 (the trail along the head's path), tron-grid-lite #118 (ABI v7, a model per
+segment pose, skip ranges for the senses), and here: the ABI re-vendored at v7, two joint stubs
+authored out of the nose spike and its antipode, `BODY_SEGMENTS` = 8 and `SEGMENT_SPACING` = 0.56 m
+declared when the body is lent. `docs/BODY.md` § The chain.
+
 The owner's ruling (2026-08-26): a worm is a chain of icosahedra, joined spike to spike - the
 joint sits between two vertices, one of each segment, a short neon between them - and it
 undulates as it moves. One rigid segment was Etape 3's deliberate stop, because the world's

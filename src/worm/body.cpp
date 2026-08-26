@@ -176,12 +176,36 @@ namespace WormLib
             }
         }
 
+        // The two joint spikes, now that the body is oriented: the nose is the shell vertex on
+        // -Z at the waist, its antipode the tail - an icosahedron's vertices come in antipodal
+        // pairs, so the tail sits exactly a diameter behind the nose, through the origin.
+        {
+            std::size_t nose{0u};
+            for (std::size_t index{1u}; index < vertices.size(); ++index) {
+                if (vertices[index].z < vertices[nose].z) {
+                    nose = index;
+                }
+            }
+            std::size_t tail{0u};
+            float nearest{1.0e30f};
+            for (std::size_t index{0u}; index < vertices.size(); ++index) {
+                const V3 mirrored{vertices[index] + vertices[nose]};
+                const float miss{dot(mirrored, mirrored)};
+                if (miss < nearest) {
+                    nearest = miss;
+                    tail = index;
+                }
+            }
+            m_nose = static_cast<std::uint32_t>(nose);
+            m_tail = static_cast<std::uint32_t>(tail);
+        }
+
         // The shell: twelve vertices, twenty faces.
-        m_positions.reserve((12u + (30u * 6u)) * 3u);
+        m_positions.reserve((12u + (30u * 6u) + (2u * 6u)) * 3u);
         for (const V3& v : vertices) {
             m_positions.insert(m_positions.end(), {v.x, v.y, v.z});
         }
-        m_triangles.reserve(20u + (30u * 6u));
+        m_triangles.reserve(20u + (30u * 6u) + (2u * 6u));
         for (const auto& face : FACES) {
             m_triangles.push_back(TglRenderTriangle{.vertices = {face[0], face[1], face[2]}, .material = MATERIAL_SHELL});
         }
@@ -235,6 +259,40 @@ namespace WormLib
             }
         }
 
+        // The joint stubs: out of the nose spike and out of its antipode, along the spike's own
+        // direction from the origin, a triangular neon prism half a joint long - the same prism
+        // the edges wear, so the joint reads as the neon continuing off the body. Two segments
+        // of the chain meet where their stubs do, tip to tip.
+        for (const std::uint32_t spike : {m_nose, m_tail}) {
+            const V3 base{vertices[spike]};
+            const V3 along{normalised(base)};
+            // A perpendicular pair around the stub's axis: the axis is never vertical, so up is
+            // a safe partner for the first.
+            const V3 outward{normalised(cross(along, V3{0.0f, 1.0f, 0.0f}))};
+            const V3 side{cross(along, outward)};
+            const std::uint32_t first{static_cast<std::uint32_t>(m_positions.size() / 3u)};
+            const std::array<V3, 3> spokes{{
+                outward * NEON_RADIUS,
+                (outward * (-0.5f * NEON_RADIUS)) + (side * (0.866f * NEON_RADIUS)),
+                (outward * (-0.5f * NEON_RADIUS)) - (side * (0.866f * NEON_RADIUS)),
+            }};
+            for (const V3& spoke : spokes) {
+                const V3 start{base + spoke};
+                const V3 end{base + (along * JOINT_STUB_LENGTH) + spoke};
+                m_positions.insert(m_positions.end(), {start.x, start.y, start.z});
+                m_positions.insert(m_positions.end(), {end.x, end.y, end.z});
+            }
+            for (std::uint32_t rail{0u}; rail < 3u; ++rail) {
+                const std::uint32_t next{(rail + 1u) % 3u};
+                const std::uint32_t s0{first + (rail * 2u)};
+                const std::uint32_t e0{s0 + 1u};
+                const std::uint32_t s1{first + (next * 2u)};
+                const std::uint32_t e1{s1 + 1u};
+                m_triangles.push_back(TglRenderTriangle{.vertices = {s0, s1, e1}, .material = MATERIAL_NEON});
+                m_triangles.push_back(TglRenderTriangle{.vertices = {s0, e1, e0}, .material = MATERIAL_NEON});
+            }
+        }
+
         // The materials: a near-black mirror for the shell (the floor's reflectivity, a dark
         // green-tinged tint), and green neon for the tubes at the Grid's own neon intensities.
         m_materials.push_back(TglRenderMaterial{.colour = {0.06f, 0.08f, 0.07f}, .index_of_refraction = 2.4f, .emission = {0.0f, 0.0f, 0.0f}, .transmission = 0.0f});
@@ -249,6 +307,9 @@ namespace WormLib
         model.vertex_count = vertexCount();
         model.triangle_count = static_cast<std::uint32_t>(m_triangles.size());
         model.material_count = static_cast<std::uint32_t>(m_materials.size());
+        // The chain: eight of these, joined stub to stub.
+        model.segment_count = BODY_SEGMENTS;
+        model.segment_spacing = SEGMENT_SPACING;
         model.padding0 = 0u;
     }
 
