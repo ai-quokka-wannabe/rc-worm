@@ -13,8 +13,9 @@ Three processes, three console windows, all on one machine:
 | The Grid's window | `TronGridLite 127.0.0.1:<port> --window` | the User's eyes: fly with WASD, look with the mouse, Tab captures the cursor |
 | The Grid's host | `TronGridLite 127.0.0.1:<port> --program rc_worm` | rezzes the worm from `programs/` and opens the panel from inside itself |
 
-`tools/first_life.ps1` starts all three, waits for Master Control to end (close its window or
-Ctrl+C in it - the host then leaves on its own), and runs Clu on what was recorded:
+`tools/first_life.ps1` starts all three, waits for Master Control to end (Ctrl+C in its window,
+or close it: the world stops on request - the tick in hand finishes, the log gets its end
+line, the Disk closes - and the host then leaves on its own), and runs Clu on what was recorded:
 
 ```powershell
 .\tools\first_life.ps1 -Grid <path>\TronGridLite.exe -MasterControl <path>\master-control.exe
@@ -56,10 +57,13 @@ showed:
 
 - The worm hears its own call as the ABI promises: three arrivals at each ear, the direct path
   at 0.58 ms and two echoes near 12 ms, loudest and first.
-- Master Control cannot be asked to stop. Closing its window or Ctrl+C kills it, the Disk and
-  the log end where the last tick left them, and Clu says so every time ("the log has no end
-  line - the world did not stop on request"). The recording is whole - every tick is written as
-  it happens - but a life should end with an end line. Filed against master-control.
+- Master Control could not be asked to stop. Closing its window or Ctrl+C killed it, the Disk
+  and the log ended where the last tick left them, and Clu said so every time ("the log has
+  no end line - the world did not stop on request"). The recording was whole - every tick is
+  written as it happens - but a life should end with an end line. Filed as master-control
+  issue #31 and fixed there the same day: Ctrl+C (or closing the window) is now a request,
+  the tick in hand finishes, the log ends, the Disk closes with its farewell, and Clu has
+  nothing to say about the ending. A second Ctrl+C ends the process at once, the old way.
 - Nothing yet in the Grid's picture disagreed with the panel's feel. That is what your life is
   for.
 

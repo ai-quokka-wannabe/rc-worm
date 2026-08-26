@@ -16,9 +16,10 @@
 <#
 .SYNOPSIS
     A life on the Grid: Master Control recording to a Disk and a log, the Grid's window to watch
-    it in, the Grid hosting rc-worm with its panel - and you at the keys. When you close Master
-    Control's window (or press Ctrl+C in it), the host leaves, and Clu re-simulates the log and
-    says whether the Disk is the world it describes.
+    it in, the Grid hosting rc-worm with its panel - and you at the keys. Ctrl+C in Master
+    Control's window (or closing it) stops the world on request - the log ends, the Disk
+    closes - the host leaves, and Clu re-simulates the log and says whether the Disk is the
+    world it describes.
 
 .DESCRIPTION
     Three processes in three console windows, so every log is readable as it happens:
@@ -77,11 +78,11 @@ $host1 = Start-Process -FilePath $Grid -ArgumentList @("127.0.0.1:$Port", '--pro
 Write-Host ""
 Write-Host "The Grid's window: WASD to fly, mouse to look, Tab captures the cursor."
 Write-Host "The panel (from the host): W/S forward, A/D turn, Space call, X brake; sliders hold a course."
-Write-Host "Close Master Control's window (or Ctrl+C in it) to end the life."
+Write-Host "Ctrl+C in Master Control's window (or close it) ends the life properly: the log ends, the Disk closes."
 Write-Host ""
 
 $mc.WaitForExit()
-Write-Host "Master Control stopped; the host leaves on its own."
+Write-Host "Master Control stopped on request; the host leaves on its own."
 $host1.WaitForExit(15000) | Out-Null
 if (-not $host1.HasExited) { Stop-Process -Id $host1.Id -Force }
 if (-not $window.HasExited) { Stop-Process -Id $window.Id -Force }

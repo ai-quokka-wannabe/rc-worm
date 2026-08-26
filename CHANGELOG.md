@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `docs/FIRST_LIFE.md`, `TODO.md` and `tools/first_life.ps1` no longer say Master Control cannot
+  be asked to stop: master-control #31 was fixed the same day it was filed, and Ctrl+C in its
+  window (or closing it) now ends a life properly - the log ends, the Disk closes, Clu is
+  content. The rehearsal's finding stays in the record as what it was.
 - `tools/check_abi_vendor.py check --flagship PATH` reads only a checkout that lives beside this
   repository: the path means what it always meant (relative to where the tool is run), but it
   is normalised, resolved to its real place and refused in words unless it falls under the two

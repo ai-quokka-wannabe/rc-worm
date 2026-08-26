@@ -146,8 +146,8 @@ the Grid's window and the Grid hosting the worm with its panel, waits for Master
 and runs Clu; `docs/FIRST_LIFE.md` is the recipe, what to look for and where what is found
 goes. A scripted rehearsal lived first (seven metres in a weave, two calls, the window
 watching; Clu agreed, 1600 ticks): the worm hears its own call as the ABI promises, and Master
-Control cannot be asked to stop (every Disk ends without an end line - filed against
-master-control). The ears now remember their last arrivals for a second, because an arrival is
+Control could not be asked to stop (every Disk ended without an end line - filed as
+master-control #31 and fixed there the same day: Ctrl+C is now a request). The ears now remember their last arrivals for a second, because an arrival is
 one tick's event and a human reads slower than the Grid ticks. The life itself is the User's
 to live; its Disk and log, kept, are the trigger for the thinking worm.
 
