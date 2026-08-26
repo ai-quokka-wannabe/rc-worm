@@ -62,9 +62,15 @@ namespace PanelLib
     public:
         EarView(const WormLib::EarStation& station, std::uint32_t index, QWidget* parent = nullptr);
 
-        void showView(const WormLib::EarSnapshot& view);
+        void showView(const WormLib::EarSnapshot& view, std::uint64_t tick);
 
         [[nodiscard]] QSize sizeHint() const override;
+
+        //! The tick the last arrivals came in, zero if none ever did - for a test, and the status.
+        [[nodiscard]] std::uint64_t lastArrivalTick() const noexcept
+        {
+            return m_last_arrival_tick;
+        }
 
     protected:
         void paintEvent(QPaintEvent* event) override;
@@ -72,6 +78,12 @@ namespace PanelLib
     private:
         WormLib::EarStation m_station;
         WormLib::EarSnapshot m_view{};
+        //! An arrival is one tick's event, gone before an eye can see it: the last ones are kept
+        //! and drawn dimmed for a second, with the tick they came in.
+        TglArrival m_last_arrivals[TGL_EAR_ARRIVALS_MAX]{};
+        std::uint32_t m_last_arrival_count{0u};
+        std::uint64_t m_last_arrival_tick{0u};
+        std::uint64_t m_tick{0u};
         std::uint32_t m_index;
     };
 

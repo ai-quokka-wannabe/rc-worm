@@ -141,6 +141,16 @@ Qt"; and the offscreen-QPA note for headless tests.
 
 ## Etape 5 — the first life on the Grid
 
+**Ready for the User (2026-08-26).** `tools/first_life.ps1` starts Master Control recording,
+the Grid's window and the Grid hosting the worm with its panel, waits for Master Control to end
+and runs Clu; `docs/FIRST_LIFE.md` is the recipe, what to look for and where what is found
+goes. A scripted rehearsal lived first (seven metres in a weave, two calls, the window
+watching; Clu agreed, 1600 ticks): the worm hears its own call as the ABI promises, and Master
+Control cannot be asked to stop (every Disk ends without an end line - filed against
+master-control). The ears now remember their last arrivals for a second, because an arrival is
+one tick's event and a human reads slower than the Grid ticks. The life itself is the User's
+to live; its Disk and log, kept, are the trigger for the thinking worm.
+
 Master Control with `--disk` and `--log`, one `--window` to watch, one `--program rc_worm` host,
 and the User drives the worm across the terraces, into a riser, past the guest, calling - the
 first Disk of a life somebody lived. Clu re-simulates the log and agrees. What that life shows
@@ -169,6 +179,30 @@ MSVC kit on Windows, the GCC kit on Linux; MinGW and LLVM-MinGW kits stay local 
 between runs. The deviceless tests run there; the Grid-in-the-loop
 proof of Etape 2 stays a local, recorded check until the flagship publishes release binaries a
 workflow may download.
+
+## Etape 7 — the chain
+
+The owner's ruling (2026-08-26): a worm is a chain of icosahedra, joined spike to spike - the
+joint sits between two vertices, one of each segment, a short neon between them - and it
+undulates as it moves. One rigid segment was Etape 3's deliberate stop, because the world's
+physics is rigid and kinematic; the chain needs three things across the repositories, in this
+order:
+
+1. **The wire (Link v7)**: a creature carries a segment count and a pose per segment, in
+   `TICK_STATE`, the Disk and the log; the REZ carries the segment model once and the joint's
+   two spike indices. 0.0.0: no compatibility kept.
+2. **The world (Master Control)**: the head is the rigid body it is today; each trailing
+   segment is placed one joint length back along the head's recorded path - deterministic,
+   allocation-free (a ring of past poses per creature), replayed bit for bit, hashed - so the
+   undulation falls out of the path when the User weaves. A lateral wave as a function of
+   speed comes after, once the following looks right in the window; it is an authored motion,
+   not physics, and says so.
+3. **The Grid**: renders the segment model once per segment at its pose, senses stay on the
+   head (the eyes and ears are where they are), and the joint neon is drawn between the two
+   spikes as a fourth material of the body.
+4. **Here**: `docs/BODY.md` names the two joint spikes (a waist vertex fore and aft, so a
+   segment's joints are opposite each other), and the panel shows the chain's poses in the
+   feel view from above.
 
 ## Later, with triggers
 

@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The first life, ready for the User.** Etape 5's tooling: `tools/first_life.ps1` starts
+  Master Control recording to a Disk and a log, the Grid's window and the Grid hosting the worm
+  with its panel, waits for Master Control to end and runs Clu; `docs/FIRST_LIFE.md` is the
+  recipe, what to look for and where what is found goes. A scripted rehearsal lived first:
+  seven metres in a weave with two calls, the window watching, Clu agreeing over 1600 ticks. It
+  found the worm hearing its own call exactly as the ABI promises (0.58 ms at both ears, two
+  echoes) and Master Control unable to be asked to stop (filed against it). The ears now keep
+  their last arrivals for a second, dimmed, with the tick they came in - an arrival is one
+  tick's event, and a human reads slower than the Grid ticks. And the owner's ruling for the
+  next etape is written down: the chain, icosahedra joined spike to spike, undulating.
 - **The panel: the User is the brain.** Etape 4. A Qt Widgets window on the Program's own thread
   shows what the worm senses - each eye's samples where they look on a map of the body frame,
   each ear as the band-by-bin histogram it is with the arrivals' onsets and radial velocities
