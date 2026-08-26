@@ -9,7 +9,8 @@ it with the recorded one, exactly as the flagship's `tools/check_abi_version.py`
 repositories agree about what "the same header" means.
 
     check                   the vendored header matches the fingerprint beside it. CI runs this.
-    check --flagship PATH   also compare both files byte for byte with a flagship checkout, so a
+    check --flagship PATH   also compare both files byte for byte with a flagship checkout (one
+                            that lives beside this repository; any other is refused), so a
                             vendor copy that lags the flagship is named before the Grid refuses
                             the Program as stale.
 
@@ -139,8 +140,18 @@ def main():
         return 1
 
     if arguments.flagship:
-        theirs_header = os.path.join(arguments.flagship, VENDORED, "include", "tgl", "tgl_program_abi.h")
-        theirs_fingerprint = os.path.join(arguments.flagship, VENDORED, "abi_fingerprint.txt")
+        # The flagship checkout is contained: the path means what the operator means by it
+        # (relative to where they run this), but the checkout it names must live under the
+        # same parent directory as this one - the four repositories sit side by side - and it
+        # is resolved to its real place before a byte is read. One that falls outside is
+        # refused in words.
+        parent = os.path.realpath(os.path.dirname(REPO))
+        flagship = os.path.realpath(os.path.normpath(os.path.join(os.getcwd(), arguments.flagship)))
+        if not flagship.startswith(parent + os.sep):
+            sys.stderr.write("--flagship %s: refusing a checkout outside %s - the flagship lives beside this repository.\n" % (arguments.flagship, parent))
+            return 1
+        theirs_header = os.path.join(flagship, VENDORED, "include", "tgl", "tgl_program_abi.h")
+        theirs_fingerprint = os.path.join(flagship, VENDORED, "abi_fingerprint.txt")
         for ours, theirs in ((HEADER, theirs_header), (FINGERPRINT, theirs_fingerprint)):
             if not os.path.isfile(theirs):
                 sys.stderr.write("No flagship file at %s.\n" % theirs)
