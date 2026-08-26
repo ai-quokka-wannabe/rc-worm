@@ -36,7 +36,11 @@ and face tables.
 | `NEON_PROUD` | 0.004 m | the tube's centre line stands this far off the edge, outward |
 | Shell | 12 vertices, 20 triangles | material 0 |
 | Neon | 30 edges × (6 vertices, 6 triangles) | material 1, a triangular prism per edge |
-| Total | 192 vertices, 200 triangles, 2 materials | under the wire's caps of 1024 / 2048 / 16 |
+| Joint stubs | 2 × (6 vertices, 6 triangles) | material 1, the same prism out of the nose spike and its antipode |
+| Total | 204 vertices, 212 triangles, 2 materials | under the wire's caps of 1024 / 2048 / 16 |
+| `BODY_SEGMENTS` | 8 | the chain, the head counted: the wire's cap and a worm's worth |
+| `JOINT_STUB_LENGTH` | 0.03 m | each stub; two meet tip to tip between segments |
+| `SEGMENT_SPACING` | 0.56 m | a diameter (the spikes are antipodal) plus two stubs |
 | Extent | 0.25 m | under the world's `BODY_MAX_EXTENT` of 4 m |
 
 The first body's eyes sit at body-frame `(0, 0, -0.2)` and its ears at `(0, 0, 0.2)`; a
@@ -72,6 +76,20 @@ outward.
 The emission intensities are above 1 on purpose: the Grid's tone mapping expects neon to bloom,
 and a tube that emits at 1.0 reads as a painted stripe.
 
+## The chain
+
+The owner's ruling (2026-08-26): a worm is a chain of icosahedra joined spike to spike, and it
+undulates. This body is one segment of eight. The joint is authored here rather than carried on
+the wire: a neon stub - the same triangular prism the edges wear - stands out of the **nose
+spike** (the shell vertex on -Z, where the eyes look) and out of its **antipode** (the tail
+spike, on +Z), each `JOINT_STUB_LENGTH` long along its spike's own direction from the origin.
+Two consecutive segments meet where their stubs do, tip to tip, so the spacing the model declares
+is exactly a diameter plus two stubs: `SEGMENT_SPACING` = 2 × 0.25 + 2 × 0.03 = 0.56 m.
+
+Where the trailing segments stand is the world's business (Master Control places them along the
+path the head walked - kinematic trail, not articulation) and the Grid's to draw (the mesh once
+per segment). The Program is told nothing of where its tail is: the senses are the head's.
+
 ## What the world sees
 
 Master Control builds the hull from every vertex, so the tubes' rails - proud of the shell by
@@ -80,5 +98,6 @@ rail, `lowest()` just below the resting face. That is by design: a worm lies on 
 
 ## Not yet
 
-- One segment. The chain, the joints between segments and any bending are later etapes.
+- The undulation is whatever the User weaves; a lateral wave as a function of speed is owed in
+  Master Control, authored and said so, once the following looks right in the window.
 - No animation of the body: `program_tick` answers zeroes until the panel gives the worm a will.

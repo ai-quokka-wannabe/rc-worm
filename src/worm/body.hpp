@@ -48,6 +48,18 @@ namespace WormLib
     inline constexpr std::uint32_t MATERIAL_SHELL{0u};
     inline constexpr std::uint32_t MATERIAL_NEON{1u};
 
+    /*!
+        The chain (the owner's ruling, 2026-08-26): a worm is icosahedra joined spike to spike.
+        Eight segments, the wire's cap and a worm's worth. The joint is authored here: a neon stub
+        stands out of the nose spike and out of its antipode, half a joint long each, so two
+        consecutive segments' stubs meet tip to tip. The spacing between segments' origins is
+        therefore the two spikes' distance apart (twice the circumradius - they are antipodal)
+        plus two stub lengths.
+    */
+    inline constexpr std::uint32_t BODY_SEGMENTS{8u};
+    inline constexpr float JOINT_STUB_LENGTH{0.03f};
+    inline constexpr float SEGMENT_SPACING{(2.0f * BODY_CIRCUMRADIUS) + (2.0f * JOINT_STUB_LENGTH)};
+
     //! The body's arrays, owned here and lent to the Grid.
     class Body {
     public:
@@ -83,12 +95,25 @@ namespace WormLib
         //! The lowest y over every vertex: where the world stands the body, its origin this far above the floor.
         [[nodiscard]] float lowest() const noexcept;
 
+        //! The two joint spikes: the nose vertex and its antipode, as indices into the shell.
+        [[nodiscard]] std::uint32_t noseVertex() const noexcept
+        {
+            return m_nose;
+        }
+
+        [[nodiscard]] std::uint32_t tailVertex() const noexcept
+        {
+            return m_tail;
+        }
+
     private:
         Body();
 
         std::vector<float> m_positions;
         std::vector<TglRenderTriangle> m_triangles;
         std::vector<TglRenderMaterial> m_materials;
+        std::uint32_t m_nose{0u};
+        std::uint32_t m_tail{0u};
     };
 
 } // namespace WormLib

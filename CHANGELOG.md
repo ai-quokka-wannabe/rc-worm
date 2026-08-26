@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The chain: eight icosahedra joined spike to spike.** Etape 7, the owner's ruling
+  (2026-08-26). The ABI re-vendored at v7; the body authors the joint - a neon stub, the same
+  prism the edges wear, out of the nose spike and out of its antipode, half a joint each, so two
+  segments meet tip to tip - and declares the chain when it is lent: `BODY_SEGMENTS` = 8,
+  `SEGMENT_SPACING` = a diameter plus two stubs = 0.56 m. Where the trailing segments stand is
+  Master Control's (a trail along the head's path) and the Grid draws the mesh once per segment;
+  the Program is told nothing of its tail. 204 vertices, 212 triangles. `docs/BODY.md` § The
+  chain carries the numbers.
 - **The first life, ready for the User.** Etape 5's tooling: `tools/first_life.ps1` starts
   Master Control recording to a Disk and a log, the Grid's window and the Grid hosting the worm
   with its panel, waits for Master Control to end and runs Clu; `docs/FIRST_LIFE.md` is the

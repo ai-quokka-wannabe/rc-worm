@@ -45,7 +45,8 @@ threads, the seam and the why. [docs/FIRST_LIFE.md](docs/FIRST_LIFE.md) and
 `tools/first_life.ps1` are how a life is lived and recorded: Master Control, the window, the
 host, the panel in your hands, Clu at the end.
 
-**The body.** One rigid segment: a regular icosahedron a quarter metre in circumradius, near-black
+**The body.** One segment of eight - the chain is the world's to place along the path the head
+walks and the Grid's to draw, the joint stubs are authored here on the two spikes that meet: a regular icosahedron a quarter metre in circumradius, near-black
 mirror faces and a green neon tube along every one of its thirty edges, built from the golden
 ratio in vanilla C++20 and lent to the Grid at `program_rez`. It rests on a face with its nose
 where the eyes look, passes every rule the Grid and the world judge a model by before either sees
