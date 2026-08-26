@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `tools/check_abi_vendor.py check --flagship PATH` reads only a checkout that lives beside this
+  repository: the path means what it always meant (relative to where the tool is run), but it
+  is normalised, resolved to its real place and refused in words unless it falls under the two
+  checkouts' common parent - the four repositories sit side by side by doctrine, so nothing is
+  lost. This closes CodeQL's two path-injection alerts on the
+  operator's path by code rather than by dismissal, in the same form as `tools/dll_imports.py`.
+
 ### Added
 
 - **The chain: eight icosahedra joined spike to spike.** Etape 7, the owner's ruling
