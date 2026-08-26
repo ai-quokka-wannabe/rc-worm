@@ -41,7 +41,9 @@ or sliders scaled to the body's bounds. The tick never waits for it: a vanilla-C
 plain structs sits between them, and a worm nobody steers repeats four ticks and brakes. It
 deploys beside `rc_worm.dll` with `windeployqt`, judged a closed set by `tools/check_deploy.py`,
 and the Grid loads it with no Qt on the PATH. [docs/PANEL.md](docs/PANEL.md) carries the
-threads, the seam and the why.
+threads, the seam and the why. [docs/FIRST_LIFE.md](docs/FIRST_LIFE.md) and
+`tools/first_life.ps1` are how a life is lived and recorded: Master Control, the window, the
+host, the panel in your hands, Clu at the end.
 
 **The body.** One rigid segment: a regular icosahedron a quarter metre in circumradius, near-black
 mirror faces and a green neon tube along every one of its thirty edges, built from the golden

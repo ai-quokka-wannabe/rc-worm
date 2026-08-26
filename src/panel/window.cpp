@@ -171,9 +171,17 @@ namespace PanelLib
         setMinimumSize(360, 130);
     }
 
-    void EarView::showView(const WormLib::EarSnapshot& view)
+    void EarView::showView(const WormLib::EarSnapshot& view, const std::uint64_t tick)
     {
         m_view = view;
+        m_tick = tick;
+        if (view.arrival_count > 0u) {
+            m_last_arrival_count = std::min(view.arrival_count, TGL_EAR_ARRIVALS_MAX);
+            for (std::uint32_t index{0u}; index < m_last_arrival_count; ++index) {
+                m_last_arrivals[index] = view.arrivals[index];
+            }
+            m_last_arrival_tick = tick;
+        }
         update();
     }
 
@@ -211,9 +219,15 @@ namespace PanelLib
         painter.setPen(QPen{DIM, 1.0});
         painter.drawRect(grid);
 
-        // The arrivals: onset as a column, radial velocity as a colour - approaching cyan, receding orange.
-        for (std::uint32_t arrival{0u}; arrival < m_view.arrival_count; ++arrival) {
-            const TglArrival& a{m_view.arrivals[arrival]};
+        // The arrivals: onset as a column, radial velocity as a colour - approaching cyan, receding
+        // orange. This tick's at full strength; the last ones for a second after, dimmed, because
+        // an arrival is one tick's event and a human reads slower than the Grid ticks.
+        const bool remembered{(m_last_arrival_count > 0u) && (m_tick >= m_last_arrival_tick) && (m_tick - m_last_arrival_tick < 32u)};
+        const bool fresh{m_view.arrival_count > 0u};
+        const TglArrival* const shown{fresh ? m_view.arrivals : m_last_arrivals};
+        const std::uint32_t shown_count{fresh ? m_view.arrival_count : (remembered ? m_last_arrival_count : 0u)};
+        for (std::uint32_t arrival{0u}; arrival < shown_count; ++arrival) {
+            const TglArrival& a{shown[arrival]};
             if (!(m_station.bin_seconds > 0.0f)) {
                 break;
             }
@@ -222,8 +236,22 @@ namespace PanelLib
                 continue;
             }
             const double x{grid.left() + (column * cell_w)};
-            painter.setPen(QPen{a.radial_velocity < 0.0f ? CYAN : ORANGE, 2.0});
+            QColor tint{a.radial_velocity < 0.0f ? CYAN : ORANGE};
+            if (!fresh) {
+                tint.setAlpha(110);
+            }
+            painter.setPen(QPen{tint, 2.0});
             painter.drawLine(QPointF{x, grid.top() - 4.0}, QPointF{x, grid.bottom() + 4.0});
+        }
+        if (m_last_arrival_tick > 0u) {
+            painter.setPen(DIM);
+            const TglArrival& a{m_last_arrivals[0]};
+            painter.drawText(QPointF{grid.left() + 4.0, grid.bottom() - 4.0},
+                QStringLiteral("last arrival(s): tick %1, %2 of them, first at %3 ms, %4 m/s")
+                    .arg(m_last_arrival_tick)
+                    .arg(m_last_arrival_count)
+                    .arg(a.onset_seconds * 1000.0f, 0, 'f', 2)
+                    .arg(a.radial_velocity, 0, 'f', 2));
         }
 
         painter.setPen(INK);
@@ -479,7 +507,7 @@ namespace PanelLib
             }
             for (qsizetype index{0}; index < m_ears.size(); ++index) {
                 if (static_cast<std::uint32_t>(index) < m_senses.ear_count) {
-                    m_ears[index]->showView(m_senses.ears[index]);
+                    m_ears[index]->showView(m_senses.ears[index], m_senses.tick);
                 }
             }
             m_feel->showSenses(m_senses);

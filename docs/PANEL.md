@@ -94,7 +94,11 @@ Drawn from the seam's structs at the Qt side's edge, nothing more than the worm 
   filled with its value through the same tone curve the Grid's window uses (one channel grey,
   three as they come). The first body's two eyes of one sample each are two discs.
 - **Ears**: the band-by-bin histogram each ear is, bands as rows with their edges in kHz, bins as
-  columns; each arrival a column at its onset, cyan approaching, orange receding.
+  columns; each arrival a column at its onset, cyan approaching, orange receding. An arrival is
+  one tick's event, gone before a human reads it, so each ear keeps its last arrivals for a
+  second, dimmed, and says the tick they came in, how many, the first's onset and radial
+  velocity. The worm's own call is the proof: 0.58 ms at both ears (0.2 m at the speed of
+  sound) and two echoes off the floor and a riser, seen in the first rehearsal.
 - **Feel**: the contacts where they happened on the body from above, each with its normal, and
   the numbers - impulse, depth, slip - beside; the proprioceptive speeds, the specific force, the
   angular velocity, the irradiance.
