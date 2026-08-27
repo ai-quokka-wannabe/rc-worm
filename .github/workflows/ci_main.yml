@@ -325,11 +325,17 @@ jobs:
                       qt: true
                     # The panel's thread under ThreadSanitizer: the seam between the tick
                     # and the Qt thread is the one place a race would corrupt a mind's
-                    # senses silently. Qt itself is not instrumented, so its own hand-offs
-                    # are named in tools/tsan.supp, and nothing else is.
+                    # senses silently. Qt is not instrumented: its hand-offs are made
+                    # visible by the atomics in panel.cpp, its own libraries are named in
+                    # tools/tsan.supp, and the X stack (xcb, X11, D-Bus, glib - built
+                    # without frame pointers, their mutex use beyond any suppression) is
+                    # kept out of the process: the offscreen platform, the glib
+                    # dispatcher off.
                     - name: TSan with Qt
                       preset: linux-clang-tsan
                       qt: true
+                      qpa: offscreen
+                      noglib: 1
 
         runs-on: ubuntu-latest
 
@@ -373,6 +379,8 @@ jobs:
               env:
                 ASAN_OPTIONS: detect_leaks=0
                 TSAN_OPTIONS: suppressions=${{ github.workspace }}/tools/tsan.supp second_deadlock_stack=1
+                QT_QPA_PLATFORM: ${{ matrix.qpa || 'xcb' }}
+                QT_NO_GLIB: ${{ matrix.noglib || '0' }}
               run: xvfb-run -a ctest --preset=${{ matrix.preset }}-debug
 
     ci-success:
