@@ -95,6 +95,17 @@ namespace
 
 } // namespace
 
+#if defined(__has_feature)
+#if __has_feature(thread_sanitizer)
+#define RC_WORM_UNDER_TSAN 1
+#endif
+#endif
+#if defined(RC_WORM_UNDER_TSAN)
+constexpr double PUBLISH_BOUND_MS{500.0};
+#else
+constexpr double PUBLISH_BOUND_MS{50.0};
+#endif
+
 class PanelTests : public QObject {
     Q_OBJECT
 
@@ -196,7 +207,10 @@ private slots:
         // A publish is one copy under a mutex the window holds only for a copy of its own: a
         // generous bound, because this is a shared runner, and the measured value on failure.
         const double slowest_ms{static_cast<double>(slowest_ns.load()) / 1.0e6};
-        QVERIFY2(slowest_ms < 50.0, qPrintable(QStringLiteral("the slowest publish took %1 ms").arg(slowest_ms)));
+        // Under ThreadSanitizer every access is instrumented and a copy under a mutex runs
+        // several times slower; the bound is what the sanitiser makes reasonable, and the
+        // measured value is in the message either way.
+        QVERIFY2(slowest_ms < PUBLISH_BOUND_MS, qPrintable(QStringLiteral("the slowest publish took %1 ms").arg(slowest_ms)));
         QTRY_COMPARE_WITH_TIMEOUT(window.sensesSeen(), 2000u, 5000);
         QVERIFY2(window.statusText().contains(QStringLiteral("tick 2000")), qPrintable(window.statusText()));
         window.stopPolling();

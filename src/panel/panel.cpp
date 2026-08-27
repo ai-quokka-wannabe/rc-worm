@@ -38,6 +38,7 @@
 #include <QtCore/QtGlobal>
 #include <QtWidgets/QApplication>
 
+#include <atomic>
 #include <condition_variable>
 #include <cstdlib>
 #include <iterator>
@@ -66,6 +67,18 @@ namespace PanelLib
             std::thread thread;
             std::mutex mutex;
             std::condition_variable settled;
+            /*!
+                The hand-offs, made visible. A blocking queued invoke is the real
+                synchronisation between the tick thread and the Qt thread - Qt's semaphore
+                orders everything written before the call ahead of everything the Qt thread
+                does in it, and everything done in it ahead of the return - but Qt is not
+                instrumented, so ThreadSanitizer cannot see that edge and would report the
+                mailbox built on one thread and first read on the other as a race. A release
+                on the sending side and an acquire on the receiving side of every hand-off
+                say to the sanitiser exactly what Qt already guarantees, and cost a fenced
+                increment per window opened or closed. Not a fix for anything: an annotation.
+            */
+            std::atomic<std::uint64_t> handed{0u};
             //! True while the QApplication is up and `anchor` may be posted to.
             bool up{false};
             //! True once the thread's entry has decided, up or not, so start() stops waiting.
@@ -250,13 +263,17 @@ namespace PanelLib
                 anchor = r.anchor;
             }
             PanelWindow* window{nullptr};
+            r.handed.fetch_add(1u, std::memory_order_release);
             QMetaObject::invokeMethod(
                 anchor,
-                [&mailbox, &body, &window] {
+                [&r, &mailbox, &body, &window] {
+                    (void)r.handed.load(std::memory_order_acquire);
                     window = new PanelWindow{mailbox, body};
                     window->show();
+                    r.handed.fetch_add(1u, std::memory_order_release);
                 },
                 Qt::BlockingQueuedConnection);
+            (void)r.handed.load(std::memory_order_acquire);
             return reinterpret_cast<Window*>(window);
         } catch (...) {
             return nullptr;
@@ -279,13 +296,17 @@ namespace PanelLib
                 return;
             }
             PanelWindow* const panel{reinterpret_cast<PanelWindow*>(window)};
+            r.handed.fetch_add(1u, std::memory_order_release);
             QMetaObject::invokeMethod(
                 anchor,
-                [panel] {
+                [&r, panel] {
+                    (void)r.handed.load(std::memory_order_acquire);
                     panel->stopPolling();
                     delete panel;
+                    r.handed.fetch_add(1u, std::memory_order_release);
                 },
                 Qt::BlockingQueuedConnection);
+            (void)r.handed.load(std::memory_order_acquire);
         } catch (...) {
             // A window that could not be closed is a window on a thread that is gone.
         }

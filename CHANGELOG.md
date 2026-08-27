@@ -29,6 +29,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **ThreadSanitizer with the panel on.** A fourth sanitiser leg, "TSan with Qt": the seam
+  tests and the panel's Qt tests with every access instrumented, on Qt's offscreen platform
+  with the glib dispatcher off - the X stack is uninstrumented and built without frame
+  pointers, and its mutex use confuses the sanitiser beyond any suppression's reach. Qt is
+  not instrumented either, so the hand-offs across its blocking queued invokes (a window
+  built and deleted on the Qt thread at the tick thread's request) are made visible by an
+  acquire/release atomic on either side in `panel.cpp`, an annotation of what Qt's semaphore
+  already guarantees; `tools/tsan.supp` names Qt's own libraries and nothing else. The seam
+  is a `std::mutex` the sanitiser sees whole, and a race there is the real thing the leg
+  exists to catch. The panel test's one tight timing bound is widened under the sanitiser,
+  the measured value still in the message.
 - **The chain: eight icosahedra joined spike to spike.** Etape 7, the owner's ruling
   (2026-08-26). The ABI re-vendored at v7; the body authors the joint - a neon stub, the same
   prism the edges wear, out of the nose spike and out of its antipode, half a joint each, so two

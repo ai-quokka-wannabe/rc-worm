@@ -1,0 +1,44 @@
+# ThreadSanitizer suppressions for the panel-on leg (CI: "TSan with Qt").
+#
+# The leg runs Qt on its offscreen platform with the glib dispatcher off, so no xcb, X11, D-Bus
+# or glib is in the sanitised process at all - those are uninstrumented, built without frame
+# pointers, and their own mutex use confuses the sanitiser's model beyond any suppression's
+# reach. What remains uninstrumented is Qt itself. Its hand-offs to and from our threads (the
+# blocking queued invokes that build and delete a window on the Qt thread) are made visible to
+# the sanitiser by the acquire/release atomics in src/panel/panel.cpp, so nothing about them is
+# suppressed here. What is: reports whose stacks run through Qt's own libraries, and what those
+# libraries call into libc - Qt's internal synchronisation is futex-based and invisible, so a
+# report with a Qt frame in it is a report about Qt, not about the seam. The seam
+# (WormLib::Mailbox) is a std::mutex the sanitiser sees whole, and a race there is real.
+
+# What Qt's libraries call into libc (memcpy, strlen, pthread) is theirs.
+called_from_lib:libQt6Core.so.6
+called_from_lib:libQt6Gui.so.6
+called_from_lib:libQt6Widgets.so.6
+called_from_lib:libQt6Test.so.6
+called_from_lib:libqoffscreen.so
+
+# A report with a Qt frame in its stack is Qt's: its synchronisation is invisible here.
+race:libQt6Core.so.6
+race:libQt6Gui.so.6
+race:libQt6Widgets.so.6
+race:libQt6Test.so.6
+race:libqoffscreen.so
+mutex:libQt6Core.so.6
+mutex:libQt6Gui.so.6
+mutex:libQt6Widgets.so.6
+mutex:libQt6Test.so.6
+mutex:libqoffscreen.so
+deadlock:libQt6Core.so.6
+deadlock:libQt6Gui.so.6
+deadlock:libQt6Widgets.so.6
+deadlock:libQt6Test.so.6
+deadlock:libqoffscreen.so
+
+# QtTest's watchdog waits on a std::condition_variable of its own, on the main thread's stack,
+# before the first test: its lock is called from libQt6Test and ignored by the rule above, its
+# wait is libstdc++'s and seen, and the sanitiser's torn view of that pair is one "unlock of an
+# unlocked mutex" with no frame of ours in it (the second run said so, exactly once). The seam
+# has no condition variable, and the Runner's handshake is waited on from our own instrumented
+# code, so it stays seen whole: this names Qt's, not ours.
+mutex:std::condition_variable::wait

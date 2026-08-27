@@ -125,6 +125,17 @@ host process owns whatever else Qt draws.
   the slowest under a generous bound with the measured value in the failure message. Shapes
   adopted from the owner's `claude-chats-browser`; a `QTRY_` re-evaluates once after it is
   satisfied, so a take that consumes is made to stick.
+- **Under ThreadSanitizer, with the panel on** (CI, "TSan with Qt"): the same two suites
+  with every access instrumented, on Qt's offscreen platform with the glib dispatcher off,
+  so no xcb, X11, D-Bus or glib is in the sanitised process - uninstrumented, built without
+  frame pointers, their mutex use confuses the sanitiser's model beyond any suppression's
+  reach (the first run said so, in twenty-six reports). Qt itself is not instrumented
+  either, so the hand-offs across its blocking queued invokes are made visible by an
+  acquire/release atomic on either side in `panel.cpp` - an annotation of what Qt's
+  semaphore already guarantees, not a fix - and `tools/tsan.supp` names Qt's own libraries
+  and nothing else. The seam is a `std::mutex` the sanitiser sees whole, and a race there is
+  the real thing this leg exists to catch. The one tight timing bound is widened under the
+  sanitiser, with the measured value still in the message.
 - `vtable_tests` (through the DLL, as the Grid loads it): with the panel built, `library_init`
   starts the Qt thread and each rez opens a real window; two hundred ticks of two steered-by-
   nobody worms are zeroes and quick; derez closes, shutdown joins. Under `xvfb-run` in CI.
