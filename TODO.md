@@ -168,7 +168,8 @@ windows-clang-cl (the MSVC kit), linux-gcc and linux-clang (the GCC kit) with th
 packages, `xvfb-run` and a real font; an ASan+UBSan-with-Qt sanitiser leg with
 `ASAN_OPTIONS=detect_leaks=0`; a quick-check that `QT_VERSION` in the workflows and the kit
 paths in the presets agree; the worm's dynamic dependencies recorded per build for Etape 4's
-deployment check to judge. TSan with the panel on waits for the panel's thread (Etape 4).
+deployment check to judge. TSan with the panel on landed on 2026-08-27 ("TSan with Qt" in
+CI, `tools/tsan.supp` naming Qt's own hand-offs and nothing else).
 
 The Qt legs of the build matrix with Qt fetched by a composite action of this repository's
 own - adopted from the owner's `claude-chats-browser`: `.github/actions/setup-qt` runs

@@ -323,6 +323,13 @@ jobs:
                     - name: ASan+UBSan with Qt
                       preset: linux-clang-asan
                       qt: true
+                    # The panel's thread under ThreadSanitizer: the seam between the tick
+                    # and the Qt thread is the one place a race would corrupt a mind's
+                    # senses silently. Qt itself is not instrumented, so its own hand-offs
+                    # are named in tools/tsan.supp, and nothing else is.
+                    - name: TSan with Qt
+                      preset: linux-clang-tsan
+                      qt: true
 
         runs-on: ubuntu-latest
 
@@ -365,6 +372,7 @@ jobs:
               if: matrix.qt
               env:
                 ASAN_OPTIONS: detect_leaks=0
+                TSAN_OPTIONS: suppressions=${{ github.workspace }}/tools/tsan.supp second_deadlock_stack=1
               run: xvfb-run -a ctest --preset=${{ matrix.preset }}-debug
 
     ci-success:

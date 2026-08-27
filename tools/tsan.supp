@@ -1,0 +1,29 @@
+# ThreadSanitizer suppressions for the panel-on leg (CI: "TSan with Qt").
+#
+# Qt is not instrumented. Its own synchronisation - QMutex, QSemaphore, the event loop's wake-ups,
+# the blocking queued invoke - is invisible to ThreadSanitizer, so a hand-off through it looks
+# like a data race in whichever of our frames stands on either side of it. Each line below names
+# one such hand-off, or one library whose intercepted calls (memcpy, strlen, pthread) must not be
+# judged, and nothing else: the seam itself (WormLib::Mailbox) is a std::mutex the sanitiser sees
+# whole, and a race there is a real one this leg exists to catch.
+
+# Libraries the sanitiser did not build: what they call into libc is theirs.
+called_from_lib:libQt6Core.so.6
+called_from_lib:libQt6Gui.so.6
+called_from_lib:libQt6Widgets.so.6
+called_from_lib:libQt6Test.so.6
+called_from_lib:libQt6DBus.so.6
+called_from_lib:libqxcb.so
+called_from_lib:libglib-2.0.so.0
+called_from_lib:libfontconfig.so.1
+called_from_lib:libxcb.so.1
+
+# The blocking hand-offs across the Qt thread: a window built on it for the tick thread
+# (PanelLib::open, the constructor reading the body snapshot handed over), closed and deleted on
+# it at the tick thread's request (PanelLib::close), the application asked to quit (PanelLib::stop).
+# Qt's BlockingQueuedConnection is the happens-before; the sanitiser cannot see it.
+race:PanelLib::open
+race:PanelLib::close
+race:PanelLib::stop
+race:PanelWindow::PanelWindow
+race:PanelWindow::~PanelWindow
