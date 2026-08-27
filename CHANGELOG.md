@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `docs/PANEL.md` and `docs/FIRST_LIFE.md` say what a dragging worm now hears: its own spikes on
+  the floor, in the ears' earliest bins with fading tails and an arrival count that stays at
+  zero (master-control #34 sounds the scrapes, tron-grid-lite #119 delivers them to creature
+  ears). What to look for, and what would be a finding, is written down for the first life.
+
 ### Fixed
 
 - `docs/FIRST_LIFE.md`, `TODO.md` and `tools/first_life.ps1` no longer say Master Control cannot
