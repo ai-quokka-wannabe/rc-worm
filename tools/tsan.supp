@@ -34,3 +34,11 @@ deadlock:libQt6Gui.so.6
 deadlock:libQt6Widgets.so.6
 deadlock:libQt6Test.so.6
 deadlock:libqoffscreen.so
+
+# QtTest's watchdog waits on a std::condition_variable of its own, on the main thread's stack,
+# before the first test: its lock is called from libQt6Test and ignored by the rule above, its
+# wait is libstdc++'s and seen, and the sanitiser's torn view of that pair is one "unlock of an
+# unlocked mutex" with no frame of ours in it (the second run said so, exactly once). The seam
+# has no condition variable, and the Runner's handshake is waited on from our own instrumented
+# code, so it stays seen whole: this names Qt's, not ours.
+mutex:std::condition_variable::wait
