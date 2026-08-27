@@ -40,7 +40,6 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <cstdlib>
 #include <iterator>
 #include <mutex>
 #include <thread>
@@ -103,7 +102,10 @@ namespace PanelLib
 #if defined(_WIN32)
             return true;
 #else
-            return (std::getenv("DISPLAY") != nullptr) || (std::getenv("WAYLAND_DISPLAY") != nullptr) || (std::getenv("QT_QPA_PLATFORM") != nullptr);
+            // Qt's, not std::getenv: the environment is read under Qt's own lock, because the
+            // host may be reading or writing it on another thread - clang-tidy's concurrency
+            // checks named the three calls this replaced, on their first run in CI.
+            return qEnvironmentVariableIsSet("DISPLAY") || qEnvironmentVariableIsSet("WAYLAND_DISPLAY") || qEnvironmentVariableIsSet("QT_QPA_PLATFORM");
 #endif
         }
 
