@@ -29,6 +29,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The guides.** The owner's ask (2026-08-27): every repository of the organisation gets a
+  development-environment guide a contributor can follow without struggling. Here:
+  `docs/DEV_ENV_SETUP.md` - the short version; every compiler with the Qt 6.11.1 kit it needs and
+  where both come from (the Qt Tools, or aqtinstall as CI does it); Windows and Linux step by step,
+  panel on or off; what CI runs and how to run every leg at home, the TSan-with-Qt leg included;
+  deployment into the Grid's `programs/` and the closed set `check_deploy.py` judges; re-vendoring
+  the ABI; the first life; troubleshooting. CONTRIBUTING's kit path typo is fixed and both it and
+  the README point at the guide and at the flagship's `RUNNING_THE_GRID.md`.
 - **clang-tidy's concurrency checks, as errors, in CI.** The `.clang-tidy` the editor runs
   names every family; the Linux Clang build with the panel on now runs `concurrency-*` alone
   over the sources with warnings as errors - the calls that are not thread-safe, which a seam
