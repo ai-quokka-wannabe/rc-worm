@@ -97,13 +97,16 @@ When submitting:
 - C++20 compiler (MSVC 19.30+, GCC 12+, or Clang 15+)
 - CMake 3.25+
 - Ninja build system
-- Qt 6.11+ (Widgets) for the panel - on Windows the kit matching the preset (`msvc2022_64`,
-  `mingw_64` or `llvm-mingw_64` under `C:\Qt.11.1`), on Linux the distribution's Qt 6
+- Qt 6.11.1 (Widgets) for the panel - on Windows the kit matching the preset (`msvc2022_64`,
+  `mingw_64` or `llvm-mingw_64` under `C:\Qt\6.11.1`), on Linux the same kit through aqtinstall
+  (the distribution's Qt 6 is older than the panel) - or `-DRC_WORM_PANEL=OFF` and no Qt at all
 
 ### Setup
 
-Install Qt 6.11 with the kits for the presets you build, a C++20 compiler, CMake and Ninja.
-On Linux: `sudo apt-get install qt6-base-dev`.
+Install Qt 6.11.1 with the kits for the presets you build, a C++20 compiler, CMake and Ninja.
+The complete guide - every kit and where its compiler comes from, the Linux package list, what
+CI runs and how to run every leg at home, deployment into the Grid's `programs/`, re-vendoring
+the ABI, the first life - is [docs/DEV_ENV_SETUP.md](docs/DEV_ENV_SETUP.md).
 
 Quick start (prerequisites already installed):
 

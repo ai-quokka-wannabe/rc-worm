@@ -74,6 +74,11 @@ and the life somebody lives are staged in [TODO.md](TODO.md).
 
 ## Building
 
+> **New here?** [docs/DEV_ENV_SETUP.md](docs/DEV_ENV_SETUP.md) builds, tests and deploys the worm from
+> nothing on Windows or Linux, with or without its panel, exactly as CI does; the flagship's
+> [RUNNING_THE_GRID.md](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/docs/RUNNING_THE_GRID.md)
+> stands the whole ecosystem up around it.
+
 CMake 3.25+, Ninja, a C++20 compiler, and - for the panel - Qt 6.11 for the kit of the preset
 (`RC_WORM_PANEL=OFF` builds the worm with no Qt at all). The presets are the flagship's:
 `windows-msvc`, `windows-clang-cl`, `windows-mingw`, `windows-llvm-mingw`, `linux-gcc`,
