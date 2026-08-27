@@ -98,7 +98,12 @@ Drawn from the seam's structs at the Qt side's edge, nothing more than the worm 
   one tick's event, gone before a human reads it, so each ear keeps its last arrivals for a
   second, dimmed, and says the tick they came in, how many, the first's onset and radial
   velocity. The worm's own call is the proof: 0.58 ms at both ears (0.2 m at the speed of
-  sound) and two echoes off the floor and a riser, seen in the first rehearsal.
+  sound) and two echoes off the floor and a riser, seen in the first rehearsal. Since the
+  chain scrapes (master-control #34) and the Grid delivers scrapes to creature ears
+  (tron-grid-lite #119), a dragging worm hears its own spikes on the floor: both ears light in
+  the earliest bins with fading tails - the head's scratch and the seven segments at their
+  spacings behind it - and the arrival count stays zero, because a scrape has no onset to
+  range from. Energy without an arrival is a scrape; a column is a call.
 - **Feel**: the contacts where they happened on the body from above, each with its normal, and
   the numbers - impulse, depth, slip - beside; the proprioceptive speeds, the specific force, the
   angular velocity, the irradiance.

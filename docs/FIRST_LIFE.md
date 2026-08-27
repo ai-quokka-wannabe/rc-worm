@@ -78,6 +78,12 @@ the panel's status line:
 - **Sound out of place.** A call heard before it was made, an arrival at an ear with no source in
   the window, an echo from a wall that is not there, a hum louder at one ear than the other
   while standing still.
+- **The worm's own scrape.** Dragging, both ears should light in the earliest bins with fading
+  tails (its own spikes on the floor, head first, the tail at its spacings behind) and go dark
+  within a second of stopping; the arrival count must stay at zero while nobody calls - a
+  scrape is energy without an onset. An arrival from a scrape, a scrape heard while standing
+  still, or ears that stay lit after the stop are all findings against tron-grid-lite or
+  master-control.
 - **Silence that is not yours.** The status line going magenta ("the Grid has been silent")
   while the world's window keeps moving: a tick the host missed, on the record as a refusal in
   Master Control's log.
