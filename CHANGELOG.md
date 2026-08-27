@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **clang-tidy's concurrency checks, as errors, in CI.** The `.clang-tidy` the editor runs
+  names every family; the Linux Clang build with the panel on now runs `concurrency-*` alone
+  over the sources with warnings as errors - the calls that are not thread-safe, which a seam
+  between two threads must never make - with Qt's generated code left out.
 - **ThreadSanitizer with the panel on.** A fourth sanitiser leg, "TSan with Qt": the seam
   tests and the panel's Qt tests with every access instrumented, on Qt's offscreen platform
   with the glib dispatcher off - the X stack is uninstrumented and built without frame

@@ -288,6 +288,19 @@ jobs:
                     ctest --preset=${{ matrix.preset }}-release
                 fi
 
+            # The concurrency checks, as errors, in CI. The editor's .clang-tidy runs every
+            # family; this runs the one a seam between two threads cannot afford to skip -
+            # calls that are not thread-safe (getenv, strerror, localtime and their kin) and the
+            # rest of concurrency-* - over the sources, with Qt's generated code left out.
+            - name: clang-tidy, the concurrency checks
+              if: matrix.preset == 'linux-clang'
+              run: |
+                sudo apt-get install -y --no-install-recommends clang-tidy
+                clang-tidy --version | head -2
+                run-clang-tidy -quiet -j "$(nproc)" -p build/${{ matrix.preset }} \
+                    -checks='-*,concurrency-*' -warnings-as-errors='*' \
+                    "^${{ github.workspace }}/(src|libs)/.*\.cpp$"
+
             # Every library the worm ships must be found beside it or in the system, never in
             # the Qt kit's directory or the build tree. On Windows the install runs windeployqt
             # on the DLL and tools/check_deploy.py judges what it produced: a closed set beside

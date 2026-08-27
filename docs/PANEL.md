@@ -136,6 +136,10 @@ host process owns whatever else Qt draws.
   and nothing else. The seam is a `std::mutex` the sanitiser sees whole, and a race there is
   the real thing this leg exists to catch. The one tight timing bound is widened under the
   sanitiser, with the measured value still in the message.
+- **clang-tidy's concurrency checks, as errors** (CI, on the Linux Clang build with the panel
+  on): the `.clang-tidy` the editor runs names every family; CI runs `concurrency-*` alone
+  over the sources - the calls that are not thread-safe, `getenv` and `localtime` and their
+  kin, which a seam between two threads must never make - with Qt's generated code left out.
 - `vtable_tests` (through the DLL, as the Grid loads it): with the panel built, `library_init`
   starts the Qt thread and each rez opens a real window; two hundred ticks of two steered-by-
   nobody worms are zeroes and quick; derez closes, shutdown joins. Under `xvfb-run` in CI.
