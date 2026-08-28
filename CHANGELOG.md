@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The joint tips lie on the axis, so two segments meet at one point.** The owner's report
+  (2026-08-28): the chain's neighbours were not touching. A waist vertex of an icosahedron
+  resting on a face sits 0.1876 circumradii off the horizontal axis, so a stub along the spike's
+  own direction ended 4.7 cm above the axis at the nose and 4.7 cm below it at the tail, and two
+  neighbours' tips stood 10.5 cm apart on a straight chain. The stub now runs from the spike to a
+  joint tip exactly on the axis, `JOINT_TIP_REACH` = 0.28 m out (`(0, 0, ∓0.28)`), kinking by
+  the waist's 10.8°; `SEGMENT_SPACING` is twice the reach and unchanged at 0.56 m, the posture
+  untouched. Master Control's companion places the chain as rigid rods sharing those tips.
 - **The feel's text no longer writes through the plan box.** The owner's report (2026-08-28):
   the contact and vestibular rows ran straight under the body-from-above box. A row that shares
   the box's height now stops at its edge with an ellipsis.

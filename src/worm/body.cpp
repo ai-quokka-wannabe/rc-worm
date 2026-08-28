@@ -259,13 +259,18 @@ namespace WormLib
             }
         }
 
-        // The joint stubs: out of the nose spike and out of its antipode, along the spike's own
-        // direction from the origin, a triangular neon prism half a joint long - the same prism
-        // the edges wear, so the joint reads as the neon continuing off the body. Two segments
-        // of the chain meet where their stubs do, tip to tip.
+        // The joint stubs: out of the nose spike and out of its antipode to the joint tips, which
+        // lie exactly on the body's axis - (0, 0, -JOINT_TIP_REACH) for the nose, its mirror for
+        // the tail - as a triangular neon prism, the same prism the edges wear, so the joint
+        // reads as the neon continuing off the body. Two consecutive segments meet at one tip,
+        // a pivot. The spike itself is a waist vertex, 0.1876 circumradii off the axis, so the
+        // prism kinks by the waist's 10.8 degrees to reach it (the owner's report, 2026-08-28:
+        // a stub along the spike's own direction had ended off the axis, and neighbours' tips
+        // 10.5 cm apart on a straight chain).
         for (const std::uint32_t spike : {m_nose, m_tail}) {
             const V3 base{vertices[spike]};
-            const V3 along{normalised(base)};
+            const V3 tip{0.0f, 0.0f, (spike == m_nose ? -1.0f : 1.0f) * JOINT_TIP_REACH};
+            const V3 along{normalised(tip - base)};
             // A perpendicular pair around the stub's axis: the axis is never vertical, so up is
             // a safe partner for the first.
             const V3 outward{normalised(cross(along, V3{0.0f, 1.0f, 0.0f}))};
@@ -278,7 +283,7 @@ namespace WormLib
             }};
             for (const V3& spoke : spokes) {
                 const V3 start{base + spoke};
-                const V3 end{base + (along * JOINT_STUB_LENGTH) + spoke};
+                const V3 end{tip + spoke};
                 m_positions.insert(m_positions.end(), {start.x, start.y, start.z});
                 m_positions.insert(m_positions.end(), {end.x, end.y, end.z});
             }

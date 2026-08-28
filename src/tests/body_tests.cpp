@@ -154,11 +154,13 @@ TEST_CASE(the_body_rests_on_a_face_with_its_nose_forward_and_is_the_same_bytes_e
     }
     TEST_CHECK(nose);
 
-    // The chain: eight segments joined stub to stub. The nose spike is on -Z, its antipode on +Z,
-    // and the two stubs stand out of them along their own directions, half a joint each, so the
-    // spacing is a diameter plus two stubs. The model says so when lent.
+    // The chain: eight segments joined tip to tip. The nose spike is on -Z (seen from above), its
+    // antipode on +Z, and the two stubs run out of them to joint tips that lie exactly on the
+    // body's axis, a circumradius and a stub length from the origin - so two consecutive
+    // segments meet at one point, a pivot, and the spacing is twice that reach.
     TEST_CHECK_EQUAL(WormLib::BODY_SEGMENTS, 8u);
-    TEST_CHECK_CLOSE(WormLib::SEGMENT_SPACING, (2.0f * WormLib::BODY_CIRCUMRADIUS) + (2.0f * WormLib::JOINT_STUB_LENGTH), 1e-6f);
+    TEST_CHECK_CLOSE(WormLib::JOINT_TIP_REACH, WormLib::BODY_CIRCUMRADIUS + WormLib::JOINT_STUB_LENGTH, 1e-6f);
+    TEST_CHECK_CLOSE(WormLib::SEGMENT_SPACING, 2.0f * WormLib::JOINT_TIP_REACH, 1e-6f);
     const float* const nose_at{&body.positions()[body.noseVertex() * 3u]};
     const float* const tail_at{&body.positions()[body.tailVertex() * 3u]};
     TEST_CHECK(nose_at[2] < -0.2f);
@@ -166,20 +168,31 @@ TEST_CASE(the_body_rests_on_a_face_with_its_nose_forward_and_is_the_same_bytes_e
     TEST_CHECK_CLOSE(nose_at[0] + tail_at[0], 0.0f, 1e-5f); // antipodal
     TEST_CHECK_CLOSE(nose_at[1] + tail_at[1], 0.0f, 1e-5f);
     TEST_CHECK_CLOSE(nose_at[2] + tail_at[2], 0.0f, 1e-5f);
-    // The stubs are the last twelve vertices: every one within a stub's reach of its spike, and
-    // the far end of each rail a stub length further out along the spike than the near end.
+    // The stubs are the last twelve vertices: each rail starts a neon radius from its spike and
+    // ends a neon radius from the joint tip, and the three far ends centre on the tip itself -
+    // on the axis, JOINT_TIP_REACH out, nose at -Z and tail at +Z. (The owner's report,
+    // 2026-08-28: stubs along the waist spikes' own directions had ended 4.7 cm off the axis,
+    // and two neighbours' tips 10.5 cm apart on a straight chain.)
     const std::uint32_t stubs_from{12u + (30u * 6u)};
+    const auto offset{[](const float* const point, const float x, const float y, const float z) {
+        return std::sqrt(((point[0] - x) * (point[0] - x)) + ((point[1] - y) * (point[1] - y)) + ((point[2] - z) * (point[2] - z)));
+    }};
     for (std::uint32_t stub{0u}; stub < 2u; ++stub) {
         const float* const spike{stub == 0u ? nose_at : tail_at};
-        const float spike_length{std::sqrt((spike[0] * spike[0]) + (spike[1] * spike[1]) + (spike[2] * spike[2]))};
+        const float tip_z{(stub == 0u ? -1.0f : 1.0f) * WormLib::JOINT_TIP_REACH};
+        float centre[3]{};
         for (std::uint32_t rail{0u}; rail < 3u; ++rail) {
             const float* const near{&body.positions()[(stubs_from + (stub * 6u) + (rail * 2u)) * 3u]};
             const float* const far{&body.positions()[(stubs_from + (stub * 6u) + (rail * 2u) + 1u) * 3u]};
-            const float near_along{((near[0] * spike[0]) + (near[1] * spike[1]) + (near[2] * spike[2])) / spike_length};
-            const float far_along{((far[0] * spike[0]) + (far[1] * spike[1]) + (far[2] * spike[2])) / spike_length};
-            TEST_CHECK_CLOSE(near_along, spike_length, 1e-4f);
-            TEST_CHECK_CLOSE(far_along - near_along, WormLib::JOINT_STUB_LENGTH, 1e-4f);
+            TEST_CHECK_CLOSE(offset(near, spike[0], spike[1], spike[2]), WormLib::NEON_RADIUS, 1e-5f);
+            TEST_CHECK_CLOSE(offset(far, 0.0f, 0.0f, tip_z), WormLib::NEON_RADIUS, 1e-5f);
+            for (std::uint32_t axis{0u}; axis < 3u; ++axis) {
+                centre[axis] += far[axis] / 3.0f;
+            }
         }
+        TEST_CHECK_CLOSE(centre[0], 0.0f, 1e-5f);
+        TEST_CHECK_CLOSE(centre[1], 0.0f, 1e-5f);
+        TEST_CHECK_CLOSE(centre[2], tip_z, 1e-5f);
     }
 
     // Deterministic: the same body twice is the same bytes, and lending fills a model whole.

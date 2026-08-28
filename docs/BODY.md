@@ -36,11 +36,12 @@ and face tables.
 | `NEON_PROUD` | 0.004 m | the tube's centre line stands this far off the edge, outward |
 | Shell | 12 vertices, 20 triangles | material 0 |
 | Neon | 30 edges × (6 vertices, 6 triangles) | material 1, a triangular prism per edge |
-| Joint stubs | 2 × (6 vertices, 6 triangles) | material 1, the same prism out of the nose spike and its antipode |
+| Joint stubs | 2 × (6 vertices, 6 triangles) | material 1, the same prism from the nose spike, and from its antipode, to the joint tips on the axis |
 | Total | 204 vertices, 212 triangles, 2 materials | under the wire's caps of 1024 / 2048 / 16 |
 | `BODY_SEGMENTS` | 8 | the chain, the head counted: the wire's cap and a worm's worth |
-| `JOINT_STUB_LENGTH` | 0.03 m | each stub; two meet tip to tip between segments |
-| `SEGMENT_SPACING` | 0.56 m | a diameter (the spikes are antipodal) plus two stubs |
+| `JOINT_STUB_LENGTH` | 0.03 m | how far past the circumradius a joint tip lies |
+| `JOINT_TIP_REACH` | 0.28 m | the joint tips, on the axis: `(0, 0, ±0.28)`; two segments meet at one, a pivot |
+| `SEGMENT_SPACING` | 0.56 m | twice the reach - tip to tip through one segment |
 | Extent | 0.25 m | under the world's `BODY_MAX_EXTENT` of 4 m |
 
 The first body's eyes sit at body-frame `(0, 0, -0.2)` and its ears at `(0, 0, 0.2)`; a
@@ -80,11 +81,20 @@ and a tube that emits at 1.0 reads as a painted stripe.
 
 The owner's ruling (2026-08-26): a worm is a chain of icosahedra joined spike to spike, and it
 undulates. This body is one segment of eight. The joint is authored here rather than carried on
-the wire: a neon stub - the same triangular prism the edges wear - stands out of the **nose
-spike** (the shell vertex on -Z, where the eyes look) and out of its **antipode** (the tail
-spike, on +Z), each `JOINT_STUB_LENGTH` long along its spike's own direction from the origin.
-Two consecutive segments meet where their stubs do, tip to tip, so the spacing the model declares
-is exactly a diameter plus two stubs: `SEGMENT_SPACING` = 2 × 0.25 + 2 × 0.03 = 0.56 m.
+the wire: a neon stub - the same triangular prism the edges wear - runs out of the **nose
+spike** (the waist vertex on -Z as seen from above, where the eyes look) and out of its
+**antipode** (the tail spike) to a **joint tip that lies exactly on the body's axis**,
+`JOINT_TIP_REACH` = 0.25 + 0.03 = 0.28 m from the origin: `(0, 0, -0.28)` for the nose,
+`(0, 0, +0.28)` for the tail. Two consecutive segments meet at one such tip - a pivot the chain
+bends around - so the spacing the model declares is twice the reach: `SEGMENT_SPACING` = 0.56 m.
+
+On the axis, deliberately. An icosahedron resting on a face has no vertex on its own horizontal
+axis: the waist vertices sit 0.1876 circumradii (4.7 cm) above or below it, 10.8° off. The
+first authoring ran each stub along its spike's own direction, so the nose tip ended 4.7 cm
+above the axis and the tail tip 4.7 cm below, and two neighbours' tips stood
+0.56 × |n + Z| = 10.5 cm apart even on a straight chain - the gap the owner saw between every
+pair (2026-08-28). The stub now kinks by those 10.8° to reach the axis; the resting posture,
+the eyes and the ears are untouched.
 
 Where the trailing segments stand is the world's business (Master Control places them along the
 path the head walked - kinematic trail, not articulation) and the Grid's to draw (the mesh once
