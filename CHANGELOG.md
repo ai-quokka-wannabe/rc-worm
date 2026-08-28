@@ -16,6 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The feel's text no longer writes through the plan box.** The owner's report (2026-08-28):
+  the contact and vestibular rows ran straight under the body-from-above box. A row that shares
+  the box's height now stops at its edge with an ellipsis.
+- **The feel is no longer born clipped.** Its size hint (340) sat below its own minimum (420),
+  so the layout planned a column the minimum then pushed past the window's edge; and the window
+  opened at a fixed 1280 x 720 whatever its views asked for. The hint now exceeds the minimum,
+  the minimum is low enough to squeeze onto a narrow screen (the rows elide and the chain scales,
+  so nothing is lost when the layout presses), and the window opens at what its views ask for,
+  bounded by the screen.
 - `docs/FIRST_LIFE.md`, `TODO.md` and `tools/first_life.ps1` no longer say Master Control cannot
   be asked to stop: master-control #31 was fixed the same day it was filed, and Ctrl+C in its
   window (or closing it) now ends a life properly - the log ends, the Disk closes, Clu is
@@ -29,6 +38,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The panel draws its declared chain.** Along the bottom of the feel view runs the chain the
+  body's rez lends the Grid - eight icosahedra joined spike to spike over a floor line, in the
+  worm's neon, the head brightest with a dot of ink for its eye end - and the header says it:
+  `a chain of 8 segment(s), 0.56 m apart`. The declaration travels beside the Grid's body in the
+  seam's `BodySnapshot` (`segment_count`, `segment_spacing`, `segment_radius`), filled from the
+  body's own constants - one declaration, two readers. It is decorative on purpose: it never
+  moves, because where the chain is and how it waves is the world's, heard through the ears,
+  never echoed back to the panel.
 - **The guides.** The owner's ask (2026-08-27): every repository of the organisation gets a
   development-environment guide a contributor can follow without struggling. Here:
   `docs/DEV_ENV_SETUP.md` - the short version; every compiler with the Qt 6.11.1 kit it needs and

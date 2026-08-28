@@ -106,14 +106,22 @@ Drawn from the seam's structs at the Qt side's edge, nothing more than the worm 
   range from. Energy without an arrival is a scrape; a column is a call.
 - **Feel**: the contacts where they happened on the body from above, each with its normal, and
   the numbers - impulse, depth, slip - beside; the proprioceptive speeds, the specific force, the
-  angular velocity, the irradiance.
+  angular velocity, the irradiance. A text row that shares its height with the plan box stops
+  at the box's edge with an ellipsis rather than writing through it. Along the bottom runs the
+  declared chain, side on: the segments the body's rez lends the Grid, icosahedra joined spike
+  to spike over a floor line, drawn in the worm's neon because side on an icosahedron's visible
+  outline is its neon, the head brightest with a dot of ink for its eye end. It is the
+  declaration and nothing more - it never moves, because where the chain is and how it waves is
+  the world's, heard through the ears, never echoed back to the panel.
 - **Controls**: forward, turn (left positive, as the ABI has it) and voice sliders scaled to the
   body's own bounds; `W`/`S`, `A`/`D` override the sliders while held, `Space` calls once at the
   voice slider's strength, `X` brakes. The status line says which tick it drew, how many intents
   it offered, and turns magenta when the Grid has been silent for a second.
 
 The stylesheet is scoped to the window by its object name, never set on the application: the
-host process owns whatever else Qt draws.
+host process owns whatever else Qt draws. The window opens at what its views ask for, bounded
+by the screen; the header states the declaration - the chain included - and
+`PanelWindow::headerText()` says it for a test.
 
 ## The tests
 

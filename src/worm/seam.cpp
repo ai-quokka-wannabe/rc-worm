@@ -15,6 +15,8 @@
 
 #include "seam.hpp"
 
+#include "body.hpp"
+
 #include <algorithm>
 #include <cstring>
 
@@ -42,6 +44,12 @@ namespace WormLib
         body.max_turn_rate = desc.max_turn_rate;
         body.max_vocalisation_strength = desc.max_vocalisation_strength;
         body.nominal_dt_seconds = nominal_dt_seconds;
+
+        // The chain is not the Grid's to describe: the worm brings it, so the snapshot takes
+        // the declaration straight from the body - the same constants rez lends the Grid.
+        body.segment_count = BODY_SEGMENTS;
+        body.segment_spacing = SEGMENT_SPACING;
+        body.segment_radius = BODY_CIRCUMRADIUS;
 
         body.eye_count = std::min(desc.eye_count, SEAM_EYES_MAX);
         body.eyes_dropped = desc.eye_count - body.eye_count;

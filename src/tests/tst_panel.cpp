@@ -25,10 +25,12 @@
 #include <seam.hpp>
 
 #include <QtCore/QElapsedTimer>
+#include <QtGui/QImage>
 #include <QtTest/QSignalSpy>
 #include <QtTest/QTest>
 #include <QtWidgets/QApplication>
 
+#include <algorithm>
 #include <atomic>
 #include <cstdint>
 #include <thread>
@@ -47,6 +49,9 @@ namespace
         body.max_turn_rate = 1.5707964f;
         body.max_vocalisation_strength = 1.0f;
         body.nominal_dt_seconds = 0.03125f;
+        body.segment_count = 8u;
+        body.segment_spacing = 0.56f;
+        body.segment_radius = 0.25f;
         for (std::uint32_t index{0u}; index < 2u; ++index) {
             WormLib::EyeStation& eye{body.eyes[index]};
             eye.position[2] = index == 0u ? -0.2f : 0.2f;
@@ -117,6 +122,8 @@ private slots:
         PanelLib::PanelWindow window{mailbox, body};
         window.show();
         QVERIFY(QTest::qWaitForWindowExposed(&window));
+        // The header speaks the declaration, the chain now part of it.
+        QVERIFY2(window.headerText().contains(QStringLiteral("a chain of 8 segment(s)")), qPrintable(window.headerText()));
         // Said from the first paint, before any poll: a window exposed faster than its timer
         // (Linux under Xvfb) must not read as one that said nothing.
         QVERIFY2(window.statusText().contains(QStringLiteral("waiting for the first tick")), qPrintable(window.statusText()));
@@ -175,6 +182,37 @@ private slots:
         QCOMPARE(quiet->vocalisation, 0.0f);
 
         window.stopPolling();
+    }
+
+    void the_feel_draws_the_declared_chain_before_any_tick()
+    {
+        // The chain is declared, not sensed: the feel draws it before the first tick ever
+        // arrives, and its neon spans the strip - which one body's circle never did.
+        const WormLib::BodySnapshot body{firstBody()};
+        PanelLib::FeelView feel{body};
+        feel.resize(430, 260);
+        const QImage drawn{feel.grab().toImage()};
+
+        const auto neon{[](const QRgb pixel) {
+            // The worm's green, met tolerantly: antialiasing thins a stroke's edge, never its core.
+            return (qAbs(qRed(pixel) - 74) < 40) && (qAbs(qGreen(pixel) - 222) < 40) && (qAbs(qBlue(pixel) - 128) < 40);
+        }};
+        int leftmost{drawn.width()};
+        int rightmost{-1};
+        int found{0};
+        for (int x{0}; x < drawn.width(); ++x) {
+            for (int y{0}; y < drawn.height(); ++y) {
+                if (neon(drawn.pixel(x, y))) {
+                    leftmost = std::min(leftmost, x);
+                    rightmost = std::max(rightmost, x);
+                    ++found;
+                    break;
+                }
+            }
+        }
+        QVERIFY2(found > 0, "no neon anywhere: the declared chain is not drawn");
+        QVERIFY2((rightmost - leftmost) > (drawn.width() / 2),
+            qPrintable(QStringLiteral("the neon spans %1..%2 of %3 wide: a chain runs further than that").arg(leftmost).arg(rightmost).arg(drawn.width())));
     }
 
     void publishing_never_waits_for_the_window()

@@ -19,6 +19,7 @@
     fresh, repeated for PANEL_REPEAT_TICKS, then braked - with the test playing the panel.
 */
 
+#include <body.hpp>
 #include <seam.hpp>
 #include <worm.hpp>
 
@@ -133,6 +134,12 @@ TEST_CASE(a_body_and_a_tick_are_copied_whole_and_nothing_that_did_not_fit_goes_u
     TEST_CHECK_EQUAL(body.ears[0].bin_count, 64u);
     TEST_CHECK_EQUAL(body.max_turn_rate, 1.5707964f);
     TEST_CHECK_EQUAL(body.nominal_dt_seconds, 0.03125f);
+
+    // The chain the worm brings, beside what the Grid gave: the panel draws it from here,
+    // and it must be exactly what rez lends the Grid - one declaration, two readers.
+    TEST_CHECK_EQUAL(body.segment_count, WormLib::BODY_SEGMENTS);
+    TEST_CHECK_EQUAL(body.segment_spacing, WormLib::SEGMENT_SPACING);
+    TEST_CHECK_EQUAL(body.segment_radius, WormLib::BODY_CIRCUMRADIUS);
 
     const FirstSenses tick{1000u};
     WormLib::SensesSnapshot snapshot{};

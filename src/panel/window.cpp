@@ -17,7 +17,9 @@
 
 #include <QtCore/QTimer>
 #include <QtGui/QColor>
+#include <QtGui/QGuiApplication>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QScreen>
 #include <QtGui/QPainter>
 #include <QtGui/QPen>
 #include <QtWidgets/QGroupBox>
@@ -272,10 +274,15 @@ namespace PanelLib
 
     // ---- FeelView -------------------------------------------------------------------------------
 
-    FeelView::FeelView(QWidget* parent) :
-        QWidget(parent)
+    FeelView::FeelView(const WormLib::BodySnapshot& body, QWidget* parent) :
+        QWidget(parent),
+        m_segment_count(body.segment_count),
+        m_segment_spacing(body.segment_spacing),
+        m_segment_radius(body.segment_radius)
     {
-        setMinimumSize(420, 260);
+        // Low enough to squeeze onto a narrow screen: the rows elide at the plan's edge and
+        // the chain scales to the width it gets, so nothing is lost when the layout presses.
+        setMinimumSize(340, 260);
     }
 
     void FeelView::showSenses(const WormLib::SensesSnapshot& senses)
@@ -287,7 +294,54 @@ namespace PanelLib
 
     QSize FeelView::sizeHint() const
     {
-        return {340, 260};
+        // At least the minimum: a hint below it made the layout plan a column the minimum then
+        // pushed past the window's edge, and the feel was born clipped.
+        return {560, 260};
+    }
+
+    double FeelView::drawChain(QPainter& painter) const
+    {
+        if ((m_segment_count == 0u) || !(m_segment_spacing > 0.0f) || !(m_segment_radius > 0.0f)) {
+            return height() - 4.0;
+        }
+        // The declaration, side on: forward to the right, the floor under the spikes, the head
+        // brightest. Side on, an icosahedron's visible outline is its neon - near-black mirror
+        // faces, green tubes on every edge - so the silhouettes wear the worm's green. Nothing
+        // here moves: the panel knows the chain only as rez declared it; where it is and how
+        // it waves is the world's, heard through the ears, never echoed back.
+        const QRectF strip{8.0, height() - 64.0, width() - 16.0, 56.0};
+        const double spacing{m_segment_spacing};
+        const double stub{std::max(0.0, (spacing - (2.0 * m_segment_radius)) / 2.0)};
+        const double nose_to_tail{(static_cast<double>(m_segment_count - 1u) * spacing) + (2.0 * (m_segment_radius + stub))};
+        const double scale{std::min(strip.width() / nose_to_tail, (strip.height() - 26.0) / (2.0 * m_segment_radius))};
+        const double radius{m_segment_radius * scale};
+        const double floor_y{strip.bottom() - 10.0};
+        const double centre_y{floor_y - radius};
+
+        painter.setPen(QPen{DIM, 1.0});
+        painter.drawLine(QPointF{strip.left(), floor_y}, QPointF{strip.right(), floor_y});
+        painter.drawText(QPointF{strip.left(), strip.top() + 9.0},
+            QStringLiteral("declared: a chain of %1 segment(s), %2 m apart, spike to spike").arg(m_segment_count).arg(spacing, 0, 'f', 2));
+
+        const double head_x{strip.left() + ((strip.width() + (nose_to_tail * scale)) / 2.0) - ((m_segment_radius + stub) * scale)};
+        for (std::uint32_t index{0u}; index < m_segment_count; ++index) {
+            const bool head{index == 0u};
+            const double x{head_x - (static_cast<double>(index) * spacing * scale)};
+            painter.setBrush(Qt::NoBrush);
+            painter.setPen(QPen{GREEN, head ? 2.0 : 1.0});
+            painter.drawEllipse(QPointF{x, centre_y}, radius, radius);
+            // The two joint spikes and their neon stubs: consecutive segments' stubs meet tip
+            // to tip; the nose's and the last tail's stand proud, as the body authors them.
+            painter.drawLine(QPointF{x + radius, centre_y}, QPointF{x + radius + (stub * scale), centre_y});
+            painter.drawLine(QPointF{x - radius, centre_y}, QPointF{x - radius - (stub * scale), centre_y});
+            if (head) {
+                // The eye end, said with a dot of ink just inside the nose.
+                painter.setBrush(INK);
+                painter.setPen(Qt::NoPen);
+                painter.drawEllipse(QPointF{x + (radius * 0.6), centre_y - (radius * 0.3)}, 2.0, 2.0);
+            }
+        }
+        return strip.top() - 4.0;
     }
 
     void FeelView::paintEvent(QPaintEvent* const event)
@@ -298,6 +352,7 @@ namespace PanelLib
         painter.fillRect(rect(), GLASS);
         painter.setPen(INK);
         painter.drawText(QPointF{8.0, 15.0}, QStringLiteral("feel"));
+        const double rows_end{drawChain(painter)};
         if (!m_have_senses) {
             painter.setPen(DIM);
             painter.drawText(QPointF{8.0, 34.0}, QStringLiteral("nothing sensed yet"));
@@ -306,30 +361,36 @@ namespace PanelLib
         const WormLib::SensesSnapshot& s{m_senses};
         const double line{15.0};
         double y{34.0};
+
+        // The body from above sits top right; a text row that shares its height stops at its
+        // edge rather than writing straight through it (the owner's report, 2026-08-28).
+        const QRectF plan{width() - 128.0, 26.0, 120.0, 120.0};
+        const auto write{[this, &painter, &plan, line](const double at_y, const QString& text) {
+            const bool beside_plan{at_y > (plan.top() - 4.0) && (at_y - line) < plan.bottom()};
+            const int room{static_cast<int>((beside_plan ? plan.left() : width()) - 8.0 - 8.0)};
+            painter.drawText(QPointF{8.0, at_y}, painter.fontMetrics().elidedText(text, Qt::ElideRight, room));
+        }};
+
         painter.setPen(DIM);
-        painter.drawText(QPointF{8.0, y},
+        write(y,
             QStringLiteral("forward %1 m/s  vertical %2 m/s  turn %3 rad/s")
                 .arg(s.body_forward_speed, 0, 'f', 2)
                 .arg(s.body_vertical_speed, 0, 'f', 2)
                 .arg(s.body_turn_rate, 0, 'f', 2));
         y += line;
-        painter.drawText(QPointF{8.0, y}, QStringLiteral("specific force %1 m/s2  |%2|").arg(vec3(s.specific_force)).arg(length3(s.specific_force), 0, 'f', 2));
+        write(y, QStringLiteral("specific force %1 m/s2  |%2|").arg(vec3(s.specific_force)).arg(length3(s.specific_force), 0, 'f', 2));
         y += line;
-        painter.drawText(QPointF{8.0, y}, QStringLiteral("angular velocity %1 rad/s").arg(vec3(s.angular_velocity)));
+        write(y, QStringLiteral("angular velocity %1 rad/s").arg(vec3(s.angular_velocity)));
         y += line;
-        painter.drawText(QPointF{8.0, y}, QStringLiteral("irradiance %1").arg(s.irradiance, 0, 'f', 3));
+        write(y, QStringLiteral("irradiance %1").arg(s.irradiance, 0, 'f', 3));
         y += line;
         painter.setPen(INK);
-        painter.drawText(QPointF{8.0, y}, QStringLiteral("%1 contact(s)").arg(s.contact_count));
+        write(y, QStringLiteral("%1 contact(s)").arg(s.contact_count));
         if (s.contacts_dropped > 0u) {
             painter.setPen(MAGENTA);
             painter.drawText(QPointF{110.0, y}, QStringLiteral("+ %1 beyond the seam's capacity").arg(s.contacts_dropped));
         }
         y += line;
-
-        // The body from above: forward up the page, right to the right; each contact where it is,
-        // its normal drawn from it, the world's up shown as a dot.
-        const QRectF plan{width() - 128.0, 26.0, 120.0, 120.0};
         painter.setPen(QPen{DIM, 1.0});
         painter.drawRect(plan);
         painter.drawEllipse(plan.center(), 30.0, 30.0);
@@ -348,8 +409,8 @@ namespace PanelLib
                     .arg(vec3(c.normal))
                     .arg(c.depth, 0, 'f', 3)
                     .arg(length3(c.slip), 0, 'f', 2)};
-            if (y < height() - 4.0) {
-                painter.drawText(QPointF{8.0, y}, row);
+            if (y < rows_end) {
+                write(y, row);
                 y += line;
             }
         }
@@ -392,7 +453,7 @@ namespace PanelLib
             ears->addWidget(view);
         }
         ears->addStretch(1);
-        m_feel = new FeelView{this};
+        m_feel = new FeelView{m_body, this};
         senses->addLayout(eyes, 2);
         senses->addLayout(ears, 3);
         senses->addWidget(m_feel, 3);
@@ -443,7 +504,10 @@ namespace PanelLib
         connect(m_poll, &QTimer::timeout, this, &PanelWindow::poll);
         // A little faster than the Grid ticks (31.25 ms), so no tick waits a whole poll for a word.
         m_poll->start(25);
-        resize(1280, 720);
+        // The window opens at what its views ask for, bounded by the screen: a fixed size
+        // left the rightmost view - the feel, the chain now in it - clipped at its edge.
+        const QScreen* const screen{QGuiApplication::primaryScreen()};
+        resize(screen != nullptr ? sizeHint().boundedTo(screen->availableGeometry().size()) : sizeHint());
     }
 
     PanelWindow::~PanelWindow() = default;
@@ -465,6 +529,11 @@ namespace PanelLib
         return m_status->text();
     }
 
+    QString PanelWindow::headerText() const
+    {
+        return m_header->text();
+    }
+
     WormLib::Intent PanelWindow::currentIntent() const noexcept
     {
         WormLib::Intent intent{};
@@ -482,12 +551,15 @@ namespace PanelLib
 
     void PanelWindow::updateHeader()
     {
-        QString text{QStringLiteral("creature %1   %2 eye(s), %3 ear(s), up to %4 contact(s)   tick %5 ms")
-                .arg(m_body.creature_id)
-                .arg(m_body.eye_count)
-                .arg(m_body.ear_count)
-                .arg(m_body.max_contact_count)
-                .arg(m_body.nominal_dt_seconds * 1000.0f, 0, 'f', 2)};
+        QString text{QStringLiteral("creature %1   ").arg(m_body.creature_id)};
+        if (m_body.segment_count > 0u) {
+            text += QStringLiteral("a chain of %1 segment(s), %2 m apart   ").arg(m_body.segment_count).arg(m_body.segment_spacing, 0, 'f', 2);
+        }
+        text += QStringLiteral("%1 eye(s), %2 ear(s), up to %3 contact(s)   tick %4 ms")
+                    .arg(m_body.eye_count)
+                    .arg(m_body.ear_count)
+                    .arg(m_body.max_contact_count)
+                    .arg(m_body.nominal_dt_seconds * 1000.0f, 0, 'f', 2);
         if ((m_body.eyes_dropped > 0u) || (m_body.ears_dropped > 0u)) {
             text += QStringLiteral("   <span style=\"color:#e879f9\">%1 eye(s) and %2 ear(s) beyond the seam's capacity are not shown</span>")
                         .arg(m_body.eyes_dropped)
