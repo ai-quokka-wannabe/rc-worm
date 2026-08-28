@@ -16,6 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The spikes themselves lie on the axis: the body is pitched 10.8°.** The owner's second
+  look (2026-08-28): with the stubs bent to meet on the axis the tips met, but the spikes jogged
+  9.4 cm at every joint - nose spike 4.7 cm above the axis, tail spike 4.7 cm below. The body is
+  now pitched about X by the waist's elevation, so nose and tail vertices lie exactly on -Z and
+  +Z, the stubs run straight along the axis, and two neighbours' spikes meet at one point: spike,
+  stub, tip, stub, spike, one line. The body no longer lies flat on a face - it stands on the one
+  spike the tilt leaves lowest, a sharp spike on the Grid floor as the ruling has it; the world
+  stands it by its lowest point as before. Spacing, eyes and ears unchanged. Master Control's
+  chain golden is re-recorded against this body.
 - **The joint tips lie on the axis, so two segments meet at one point.** The owner's report
   (2026-08-28): the chain's neighbours were not touching. A waist vertex of an icosahedron
   resting on a face sits 0.1876 circumradii off the horizontal axis, so a stub along the spike's

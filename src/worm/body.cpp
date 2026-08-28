@@ -176,9 +176,33 @@ namespace WormLib
             }
         }
 
+        // The pitch that puts the nose on -Z exactly, not only as seen from above. A waist
+        // vertex of an icosahedron resting on a face sits 0.1876 circumradii above or below the
+        // horizontal axis - 10.8 degrees - and the owner's report (2026-08-28) was that the spikes
+        // of two neighbours must be one point, the pivot the chain bends around; so both spikes
+        // go onto the axis the chain hinges along, and the antipode follows the nose for free.
+        // The turn about +X by minus the nose's elevation takes (y, z) = r (sin b, -cos b) onto
+        // (0, -r). The body no longer lies flat on a face: it stands on the one shell vertex the
+        // tilt leaves lowest - a sharp spike on the Grid floor, as the ruling has it - and the
+        // world stands it there by its lowest point as it always did.
+        {
+            std::size_t nose{0u};
+            for (std::size_t index{1u}; index < vertices.size(); ++index) {
+                if (vertices[index].z < vertices[nose].z) {
+                    nose = index;
+                }
+            }
+            const V3& n{vertices[nose]};
+            const float elevation{std::atan2(n.y, -n.z)};
+            const V3 right{1.0f, 0.0f, 0.0f};
+            for (V3& vertex : vertices) {
+                vertex = rotated(vertex, right, -elevation);
+            }
+        }
+
         // The two joint spikes, now that the body is oriented: the nose is the shell vertex on
-        // -Z at the waist, its antipode the tail - an icosahedron's vertices come in antipodal
-        // pairs, so the tail sits exactly a diameter behind the nose, through the origin.
+        // -Z, its antipode the tail - an icosahedron's vertices come in antipodal pairs, so the
+        // tail sits exactly a diameter behind the nose, through the origin, on +Z.
         {
             std::size_t nose{0u};
             for (std::size_t index{1u}; index < vertices.size(); ++index) {
@@ -262,11 +286,9 @@ namespace WormLib
         // The joint stubs: out of the nose spike and out of its antipode to the joint tips, which
         // lie exactly on the body's axis - (0, 0, -JOINT_TIP_REACH) for the nose, its mirror for
         // the tail - as a triangular neon prism, the same prism the edges wear, so the joint
-        // reads as the neon continuing off the body. Two consecutive segments meet at one tip,
-        // a pivot. The spike itself is a waist vertex, 0.1876 circumradii off the axis, so the
-        // prism kinks by the waist's 10.8 degrees to reach it (the owner's report, 2026-08-28:
-        // a stub along the spike's own direction had ended off the axis, and neighbours' tips
-        // 10.5 cm apart on a straight chain).
+        // reads as the neon continuing off the body, straight along the axis now that the spikes
+        // lie on it. Two consecutive segments meet at one tip, a pivot: spike, stub, tip, stub,
+        // spike, all on one line.
         for (const std::uint32_t spike : {m_nose, m_tail}) {
             const V3 base{vertices[spike]};
             const V3 tip{0.0f, 0.0f, (spike == m_nose ? -1.0f : 1.0f) * JOINT_TIP_REACH};
