@@ -23,6 +23,7 @@
 #include <cstdint>
 
 class QLabel;
+class QPainter;
 class QSlider;
 class QTimer;
 
@@ -87,12 +88,13 @@ namespace PanelLib
         std::uint32_t m_index;
     };
 
-    //! The feel: every contact where it happened on the body, the vestibular numbers beside.
+    //! The feel: every contact where it happened on the body, the vestibular numbers beside,
+    //! and the chain the worm declared - drawn from the rez, not from any tick.
     class FeelView : public QWidget {
         Q_OBJECT
 
     public:
-        explicit FeelView(QWidget* parent = nullptr);
+        explicit FeelView(const WormLib::BodySnapshot& body, QWidget* parent = nullptr);
 
         void showSenses(const WormLib::SensesSnapshot& senses);
 
@@ -102,7 +104,13 @@ namespace PanelLib
         void paintEvent(QPaintEvent* event) override;
 
     private:
+        //! Paints the declared chain along the bottom; answers where the contact rows must stop.
+        double drawChain(QPainter& painter) const;
+
         WormLib::SensesSnapshot m_senses{};
+        std::uint32_t m_segment_count;
+        float m_segment_spacing;
+        float m_segment_radius;
         bool m_have_senses{false};
     };
 
@@ -121,6 +129,9 @@ namespace PanelLib
 
         //! What the status line says: tick, generations, silence - for a test to read.
         [[nodiscard]] QString statusText() const;
+
+        //! What the header says: the body's declaration, the chain included - for a test to read.
+        [[nodiscard]] QString headerText() const;
 
         //! The generation of the newest senses this window has drawn.
         [[nodiscard]] std::uint64_t sensesSeen() const noexcept

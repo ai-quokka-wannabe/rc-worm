@@ -75,7 +75,8 @@ namespace WormLib
         std::uint32_t bins_dropped;
     };
 
-    //! The body the worm was given, copied once at rez so the panel can read it for a lifetime.
+    //! The body the worm was given - and the chain it brought - copied once at rez so the
+    //! panel can read them for a lifetime.
     struct BodySnapshot {
         std::uint64_t creature_id;
         EyeStation eyes[SEAM_EYES_MAX];
@@ -89,6 +90,15 @@ namespace WormLib
         float max_turn_rate;
         float max_vocalisation_strength;
         float nominal_dt_seconds;
+        /*!
+            The chain the worm brings, exactly as its rez declares it to the Grid: this many
+            segments joined spike to spike, origins segment_spacing apart, each an icosahedron
+            of segment_radius. The panel draws the declaration and nothing more - where the
+            chain is and how it waves is the world's, heard through the ears, never echoed back.
+        */
+        std::uint32_t segment_count;
+        float segment_spacing;
+        float segment_radius;
     };
 
     [[nodiscard]] BodySnapshot snapshotBody(const TglCreatureDesc& desc, float nominal_dt_seconds) noexcept;
