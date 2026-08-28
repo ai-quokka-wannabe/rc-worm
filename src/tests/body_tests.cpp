@@ -123,11 +123,12 @@ TEST_CASE(the_body_passes_every_rule_the_grid_and_the_world_judge_a_model_by)
     TEST_CHECK(body.materials()[WormLib::MATERIAL_NEON].emission[1] > body.materials()[WormLib::MATERIAL_NEON].emission[2]);
 }
 
-TEST_CASE(the_body_rests_on_a_face_with_its_nose_forward_and_is_the_same_bytes_every_time)
+TEST_CASE(the_body_stands_on_a_spike_with_its_nose_on_the_axis_and_is_the_same_bytes_every_time)
 {
     const WormLib::Body& body{WormLib::Body::theWorm()};
-    // Face down: three shell vertices share the lowest height, within a hair, so the body
-    // rests on a face rather than balancing on a point.
+    // On a spike: pitched so its two joint spikes lie on the axis, the body stands on exactly
+    // one shell vertex - a sharp spike on the Grid floor, as the owner's ruling has it - and
+    // not flat on a face.
     float lowest{0.0f};
     for (std::uint32_t index{0u}; index < 12u; ++index) {
         lowest = std::min(lowest, body.positions()[(index * 3u) + 1u]);
@@ -138,17 +139,20 @@ TEST_CASE(the_body_rests_on_a_face_with_its_nose_forward_and_is_the_same_bytes_e
             ++on_the_floor;
         }
     }
-    TEST_CHECK_EQUAL(on_the_floor, 3u);
-    // The tubes stand proud, so the world stands the body on a tube's rail, just below the face.
+    TEST_CHECK_EQUAL(on_the_floor, 1u);
+    // The tubes stand proud, so the world stands the body on a tube's rail, just below the spike.
     TEST_CHECK(body.lowest() < lowest);
     TEST_CHECK(body.lowest() > lowest - 0.02f);
 
-    // A nose: some shell vertex lies on the -Z axis (x = 0) at the waist, where the eyes look.
+    // A nose: some shell vertex lies exactly on the -Z axis (x = 0 and y = 0, not only as seen
+    // from above), where the eyes look - the owner's report (2026-08-28): the spikes of two
+    // neighbours are one point, the pivot, so both must lie on the axis the chain hinges along.
     bool nose{false};
     for (std::uint32_t index{0u}; index < 12u; ++index) {
         const float x{body.positions()[index * 3u]};
+        const float y{body.positions()[(index * 3u) + 1u]};
         const float z{body.positions()[(index * 3u) + 2u]};
-        if ((std::fabs(x) < 1e-4f) && (z < -0.2f)) {
+        if ((std::fabs(x) < 1e-5f) && (std::fabs(y) < 1e-5f) && (z < -0.2f)) {
             nose = true;
         }
     }
@@ -163,8 +167,8 @@ TEST_CASE(the_body_rests_on_a_face_with_its_nose_forward_and_is_the_same_bytes_e
     TEST_CHECK_CLOSE(WormLib::SEGMENT_SPACING, 2.0f * WormLib::JOINT_TIP_REACH, 1e-6f);
     const float* const nose_at{&body.positions()[body.noseVertex() * 3u]};
     const float* const tail_at{&body.positions()[body.tailVertex() * 3u]};
-    TEST_CHECK(nose_at[2] < -0.2f);
-    TEST_CHECK(tail_at[2] > 0.2f);
+    TEST_CHECK_CLOSE(nose_at[2], -WormLib::BODY_CIRCUMRADIUS, 1e-5f); // on the axis, a circumradius out
+    TEST_CHECK_CLOSE(tail_at[2], WormLib::BODY_CIRCUMRADIUS, 1e-5f);
     TEST_CHECK_CLOSE(nose_at[0] + tail_at[0], 0.0f, 1e-5f); // antipodal
     TEST_CHECK_CLOSE(nose_at[1] + tail_at[1], 0.0f, 1e-5f);
     TEST_CHECK_CLOSE(nose_at[2] + tail_at[2], 0.0f, 1e-5f);

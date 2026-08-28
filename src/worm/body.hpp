@@ -59,8 +59,10 @@ namespace WormLib
         On the axis, deliberately (the owner's report, 2026-08-28): a waist vertex of an
         icosahedron resting on a face sits 0.1876 circumradii above or below the horizontal
         axis, so a stub along the spike's own direction ended 4.7 cm off it and two neighbours'
-        tips stood 10.5 cm apart even on a straight chain. The stub now kinks by the waist's
-        10.8 degrees to reach the axis; the resting posture is untouched.
+        tips stood 10.5 cm apart even on a straight chain; and a stub bent to reach the axis
+        left the spikes themselves jogging 9.4 cm at every joint. So the body is pitched by the
+        waist's 10.8 degrees: both spikes lie on the axis, the stubs run straight along it, and
+        the body stands on one spike rather than flat on a face.
     */
     inline constexpr std::uint32_t BODY_SEGMENTS{8u};
     inline constexpr float JOINT_STUB_LENGTH{0.03f};

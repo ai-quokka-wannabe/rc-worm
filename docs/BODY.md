@@ -18,9 +18,10 @@ when strung in a line. The icosahedron won on three counts:
   would be fanned into thirty-six triangles with interior edges that are not edges of the solid,
   and the neon would need to know which edges are real. The icosahedron's twenty faces go on the
   wire as twenty triangles and its thirty edges are exactly the thirty tubes.
-- **It rests on a face.** Face 0 is turned to face -Y, so the body sits on a triangle, not on a
-  point - Master Control stands a body on its lowest vertex, and the tubes along that face's
-  edges are what touch the floor.
+- **It stands on a spike.** Face 0 is turned to face -Y and the body is then pitched 10.8° so
+  its two joint spikes lie on its axis, which leaves one shell vertex lowest: Master Control
+  stands a body on its lowest point, and a sharp spike - the tube rails meeting at it - is what
+  touches the floor, as the owner's ruling has it.
 - **It is nearly a sphere.** Twelve vertices on one circumsphere, the roundest of the five: a
   segment that will later roll and bend without any one face dominating the look.
 
@@ -50,16 +51,19 @@ quarter-metre circumradius puts both just inside the shell, the eyes behind the 
 ## Orientation
 
 The twelve raw vertices are the corners of three mutually perpendicular golden rectangles,
-`(0, ±1, ±φ)` and its two cyclic permutations, scaled by `0.25 / √(1 + φ²)`. Then two turns:
+`(0, ±1, ±φ)` and its two cyclic permutations, scaled by `0.25 / √(1 + φ²)`. Then three turns:
 
 1. **Face down.** The outward normal of face 0 is rotated onto `-Y` (Rodrigues about the axis
    perpendicular to both), so the body rests on that face.
 2. **Nose forward.** Of the vertices around the waist (`|y| < R/2`), the one furthest from the
-   vertical axis is turned about `Y` exactly onto `-Z` - the direction the eyes look. A turn about
-   the vertical keeps the resting face flat.
+   vertical axis is turned about `Y` onto `-Z` as seen from above - the direction the eyes look.
+3. **Spikes on the axis.** That vertex still sits 0.1876 R (4.7 cm, 10.8°) above or below the
+   horizontal axis, so the body is pitched about `X` by minus its elevation: nose exactly on
+   `-Z`, and its antipode - the tail spike - exactly on `+Z` for free. The face is no longer
+   flat: one vertex is lowest, and the body stands on that spike.
 
-Both turns are deterministic arithmetic on the same constants; `Body::theWorm()` builds once and
-the tests check the same bytes come back every time.
+All three turns are deterministic arithmetic on the same constants; `Body::theWorm()` builds
+once and the tests check the same bytes come back every time.
 
 ## Winding and materials
 
@@ -88,13 +92,16 @@ spike** (the waist vertex on -Z as seen from above, where the eyes look) and out
 `(0, 0, +0.28)` for the tail. Two consecutive segments meet at one such tip - a pivot the chain
 bends around - so the spacing the model declares is twice the reach: `SEGMENT_SPACING` = 0.56 m.
 
-On the axis, deliberately. An icosahedron resting on a face has no vertex on its own horizontal
-axis: the waist vertices sit 0.1876 circumradii (4.7 cm) above or below it, 10.8° off. The
-first authoring ran each stub along its spike's own direction, so the nose tip ended 4.7 cm
-above the axis and the tail tip 4.7 cm below, and two neighbours' tips stood
-0.56 × |n + Z| = 10.5 cm apart even on a straight chain - the gap the owner saw between every
-pair (2026-08-28). The stub now kinks by those 10.8° to reach the axis; the resting posture,
-the eyes and the ears are untouched.
+On the axis, deliberately - spike, stub, tip, stub, spike, all on one line. An icosahedron
+resting on a face has no vertex on its own horizontal axis: the waist vertices sit 0.1876
+circumradii (4.7 cm) above or below it, 10.8° off. The first authoring ran each stub along its
+spike's own direction, so the nose tip ended 4.7 cm above the axis and the tail tip 4.7 cm
+below, and two neighbours' tips stood 0.56 × |n + Z| = 10.5 cm apart even on a straight chain -
+the gap the owner saw between every pair (2026-08-28). Bending the stubs to meet on the axis
+closed the tips but left the spikes themselves jogging 9.4 cm at every joint - the offset the
+owner saw next. So the body is pitched by the waist's 10.8° (turn 3 above): both spikes lie on
+the axis, the stubs run straight along it, and two neighbours' spikes meet at one point. The
+eyes and the ears are untouched; the posture is a spike on the floor rather than a face.
 
 Where the trailing segments stand is the world's business (Master Control places them along the
 path the head walked - kinematic trail, not articulation) and the Grid's to draw (the mesh once
@@ -104,7 +111,7 @@ per segment). The Program is told nothing of where its tail is: the senses are t
 
 Master Control builds the hull from every vertex, so the tubes' rails - proud of the shell by
 `NEON_PROUD + NEON_RADIUS` - are the hull's extremes, and the body stands on a tube's outermost
-rail, `lowest()` just below the resting face. That is by design: a worm lies on its tubes.
+rail, `lowest()` just below the standing spike. That is by design: a worm lies on its tubes.
 
 ## Not yet
 
