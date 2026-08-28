@@ -51,14 +51,21 @@ namespace WormLib
     /*!
         The chain (the owner's ruling, 2026-08-26): a worm is icosahedra joined spike to spike.
         Eight segments, the wire's cap and a worm's worth. The joint is authored here: a neon stub
-        stands out of the nose spike and out of its antipode, half a joint long each, so two
-        consecutive segments' stubs meet tip to tip. The spacing between segments' origins is
-        therefore the two spikes' distance apart (twice the circumradius - they are antipodal)
-        plus two stub lengths.
+        runs out of the nose spike, and out of its antipode, to a joint tip that lies exactly on
+        the body's axis, JOINT_TIP_REACH from the origin - a circumradius and a stub length. Two
+        consecutive segments meet at one such tip, a pivot the chain bends around, so the spacing
+        between segments' origins is twice the reach.
+
+        On the axis, deliberately (the owner's report, 2026-08-28): a waist vertex of an
+        icosahedron resting on a face sits 0.1876 circumradii above or below the horizontal
+        axis, so a stub along the spike's own direction ended 4.7 cm off it and two neighbours'
+        tips stood 10.5 cm apart even on a straight chain. The stub now kinks by the waist's
+        10.8 degrees to reach the axis; the resting posture is untouched.
     */
     inline constexpr std::uint32_t BODY_SEGMENTS{8u};
     inline constexpr float JOINT_STUB_LENGTH{0.03f};
-    inline constexpr float SEGMENT_SPACING{(2.0f * BODY_CIRCUMRADIUS) + (2.0f * JOINT_STUB_LENGTH)};
+    inline constexpr float JOINT_TIP_REACH{BODY_CIRCUMRADIUS + JOINT_STUB_LENGTH};
+    inline constexpr float SEGMENT_SPACING{2.0f * JOINT_TIP_REACH};
 
     //! The body's arrays, owned here and lent to the Grid.
     class Body {
