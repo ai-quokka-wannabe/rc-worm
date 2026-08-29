@@ -97,13 +97,13 @@ When submitting:
 - C++20 compiler (MSVC 19.30+, GCC 12+, or Clang 15+)
 - CMake 3.25+
 - Ninja build system
-- Qt 6.11.1 (Widgets) for the panel - on Windows the kit matching the preset (`msvc2022_64`,
-  `mingw_64` or `llvm-mingw_64` under `C:\Qt\6.11.1`), on Linux the same kit through aqtinstall
+- Qt 6.11.2 (Widgets) for the panel - on Windows the kit matching the preset (`msvc2022_64`,
+  `mingw_64` or `llvm-mingw_64` under `C:\Qt\6.11.2`), on Linux the same kit through aqtinstall
   (the distribution's Qt 6 is older than the panel) - or `-DRC_WORM_PANEL=OFF` and no Qt at all
 
 ### Setup
 
-Install Qt 6.11.1 with the kits for the presets you build, a C++20 compiler, CMake and Ninja.
+Install Qt 6.11.2 with the kits for the presets you build, a C++20 compiler, CMake and Ninja.
 The complete guide - every kit and where its compiler comes from, the Linux package list, what
 CI runs and how to run every leg at home, deployment into the Grid's `programs/`, re-vendoring
 the ABI, the first life - is [docs/DEV_ENV_SETUP.md](docs/DEV_ENV_SETUP.md).
@@ -207,7 +207,7 @@ fix(window): correct X11 event handling on multi-monitor setups
 
 docs: update README with build instructions
 
-chore: update Qt to 6.11.1
+chore: update Qt to 6.11.2
 ```
 
 ### Rules

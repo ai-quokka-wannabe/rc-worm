@@ -12,7 +12,7 @@ Grid will find it. To run the whole ecosystem around it, see the flagship's
 ```text
 git clone https://github.com/ai-quokka-wannabe/rc-worm.git
 cd rc-worm
-cmake --workflow --preset windows-msvc                     # needs Qt 6.11.1 msvc2022_64 at C:\Qt\6.11.1
+cmake --workflow --preset windows-msvc                     # needs Qt 6.11.2 msvc2022_64 at C:\Qt\6.11.2
 cmake --install build/windows-msvc --config Release --prefix build/windows-msvc-deploy
 python tools/check_deploy.py build/windows-msvc-deploy/programs
 ```
@@ -29,7 +29,7 @@ Qt at all: `cmake --preset windows-msvc -DRC_WORM_PANEL=OFF` builds the worm wit
 | CMake | 3.25 or newer | <https://cmake.org/download/> |
 | Ninja | any recent | Bundled with Visual Studio; `C:\Qt\Tools\ninja` from the Qt installer; `ninja-build` on Linux |
 | A C++20 compiler | see the table below | see the table below |
-| Qt | **6.11.1**, Widgets - the version CI pins and the presets name; the kit must match the compiler | The Qt online installer (<https://www.qt.io/download-open-source>) or aqtinstall (below) |
+| Qt | **6.11.2**, Widgets - the version CI pins and the presets name; the kit must match the compiler | The Qt online installer (<https://www.qt.io/download-open-source>) or aqtinstall (below) |
 | Python | 3.10 or newer, for the `tools/` scripts and the pinned formatter | <https://www.python.org/downloads/> |
 | Node.js | 20 or newer, only for the markdown linter (`npm ci`) | <https://nodejs.org/> |
 
@@ -45,10 +45,10 @@ flagship's Program ABI header, `libs/program-abi/`, byte for byte (see "Re-vendo
 
 | Platform | Compiler | Configure preset | Qt kit the preset names | Where the compiler comes from |
 |----------|----------|------------------|-------------------------|-------------------------------|
-| Windows | MSVC (Visual Studio 2022 or newer) | `windows-msvc` | `C:\Qt\6.11.1\msvc2022_64` | The "Desktop development with C++" workload |
-| Windows | Clang-CL | `windows-clang-cl` | `C:\Qt\6.11.1\msvc2022_64` (the MSVC kit: clang-cl is MSVC-ABI) | The workload's "C++ Clang tools for Windows", or <https://releases.llvm.org/> |
-| Windows | MinGW-w64 GCC 13.1 | `windows-mingw` | `C:\Qt\6.11.1\mingw_64` | Qt's Tools: `C:\Qt\Tools\mingw1310_64` |
-| Windows | LLVM-MinGW 17 | `windows-llvm-mingw` | `C:\Qt\6.11.1\llvm-mingw_64` | Qt's Tools: `C:\Qt\Tools\llvm-mingw1706_64` |
+| Windows | MSVC (Visual Studio 2022 or newer) | `windows-msvc` | `C:\Qt\6.11.2\msvc2022_64` | The "Desktop development with C++" workload |
+| Windows | Clang-CL | `windows-clang-cl` | `C:\Qt\6.11.2\msvc2022_64` (the MSVC kit: clang-cl is MSVC-ABI) | The workload's "C++ Clang tools for Windows", or <https://releases.llvm.org/> |
+| Windows | MinGW-w64 GCC 13.1 | `windows-mingw` | `C:\Qt\6.11.2\mingw_64` | Qt's Tools: `C:\Qt\Tools\mingw1310_64` |
+| Windows | LLVM-MinGW 17 (or 22) | `windows-llvm-mingw` | `C:\Qt\6.11.2\llvm-mingw_64` | Qt's Tools: `C:\Qt\Tools\llvm-mingw1706_64` (the kit's own compiler) or `llvm-mingw2217_64` |
 | Linux | GCC 12+ | `linux-gcc` | the kit on `CMAKE_PREFIX_PATH` (below) | `build-essential` |
 | Linux | Clang 15+ | `linux-clang` (+ `-asan`, `-tsan`) | the same | `clang` |
 
@@ -62,7 +62,7 @@ and a compiler must match: MinGW code cannot link MSVC's Qt and vice versa.
 
 ### Step 1 - Qt
 
-Run the Qt online installer, choose **Qt 6.11.1**, and tick the kits for the compilers you will
+Run the Qt online installer, choose **Qt 6.11.2**, and tick the kits for the compilers you will
 build with - `MSVC 2022 64-bit` for `windows-msvc` and `windows-clang-cl`, `MinGW 13.1.0 64-bit`
 for `windows-mingw`, `LLVM-MinGW 17.0.6 64-bit` for `windows-llvm-mingw` - plus, under **Tools**,
 the matching MinGW toolchains and **Ninja**. The defaults land everything under `C:\Qt`, where the
@@ -72,9 +72,9 @@ Or, without the installer, the way CI does it - aqtinstall, kept out of the syst
 pipx:
 
 ```text
-pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.1 win64_msvc2022_64
-pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.1 win64_mingw
-pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.1 win64_llvm_mingw
+pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.2 win64_msvc2022_64
+pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.2 win64_mingw
+pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.2 win64_llvm_mingw
 ```
 
 (`.github/actions/setup-qt/action.yml` is the pinned, checksummed version of this.)
@@ -85,7 +85,10 @@ pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir C:\Qt 
   `vcvars64.bat`.
 - **MinGW**: any shell with the toolchain and Ninja first on the `PATH`:
   `set PATH=C:\Qt\Tools\mingw1310_64\bin;C:\Qt\Tools\ninja;%PATH%`
-- **LLVM-MinGW**: `set PATH=C:\Qt\Tools\llvm-mingw1706_64\bin;C:\Qt\Tools\ninja;%PATH%`
+- **LLVM-MinGW**: `set PATH=C:\Qt\Tools\llvm-mingw1706_64\bin;C:\Qt\Tools\ninja;%PATH%` -
+  the 6.11.2 kit is built by clang 17, so 17.0.6 is its match; LLVM-MinGW 22.1.7
+  (`llvm-mingw2217_64`, offered beside it under Tools) builds and passes the suite against the
+  same kit too, verified 2026-08-29
 
 ### Step 3 - Build and test
 
@@ -126,10 +129,10 @@ sudo apt install -y build-essential clang cmake ninja-build git python3 pipx \
     libgl1-mesa-dev libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
     libxcb-render-util0 libxcb-shape0 libxcb-cursor0 libxcb-xinerama0 libfontconfig1 \
     xvfb fonts-dejavu-core
-pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir ~/Qt linux desktop 6.11.1 linux_gcc_64
+pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir ~/Qt linux desktop 6.11.2 linux_gcc_64
 git clone https://github.com/ai-quokka-wannabe/rc-worm.git
 cd rc-worm
-cmake --preset linux-gcc -DCMAKE_PREFIX_PATH=~/Qt/6.11.1/gcc_64
+cmake --preset linux-gcc -DCMAKE_PREFIX_PATH=~/Qt/6.11.2/gcc_64
 cmake --build --preset linux-gcc-release
 ctest --preset linux-gcc-release
 ```
@@ -195,7 +198,7 @@ body and the chain.
 
 ### `Could not find a package configuration file provided by "Qt6"`
 
-The kit the preset names is not there, or it is another compiler's. Install Qt 6.11.1 for that
+The kit the preset names is not there, or it is another compiler's. Install Qt 6.11.2 for that
 compiler (the table above), or pass the kit you have: `-DCMAKE_PREFIX_PATH=<kit>`. Or build
 without the panel: `-DRC_WORM_PANEL=OFF`.
 

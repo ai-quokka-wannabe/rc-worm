@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Qt 6.11.2** (the Tool Updates watcher's #21): `QT_VERSION` in both workflows, the presets'
+  kit paths and the guides move from 6.11.1. Built and tested on the desk on every Windows kit -
+  MSVC 2022, MinGW 13.1.0, LLVM-MinGW 17.0.6 - and, as a second toolchain against the same
+  `llvm-mingw_64` kit, LLVM-MinGW 22.1.7; Debug and Release, 9/9 each. The line the org rides is
+  the latest minor: Qt's LTS patch releases past the first are commercial-only, so for an
+  open-source Program the current minor is the supported one (6.12 LTS, due in the autumn, will
+  be just another latest).
 - **clang-format 23** (the Tool Updates watcher's #22): the pin moves from 22.1 in both workflows
   and the guides. Under 23 the formatter reformats nothing in the tree - twenty-seven files
   unchanged - so the gate moves and the code does not.

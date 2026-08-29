@@ -11,7 +11,7 @@ description: Downloads, caches and configures a Qt kit on the runner via aqtinst
 
 inputs:
     version:
-        description: Qt version, e.g. 6.11.1 - the same one the kit paths in CMakePresets.json name.
+        description: Qt version, e.g. 6.11.2 - the same one the kit paths in CMakePresets.json name.
         required: true
     kit:
         description: >
