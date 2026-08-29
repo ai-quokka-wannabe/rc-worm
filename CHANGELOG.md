@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **clang-format 23** (the Tool Updates watcher's #22): the pin moves from 22.1 in both workflows
+  and the guides. Under 23 the formatter reformats nothing in the tree - twenty-seven files
+  unchanged - so the gate moves and the code does not.
 - `docs/PANEL.md` and `docs/FIRST_LIFE.md` say what a dragging worm now hears: its own spikes on
   the floor, in the ears' earliest bins with fading tails and an arrival count that stays at
   zero (master-control #34 sounds the scrapes, tron-grid-lite #119 delivers them to creature
