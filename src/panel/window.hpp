@@ -89,7 +89,8 @@ namespace PanelLib
     };
 
     //! The feel: every contact where it happened on the body, the vestibular numbers beside,
-    //! and the chain the worm declared - drawn from the rez, not from any tick.
+    //! and the chain from above - straight as the rez declares it until the first tick, then
+    //! bent joint by joint as the body's own servos report.
     class FeelView : public QWidget {
         Q_OBJECT
 
@@ -104,7 +105,8 @@ namespace PanelLib
         void paintEvent(QPaintEvent* event) override;
 
     private:
-        //! Paints the declared chain along the bottom; answers where the contact rows must stop.
+        //! Paints the chain along the bottom, from above, bent by the felt joint angles; answers
+        //! where the contact rows must stop.
         double drawChain(QPainter& painter) const;
 
         WormLib::SensesSnapshot m_senses{};

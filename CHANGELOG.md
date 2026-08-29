@@ -75,6 +75,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The joints felt: Program ABI 9 (Etape 8 movement 4).** `TglSenses::joint_angles` - the
+  angle each servo actually holds, the encoder's reading the world reports through link v10's
+  letter - crosses the seam into `SensesSnapshot`, and the panel shows it twice: a `joints` row
+  of the readings in radians beside the proprioceptive speeds, and the chain along the feel's
+  bottom now drawn from above and bent joint by joint as the body reports, straight as declared
+  until the first tick. The gait stays open-loop for now: what the worm feels is on the panel
+  before it is in the controller. ABI re-vendored at v9.
 - **The worm brings its own gait: Program ABI 8 (Etape 8 movement 3).** The ABI is re-vendored
   from the flagship: `TglActions` carries `joint_targets[7]`, the angle each servo is asked to
   hold, and `TglCreatureDesc` the Grid's limit for the servos' swing and torque. This body is a
