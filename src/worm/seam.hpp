@@ -100,7 +100,8 @@ namespace WormLib
             The chain the worm brings, exactly as its rez declares it to the Grid: this many
             segments joined spike to spike, origins segment_spacing apart, each an icosahedron
             of segment_radius. The panel draws the declaration and nothing more - where the
-            chain is and how it waves is the world's, heard through the ears, never echoed back.
+            chain is and how it waves is the world's, heard through the ears - and, since movement
+            4, felt: the senses carry every joint's own reading.
         */
         std::uint32_t segment_count;
         float segment_spacing;
@@ -144,6 +145,9 @@ namespace WormLib
         float body_forward_speed;
         float body_vertical_speed;
         float body_turn_rate;
+        //! What every servo holds, radians, joint k between segments k and k + 1 - the encoder's
+        //! reading the world reports, the joints the chain has and zero beyond.
+        float joint_angles[TGL_SEGMENTS_MAX - 1u];
         float specific_force[3];
         float angular_velocity[3];
         float irradiance;

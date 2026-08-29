@@ -30,6 +30,7 @@
 #include <QtWidgets/QVBoxLayout>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <numbers>
 
@@ -304,41 +305,75 @@ namespace PanelLib
         if ((m_segment_count == 0u) || !(m_segment_spacing > 0.0f) || !(m_segment_radius > 0.0f)) {
             return height() - 4.0;
         }
-        // The declaration, side on: forward to the right, the floor under the spikes, the head
-        // brightest. Side on, an icosahedron's visible outline is its neon - near-black mirror
-        // faces, green tubes on every edge - so the silhouettes wear the worm's green. Nothing
-        // here moves: the panel knows the chain only as rez declared it; where it is and how
-        // it waves is the world's, heard through the ears, never echoed back.
-        const QRectF strip{8.0, height() - 64.0, width() - 16.0, 56.0};
+        // From above: forward to the right, the creature's left up the screen, the head brightest.
+        // Straight as the rez declares it until the first tick; from then on bent joint by joint
+        // as the body's own servos report - the encoder's reading, what each joint did rather
+        // than what the gait asked, the one place the panel shows the body it feels. An
+        // icosahedron's visible outline is its neon, so the silhouettes wear the worm's green.
+        const QRectF strip{8.0, height() - 92.0, width() - 16.0, 84.0};
         const double spacing{m_segment_spacing};
-        const double stub{std::max(0.0, (spacing - (2.0 * m_segment_radius)) / 2.0)};
-        const double nose_to_tail{(static_cast<double>(m_segment_count - 1u) * spacing) + (2.0 * (m_segment_radius + stub))};
-        const double scale{std::min(strip.width() / nose_to_tail, (strip.height() - 26.0) / (2.0 * m_segment_radius))};
-        const double radius{m_segment_radius * scale};
-        const double floor_y{strip.bottom() - 10.0};
-        const double centre_y{floor_y - radius};
+        const double radius_m{m_segment_radius};
+        const double stub{std::max(0.0, (spacing - (2.0 * radius_m)) / 2.0)};
+        const std::uint32_t joints{std::min(m_segment_count - 1u, TGL_SEGMENTS_MAX - 1u)};
 
-        painter.setPen(QPen{DIM, 1.0});
-        painter.drawLine(QPointF{strip.left(), floor_y}, QPointF{strip.right(), floor_y});
-        painter.drawText(QPointF{strip.left(), strip.top() + 9.0},
-            QStringLiteral("declared: a chain of %1 segment(s), %2 m apart, spike to spike").arg(m_segment_count).arg(spacing, 0, 'f', 2));
+        // Each segment's origin and facing in metres, the head at the origin facing +u; the
+        // pivots chain them: a segment's tail tip is the next one's nose tip.
+        std::array<QPointF, TGL_SEGMENTS_MAX> origin{};
+        std::array<QPointF, TGL_SEGMENTS_MAX> facing{};
+        facing[0] = QPointF{1.0, 0.0};
+        for (std::uint32_t joint{0u}; joint < joints; ++joint) {
+            const double angle{m_have_senses ? static_cast<double>(m_senses.joint_angles[joint]) : 0.0};
+            const QPointF f{facing[joint]};
+            // Positive bends the chain to the creature's left, which is up the screen.
+            facing[joint + 1u] = QPointF{(std::cos(angle) * f.x()) + (std::sin(angle) * f.y()), (-std::sin(angle) * f.x()) + (std::cos(angle) * f.y())};
+            const QPointF tail_tip{origin[joint] - (f * (spacing / 2.0))};
+            origin[joint + 1u] = tail_tip - (facing[joint + 1u] * (spacing / 2.0));
+        }
 
-        const double head_x{strip.left() + ((strip.width() + (nose_to_tail * scale)) / 2.0) - ((m_segment_radius + stub) * scale)};
+        // Fit whatever shape the body holds into the strip, keeping its proportions.
+        double min_u{0.0};
+        double max_u{0.0};
+        double min_v{0.0};
+        double max_v{0.0};
+        const double reach{radius_m + stub};
+        for (std::uint32_t index{0u}; index < m_segment_count; ++index) {
+            min_u = std::min(min_u, origin[index].x() - reach);
+            max_u = std::max(max_u, origin[index].x() + reach);
+            min_v = std::min(min_v, origin[index].y() - reach);
+            max_v = std::max(max_v, origin[index].y() + reach);
+        }
+        const QRectF room{strip.left(), strip.top() + 14.0, strip.width(), strip.height() - 18.0};
+        const double scale{std::min(room.width() / (max_u - min_u), room.height() / (max_v - min_v))};
+        const QPointF centre{room.center() - QPointF{((min_u + max_u) / 2.0) * scale, ((min_v + max_v) / 2.0) * scale}};
+        const auto at{[&](const QPointF& metres) {
+            return centre + (metres * scale);
+        }};
+        const double radius{radius_m * scale};
+
+        painter.setPen(DIM);
+        if (m_have_senses && (joints > 0u)) {
+            painter.drawText(QPointF{strip.left(), strip.top() + 9.0}, QStringLiteral("felt: the chain from above, bent as its %1 joint(s) report").arg(joints));
+        } else {
+            painter.drawText(QPointF{strip.left(), strip.top() + 9.0},
+                QStringLiteral("declared: a chain of %1 segment(s), %2 m apart, spike to spike").arg(m_segment_count).arg(spacing, 0, 'f', 2));
+        }
+
         for (std::uint32_t index{0u}; index < m_segment_count; ++index) {
             const bool head{index == 0u};
-            const double x{head_x - (static_cast<double>(index) * spacing * scale)};
+            const QPointF o{at(origin[index])};
+            const QPointF f{facing[index]};
             painter.setBrush(Qt::NoBrush);
             painter.setPen(QPen{GREEN, head ? 2.0 : 1.0});
-            painter.drawEllipse(QPointF{x, centre_y}, radius, radius);
-            // The two joint spikes and their neon stubs: consecutive segments' stubs meet tip
-            // to tip; the nose's and the last tail's stand proud, as the body authors them.
-            painter.drawLine(QPointF{x + radius, centre_y}, QPointF{x + radius + (stub * scale), centre_y});
-            painter.drawLine(QPointF{x - radius, centre_y}, QPointF{x - radius - (stub * scale), centre_y});
+            painter.drawEllipse(o, radius, radius);
+            // The two joint spikes and their neon stubs along the segment's own axis: consecutive
+            // segments' stubs meet tip to tip at the pivot, the nose's and the last tail's stand proud.
+            painter.drawLine(o + (f * radius), o + (f * (radius + (stub * scale))));
+            painter.drawLine(o - (f * radius), o - (f * (radius + (stub * scale))));
             if (head) {
                 // The eye end, said with a dot of ink just inside the nose.
                 painter.setBrush(INK);
                 painter.setPen(Qt::NoPen);
-                painter.drawEllipse(QPointF{x + (radius * 0.6), centre_y - (radius * 0.3)}, 2.0, 2.0);
+                painter.drawEllipse(o + (f * (radius * 0.6)) + QPointF{0.0, -radius * 0.3}, 2.0, 2.0);
             }
         }
         return strip.top() - 4.0;
@@ -378,6 +413,17 @@ namespace PanelLib
                 .arg(s.body_vertical_speed, 0, 'f', 2)
                 .arg(s.body_turn_rate, 0, 'f', 2));
         y += line;
+        {
+            // What every servo holds, in radians: the readback the gait has.
+            QString joints{QStringLiteral("joints")};
+            const std::uint32_t count{std::min(m_segment_count > 0u ? m_segment_count - 1u : 0u, TGL_SEGMENTS_MAX - 1u)};
+            for (std::uint32_t joint{0u}; joint < count; ++joint) {
+                joints += QStringLiteral("  %1").arg(s.joint_angles[joint], 0, 'f', 2);
+            }
+            joints += (count > 0u) ? QStringLiteral(" rad") : QStringLiteral(": none, a body of one segment");
+            write(y, joints);
+            y += line;
+        }
         write(y, QStringLiteral("specific force %1 m/s2  |%2|").arg(vec3(s.specific_force)).arg(length3(s.specific_force), 0, 'f', 2));
         y += line;
         write(y, QStringLiteral("angular velocity %1 rad/s").arg(vec3(s.angular_velocity)));

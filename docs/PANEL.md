@@ -107,12 +107,16 @@ Drawn from the seam's structs at the Qt side's edge, nothing more than the worm 
 - **Feel**: the contacts where they happened on the body from above, each with its normal, and
   the numbers - impulse, depth, slip - beside; the proprioceptive speeds, the specific force, the
   angular velocity, the irradiance. A text row that shares its height with the plan box stops
-  at the box's edge with an ellipsis rather than writing through it. Along the bottom runs the
-  declared chain, side on: the segments the body's rez lends the Grid, icosahedra joined spike
-  to spike over a floor line, drawn in the worm's neon because side on an icosahedron's visible
-  outline is its neon, the head brightest with a dot of ink for its eye end. It is the
-  declaration and nothing more - it never moves, because where the chain is and how it waves is
-  the world's, heard through the ears, never echoed back to the panel.
+  at the box's edge with an ellipsis rather than writing through it. A `joints` row gives every
+  servo's own reading in radians - what each joint holds, not what the gait asked, which is
+  the readback the gait has (Etape 8 movement 4: `TglSenses::joint_angles`, reported by the
+  world's letter). Along the bottom runs the chain from above, forward to the right and the
+  creature's left up the screen: the segments the body's rez lends the Grid, icosahedra joined
+  spike to spike, drawn in the worm's neon because an icosahedron's visible outline is its
+  neon, the head brightest with a dot of ink for its eye end. Straight as declared until the
+  first tick; from then on bent joint by joint as the servos report, fitted to the strip
+  whatever shape the body holds - the one place the panel shows the body it feels rather than
+  the body it declared. Where the chain *is* stays the world's, heard through the ears.
 - **Controls**: forward, turn (left positive, as the ABI has it) and voice sliders scaled to the
   body's own bounds; `W`/`S`, `A`/`D` override the sliders while held, `Space` calls once at the
   voice slider's strength, `X` brakes. Since the third ruling (2026-08-28: the undulation

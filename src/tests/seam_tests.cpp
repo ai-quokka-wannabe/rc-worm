@@ -116,6 +116,10 @@ namespace
             senses.body_forward_speed = 0.5f;
             senses.specific_force[1] = 9.81f;
             senses.irradiance = 0.125f;
+            senses.joint_angles[2] = 0.3f;
+            senses.joint_angles[6] = -0.9f;
+            senses.joint_angles[2] = 0.3f;
+            senses.joint_angles[6] = -0.9f;
         }
     };
 
@@ -157,6 +161,9 @@ TEST_CASE(a_body_and_a_tick_are_copied_whole_and_nothing_that_did_not_fit_goes_u
     TEST_CHECK_EQUAL(snapshot.contacts[1].slip[0], 0.2f);
     TEST_CHECK_EQUAL(snapshot.contacts_dropped, 0u);
     TEST_CHECK_EQUAL(snapshot.specific_force[1], 9.81f);
+    TEST_CHECK_EQUAL(snapshot.joint_angles[2], 0.3f);
+    TEST_CHECK_EQUAL(snapshot.joint_angles[6], -0.9f);
+    TEST_CHECK_EQUAL(snapshot.joint_angles[0], 0.0f);
 
     // A body richer than the seam: nothing is silently trimmed, every drop is counted.
     std::vector<float> many_directions(3u * 300u, 0.0f);
