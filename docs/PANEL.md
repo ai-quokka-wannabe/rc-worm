@@ -115,8 +115,14 @@ Drawn from the seam's structs at the Qt side's edge, nothing more than the worm 
   the world's, heard through the ears, never echoed back to the panel.
 - **Controls**: forward, turn (left positive, as the ABI has it) and voice sliders scaled to the
   body's own bounds; `W`/`S`, `A`/`D` override the sliders while held, `Space` calls once at the
-  voice slider's strength, `X` brakes. The status line says which tick it drew, how many intents
-  it offered, and turns magenta when the Grid has been silent for a second.
+  voice slider's strength, `X` brakes. Since the third ruling (2026-08-28: the undulation
+  propels) the forward and turn are not a speed and a heading. This body is a chain, a row of
+  servos at its pivots with no velocity actuator, and its gait is its own (`src/worm/gait.hpp`):
+  the forward word is how hard the wave of joint angles runs - and the other way for reverse -
+  the turn word which way the body is bent on top of it, both ramping over half a second the
+  way muscles do, and how far the body gets is the floor's answer, read back through the
+  senses. The status line says which tick it drew, how many intents it offered, and turns
+  magenta when the Grid has been silent for a second.
 
 The stylesheet is scoped to the window by its object name, never set on the application: the
 host process owns whatever else Qt draws. The window opens at what its views ask for, bounded

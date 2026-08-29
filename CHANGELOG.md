@@ -55,6 +55,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The worm brings its own gait: Program ABI 8 (Etape 8 movement 3).** The ABI is re-vendored
+  from the flagship: `TglActions` carries `joint_targets[7]`, the angle each servo is asked to
+  hold, and `TglCreatureDesc` the Grid's limit for the servos' swing and torque. This body is a
+  chain - a row of servos at its pivots, no velocity actuator - and `src/worm/gait.hpp` is its
+  gait: lateral undulation, a travelling wave of joint angles four segments long whose crest
+  runs tailward so the runners push the body forward, its amplitude the declared swing at full
+  forward and nothing at rest, its frequency a fact about this worm (0.45 Hz), the turn a bend
+  on top, everything ramping over half a second the way muscles do, reverse running the wave
+  the other way. The panel's words are unchanged; what they mean is how hard the wave runs and
+  which way the body bends, and how far it gets is the floor's answer. The seam's
+  `BodySnapshot` carries the servo bounds. The seam test drives the gait; PANEL.md says so.
 - **The panel draws its declared chain.** Along the bottom of the feel view runs the chain the
   body's rez lends the Grid - eight icosahedra joined spike to spike over a floor line, in the
   worm's neon, the head brightest with a dot of ink for its eye end - and the header says it:

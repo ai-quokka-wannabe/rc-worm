@@ -5,6 +5,7 @@
 
 add_library(worm STATIC
     body.cpp
+    gait.cpp
     seam.cpp
     worm.cpp
 )
