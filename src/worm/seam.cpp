@@ -43,6 +43,8 @@ namespace WormLib
         body.max_forward_speed = desc.max_forward_speed;
         body.max_turn_rate = desc.max_turn_rate;
         body.max_vocalisation_strength = desc.max_vocalisation_strength;
+        body.max_joint_angle = desc.max_joint_angle;
+        body.max_joint_torque = desc.max_joint_torque;
         body.nominal_dt_seconds = nominal_dt_seconds;
 
         // The chain is not the Grid's to describe: the worm brings it, so the snapshot takes

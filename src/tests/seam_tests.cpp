@@ -26,6 +26,7 @@
 #include <testing/testing.hpp>
 
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <thread>
 #include <vector>
@@ -231,61 +232,93 @@ TEST_CASE(the_mailbox_hands_over_the_latest_once_and_latches_a_call_until_a_tick
 TEST_CASE(the_worm_applies_a_fresh_intent_repeats_it_for_the_budget_and_then_brakes)
 {
     const FirstBody first;
-    WormLib::Worm worm{first.desc, 0.03125f};
+    TglCreatureDesc desc{first.desc};
+    desc.max_joint_angle = 0.9f;
+    desc.max_joint_torque = 5.0f;
+    WormLib::Worm worm{desc, 0.03125f};
     TEST_CHECK_EQUAL(worm.eyeCount(), 2u);
     TEST_CHECK_EQUAL(worm.body().max_forward_speed, 1.0f);
-
-    // Nobody steering: the worm stands, and says so.
+    TEST_CHECK_EQUAL(worm.body().max_joint_angle, 0.9f);
+    const auto live{[](const TglActions& actions) {
+        for (const float target : actions.joint_targets) {
+            if (target != 0.0f) {
+                return true;
+            }
+        }
+        return false;
+    }};
+    const auto within_swing{[](const TglActions& actions) {
+        for (const float target : actions.joint_targets) {
+            if (std::fabs(target) > 0.9f + 1e-6f) {
+                return false;
+            }
+        }
+        return true;
+    }};
+    // Nobody steering: the worm stands, and says so - no velocity ever (a chain has no such
+    // actuator), and no servo asked to bend from rest.
     FirstSenses tick{1u};
     TglActions actions{};
     worm.tick(tick.senses, actions);
     TEST_CHECK(worm.lastApplied() == WormLib::Applied::Braked);
     TEST_CHECK_EQUAL(actions.desired_forward_speed, 0.0f);
+    TEST_CHECK_EQUAL(actions.desired_turn_rate, 0.0f);
+    TEST_CHECK(!live(actions));
     // What it sensed was published for a panel to take.
     WormLib::SensesSnapshot seen_senses{};
     std::uint64_t seen{0u};
     TEST_CHECK(worm.mailbox().takeSenses(seen_senses, seen));
     TEST_CHECK_EQUAL(seen_senses.tick, 1u);
     TEST_CHECK_EQUAL(seen_senses.eyes[0].samples[0], 0.75f);
-
-    // The panel speaks: applied fresh, with the call.
+    // The panel speaks: applied fresh, with the call. The word is not a speed: the wave runs,
+    // the servos are asked to bend within the swing, the body bends the turn's way, the
+    // velocity actuators stay at zero.
     worm.mailbox().offerIntent(WormLib::Intent{.forward_speed = 0.6f, .turn_rate = -0.2f, .vocalisation = 1.0f, .generation = 0u});
     tick.senses.tick = 2u;
     actions = TglActions{};
     worm.tick(tick.senses, actions);
     TEST_CHECK(worm.lastApplied() == WormLib::Applied::Fresh);
-    TEST_CHECK_EQUAL(actions.desired_forward_speed, 0.6f);
-    TEST_CHECK_EQUAL(actions.desired_turn_rate, -0.2f);
+    TEST_CHECK_EQUAL(actions.desired_forward_speed, 0.0f);
+    TEST_CHECK_EQUAL(actions.desired_turn_rate, 0.0f);
+    TEST_CHECK(live(actions));
+    TEST_CHECK(within_swing(actions));
+    TEST_CHECK(worm.gait().amplitude() > 0.0f);
+    TEST_CHECK(worm.gait().bias() < 0.0f);
     TEST_CHECK_EQUAL(actions.vocalisation_strength, 1.0f);
     TEST_CHECK_EQUAL(worm.repeatBudget(), WormLib::PANEL_REPEAT_TICKS);
-
-    // Silence: the motion repeats for the budget, the voice does not.
+    // Silence: the motion repeats for the budget - the wave keeps running - the voice does not.
+    float phase_before{worm.gait().phase()};
     for (std::uint32_t repeat{1u}; repeat <= WormLib::PANEL_REPEAT_TICKS; ++repeat) {
         tick.senses.tick = 2u + repeat;
         actions = TglActions{};
         worm.tick(tick.senses, actions);
         TEST_CHECK(worm.lastApplied() == WormLib::Applied::Repeated);
-        TEST_CHECK_EQUAL(actions.desired_forward_speed, 0.6f);
-        TEST_CHECK_EQUAL(actions.desired_turn_rate, -0.2f);
+        TEST_CHECK(live(actions));
+        TEST_CHECK(within_swing(actions));
+        TEST_CHECK(worm.gait().phase() != phase_before);
+        phase_before = worm.gait().phase();
         TEST_CHECK_EQUAL(actions.vocalisation_strength, 0.0f);
         TEST_CHECK_EQUAL(worm.repeatBudget(), WormLib::PANEL_REPEAT_TICKS - repeat);
     }
-    // Past the budget: the brake.
+    // Past the budget: the brake - the wave relaxes, a share each tick, rather than snapping.
+    const float amplitude_before{worm.gait().amplitude()};
     tick.senses.tick = 100u;
     actions = TglActions{};
     worm.tick(tick.senses, actions);
     TEST_CHECK(worm.lastApplied() == WormLib::Applied::Braked);
-    TEST_CHECK_EQUAL(actions.desired_forward_speed, 0.0f);
-    TEST_CHECK_EQUAL(actions.desired_turn_rate, 0.0f);
+    TEST_CHECK(worm.gait().amplitude() < amplitude_before);
+    TEST_CHECK(worm.gait().amplitude() > 0.0f);
     TEST_CHECK_EQUAL(worm.ticksSeen(), 2u + WormLib::PANEL_REPEAT_TICKS + 1u);
-
-    // A word breaks the silence and the budget refills.
+    // A word breaks the silence and the budget refills; reverse runs the wave the other way.
+    phase_before = worm.gait().phase();
     worm.mailbox().offerIntent(WormLib::Intent{.forward_speed = -0.3f, .turn_rate = 0.0f, .vocalisation = 0.0f, .generation = 0u});
     tick.senses.tick = 101u;
     actions = TglActions{};
     worm.tick(tick.senses, actions);
     TEST_CHECK(worm.lastApplied() == WormLib::Applied::Fresh);
-    TEST_CHECK_EQUAL(actions.desired_forward_speed, -0.3f);
+    const float phase_after{worm.gait().phase()};
+    const float backwards{phase_before - phase_after};
+    TEST_CHECK((backwards > 0.0f && backwards < 1.0f) || backwards < -5.0f); // ran back, wrapping once at most
     TEST_CHECK_EQUAL(worm.repeatBudget(), WormLib::PANEL_REPEAT_TICKS);
 }
 

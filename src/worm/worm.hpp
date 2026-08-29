@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include "gait.hpp"
 #include "seam.hpp"
 
 #include <tgl/tgl_program_abi.h>
@@ -100,6 +101,12 @@ namespace WormLib
             return m_last_applied;
         }
 
+        //! The gait as it stands: where the wave is, how much of it the muscles give.
+        [[nodiscard]] const Gait& gait() const noexcept
+        {
+            return m_gait;
+        }
+
         //! Ticks of repeat left before silence becomes a brake.
         [[nodiscard]] std::uint32_t repeatBudget() const noexcept
         {
@@ -109,6 +116,8 @@ namespace WormLib
     private:
         BodySnapshot m_body;
         Mailbox m_mailbox;
+        //! The worm's own gait: the wave its servos are asked to hold, from the User's word.
+        Gait m_gait;
         //! The tick's own copy of what the Grid lent, kept as a member so the tick's stack stays small.
         SensesSnapshot m_snapshot{};
         Intent m_last_intent{};

@@ -89,6 +89,12 @@ namespace WormLib
         float max_forward_speed;
         float max_turn_rate;
         float max_vocalisation_strength;
+        /*!
+            The servos, as the Grid bounds them: how far a joint may be asked to swing, radians,
+            and the torque it holds with. Zero means the body has none - a lone icosahedron.
+        */
+        float max_joint_angle;
+        float max_joint_torque;
         float nominal_dt_seconds;
         /*!
             The chain the worm brings, exactly as its rez declares it to the Grid: this many

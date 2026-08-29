@@ -15,11 +15,14 @@
 
 #include "worm.hpp"
 
+#include "body.hpp"
+
 namespace WormLib
 {
 
     Worm::Worm(const TglCreatureDesc& desc, const float nominal_dt_seconds) noexcept :
-        m_body(snapshotBody(desc, nominal_dt_seconds))
+        m_body(snapshotBody(desc, nominal_dt_seconds)),
+        m_gait(BODY_SEGMENTS - 1u, desc.max_joint_angle)
     {
     }
 
@@ -48,9 +51,16 @@ namespace WormLib
             m_last_applied = Applied::Braked;
         }
 
-        // The Grid zeroed the actions; a braked worm leaves them so and stands.
-        actions.desired_forward_speed = m_last_intent.forward_speed;
-        actions.desired_turn_rate = m_last_intent.turn_rate;
+        // The Grid zeroed the actions. This body is a chain: it has servos and no velocity
+        // actuator, so the User's forward and turn are not a speed and a heading but how hard
+        // the wave runs and which way the body bends - the gait turns them into the angle each
+        // servo is asked to hold. A braked worm asks for a relaxing wave and comes to rest as
+        // the floor lets it. The voice is the voice.
+        const float forward_fraction{m_body.max_forward_speed > 0.0f ? m_last_intent.forward_speed / m_body.max_forward_speed : m_last_intent.forward_speed};
+        const float turn_fraction{m_body.max_turn_rate > 0.0f ? m_last_intent.turn_rate / m_body.max_turn_rate : m_last_intent.turn_rate};
+        m_gait.tick(forward_fraction, turn_fraction, senses.dt_seconds > 0.0f ? senses.dt_seconds : m_body.nominal_dt_seconds, actions.joint_targets);
+        actions.desired_forward_speed = 0.0f;
+        actions.desired_turn_rate = 0.0f;
         actions.vocalisation_strength = m_last_intent.vocalisation;
     }
 
