@@ -279,7 +279,8 @@ namespace PanelLib
         QWidget(parent),
         m_segment_count(body.segment_count),
         m_segment_spacing(body.segment_spacing),
-        m_segment_radius(body.segment_radius)
+        m_segment_radius(body.segment_radius),
+        m_max_joint_torque(body.max_joint_torque)
     {
         // Low enough to squeeze onto a narrow screen: the rows elide at the plan's edge and
         // the chain scales to the width it gets, so nothing is lost when the layout presses.
@@ -414,15 +415,25 @@ namespace PanelLib
                 .arg(s.body_turn_rate, 0, 'f', 2));
         y += line;
         {
-            // What every servo holds, in radians: the readback the gait has.
+            // What every servo holds, in radians, and what it holds it with, in newton-metres:
+            // the readback the gait has, and the load on it - a servo at its whole torque has
+            // stalled, and says so with a bang.
             QString joints{QStringLiteral("joints")};
+            QString loads{QStringLiteral("loads ")};
             const std::uint32_t count{std::min(m_segment_count > 0u ? m_segment_count - 1u : 0u, TGL_SEGMENTS_MAX - 1u)};
             for (std::uint32_t joint{0u}; joint < count; ++joint) {
                 joints += QStringLiteral("  %1").arg(s.joint_angles[joint], 0, 'f', 2);
+                const bool stalled{(m_max_joint_torque > 0.0f) && (std::abs(s.joint_torques[joint]) >= m_max_joint_torque - 1e-4f)};
+                loads += QStringLiteral("  %1%2").arg(s.joint_torques[joint], 0, 'f', 1).arg(stalled ? QStringLiteral("!") : QString());
             }
             joints += (count > 0u) ? QStringLiteral(" rad") : QStringLiteral(": none, a body of one segment");
             write(y, joints);
             y += line;
+            if (count > 0u) {
+                loads += QStringLiteral(" N m  (! = stalled at %1)").arg(m_max_joint_torque, 0, 'f', 1);
+                write(y, loads);
+                y += line;
+            }
         }
         write(y, QStringLiteral("specific force %1 m/s2  |%2|").arg(vec3(s.specific_force)).arg(length3(s.specific_force), 0, 'f', 2));
         y += line;

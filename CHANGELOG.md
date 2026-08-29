@@ -75,6 +75,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The servos' loads felt: Program ABI 10 (Etape 8 movement 5).** `TglSenses::joint_torques`,
+  the torque each servo holds its angle with - the world's own current sense through link
+  v11's letter - crosses the seam into `SensesSnapshot`, and the panel shows a `loads` row
+  beneath the `joints` row, a `!` marking a servo holding with its whole declared torque:
+  stalled against a wall, a neighbour or the floor. On the Grid every segment now meets the
+  floor, the risers and the air for itself and pitches over an edge; the worm's picture of
+  its body on the panel is unchanged, because pitch is not a sense the body reports - the
+  vestibular numbers and the touch are how it would know. ABI re-vendored at v10.
 - **The joints felt: Program ABI 9 (Etape 8 movement 4).** `TglSenses::joint_angles` - the
   angle each servo actually holds, the encoder's reading the world reports through link v10's
   letter - crosses the seam into `SensesSnapshot`, and the panel shows it twice: a `joints` row

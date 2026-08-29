@@ -110,7 +110,10 @@ Drawn from the seam's structs at the Qt side's edge, nothing more than the worm 
   at the box's edge with an ellipsis rather than writing through it. A `joints` row gives every
   servo's own reading in radians - what each joint holds, not what the gait asked, which is
   the readback the gait has (Etape 8 movement 4: `TglSenses::joint_angles`, reported by the
-  world's letter). Along the bottom runs the chain from above, forward to the right and the
+  world's letter) - and beneath it a `loads` row, the torque each servo holds that angle with
+  in newton-metres, a `!` on one holding with its whole declared torque: it has stalled,
+  against a wall, a neighbour or the floor's grip (movement 5: `TglSenses::joint_torques`,
+  a motor's current sense). Along the bottom runs the chain from above, forward to the right and the
   creature's left up the screen: the segments the body's rez lends the Grid, icosahedra joined
   spike to spike, drawn in the worm's neon because an icosahedron's visible outline is its
   neon, the head brightest with a dot of ink for its eye end. Straight as declared until the
