@@ -6,7 +6,7 @@ permissions:
 # The Qt the runners fetch (.github/actions/setup-qt); the presets name the same version for the
 # desk, and quick-checks refuses a tree where the two disagree.
 env:
-    QT_VERSION: 6.11.1
+    QT_VERSION: 6.11.2
 
 # Runs are queued rather than cancelled here: unlike a pull request, every commit that lands on main
 # should keep a result of its own.
