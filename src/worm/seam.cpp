@@ -98,15 +98,7 @@ namespace WormLib
         out.body_turn_rate = senses.body_turn_rate;
         for (std::size_t joint{0u}; joint < (TGL_SEGMENTS_MAX - 1u); ++joint) {
             out.joint_angles[joint] = senses.joint_angles[joint];
-        }
-        for (std::size_t joint{0u}; joint < (TGL_SEGMENTS_MAX - 1u); ++joint) {
-            out.joint_angles[joint] = senses.joint_angles[joint];
-        }
-        for (std::size_t joint{0u}; joint < (TGL_SEGMENTS_MAX - 1u); ++joint) {
-            out.joint_angles[joint] = senses.joint_angles[joint];
-        }
-        for (std::size_t joint{0u}; joint < (TGL_SEGMENTS_MAX - 1u); ++joint) {
-            out.joint_angles[joint] = senses.joint_angles[joint];
+            out.joint_torques[joint] = senses.joint_torques[joint];
         }
         copy3(out.specific_force, senses.specific_force);
         copy3(out.angular_velocity, senses.angular_velocity);

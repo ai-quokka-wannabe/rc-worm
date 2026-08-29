@@ -148,6 +148,9 @@ namespace WormLib
         //! What every servo holds, radians, joint k between segments k and k + 1 - the encoder's
         //! reading the world reports, the joints the chain has and zero beyond.
         float joint_angles[TGL_SEGMENTS_MAX - 1u];
+        //! What every servo holds its angle with, newton-metres, signed in the angle's sense -
+        //! the load the joint bears, at most the declared torque and exactly that when stalled.
+        float joint_torques[TGL_SEGMENTS_MAX - 1u];
         float specific_force[3];
         float angular_velocity[3];
         float irradiance;

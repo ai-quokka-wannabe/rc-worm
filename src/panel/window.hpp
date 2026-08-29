@@ -113,6 +113,7 @@ namespace PanelLib
         std::uint32_t m_segment_count;
         float m_segment_spacing;
         float m_segment_radius;
+        float m_max_joint_torque;
         bool m_have_senses{false};
     };
 
