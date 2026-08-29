@@ -152,8 +152,8 @@ beside the worm).
 | Sanitisers | ASan+UBSan and TSan panel off; ASan+UBSan with Qt under xvfb; **TSan with Qt** on the offscreen platform with the glib dispatcher off, `tools/tsan.supp` naming Qt's own hand-offs | `cmake --workflow --preset linux-clang-asan`; for TSan with Qt: `QT_QPA_PLATFORM=offscreen QT_NO_GLIB=1 TSAN_OPTIONS=suppressions=$PWD/tools/tsan.supp ctest --preset linux-clang-tsan-debug` |
 | CodeQL | C/C++, Python, workflows | Read an alert; close it by code, by containment |
 
-The C++ formatter is **clang-format 22.1**, pinned; install exactly that into your user site and
-run it on every changed source (`python -m pip install --user "clang-format~=22.1"`, then
+The C++ formatter is **clang-format 23.1**, pinned; install exactly that into your user site and
+run it on every changed source (`python -m pip install --user "clang-format~=23.1"`, then
 `python -m clang_format -i src/...`). Never an LLVM `clang-format` of another major.
 
 ---
