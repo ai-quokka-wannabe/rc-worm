@@ -37,11 +37,14 @@ path, and the panel puts that directory on Qt's.
 
 The panel is the worm's senses and its three controls, nothing more (PANEL.md § The window):
 
-- `W`/`S` drive forward and back at the body's bound (1 m/s for the first body), `A`/`D` turn
-  left and right (a right angle a second), `Space` calls once, `X` brakes. The sliders hold a
+- `W`/`S` run the worm's wave at full strength forward and in reverse, `A`/`D` bend the body
+  left and right on top of it - both ramp over half a second the way muscles do, and how far
+  the worm gets is the floor's answer - `Space` calls once, `X` brakes. The sliders hold a
   course when no key is held.
-- Release the keys and the worm brakes within four ticks: the panel's silence rule. Close the
-  panel's process and it brakes the same way.
+- Release the keys with the sliders at zero and the next tick asks for rest: the wave relaxes
+  and the body comes to rest as the floor lets it. A panel that stalls or dies falls silent, and
+  the worm repeats the last word for four ticks and then brakes the same way - the panel's
+  silence rule (PANEL.md § The silence rule).
 - The eyes are two discs, head and tail, one sample each: a value above one is the eye looking
   at a neon tube. The ears light the early bins with the Grid's own hum; a call of your own
   arrives on the next tick, loudest and first, at both ears - marked cyan (approaching) or

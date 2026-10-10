@@ -26,6 +26,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The documents no longer describe the worm before Etape 8.** Read beside `docs/VISION.md`,
+  some "today" text still told of an older worm. The README's worm was "standing still for now"
+  and "USABLE at ABI version 6" (kept as the history it is, beside today's version 10), its chain
+  "the world's to place along the path the head walks", its body resting "on a face", its Qt
+  needed on the PATH "until Etape 4 settles deployment", and its window showed "the worm" what
+  the worm sees. `docs/BODY.md` called the chain a "kinematic trail, not articulation", and its
+  "Not yet" still owed the wave to Master Control and had `program_tick` answering zeroes.
+  `docs/PANEL.md` took "the three controls the ABI carries", said the ABI "carries three
+  numbers", called the User's word a "forward speed and turn rate", and said that when the worm
+  brakes "the body stops". `docs/FIRST_LIFE.md`'s keys drove the worm at "1 m/s" and turned it
+  "a right angle a second", and letting go of them braked it by the silence rule, which is for a
+  panel that stalls or dies: a live panel offers a fresh word every poll, and with the sliders at
+  zero that word is rest. Each now says what this changelog and the code say: a servo at every
+  pivot, the worm's own open-loop gait - the keys run its wave and bend the body, and a braked
+  worm relaxes the wave and comes to rest as the floor lets it - every segment meeting the floor
+  for itself, a spike underfoot, and `windeployqt` beside the library. `TODO.md`'s dated Etape 7
+  record stays as written, with a note beside it that Etape 8 superseded its trail and its
+  authored wave.
+- **CONTRIBUTING's documentation table lists this repository's documents.** It listed the
+  flagship's `docs/PERCEPTION.md`, `docs/RELATED_WORK.md` and `docs/TOPOLOGY.md` as if they lived
+  here, and none of this repository's own `docs/`. The three now point at the flagship, and
+  `docs/BODY.md`, `docs/PANEL.md`, `docs/FIRST_LIFE.md` and `docs/DEV_ENV_SETUP.md` are listed.
 - **The cache cleanup runs itself.** `cleanup_caches.yml` was manual-only and had never been
   dispatched here, and its script knew only the Vulkan, markdownlint and CodeQL key families, so
   every `cargo-*`, `npm-*-lock-*` and `qt-*` generation fell into the never-delete fail-safe: a
@@ -75,6 +97,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The long arc, in public: `docs/VISION.md`.** The owner's decision (2026-10-10): the
+  organisation's full vision is told in every repository's vision doc and on its landing page.
+  One persistent Grid where AI creatures live and human Users enter with avatars to meet them,
+  every creature and every User on a client of their own, Master Control holding the world and
+  keeping every client in sync, a level editor for any Grid shape; creatures whose minds aim as
+  high as an animal goes - feeling beings, as biologically realistic in their sentience as can
+  be made, animal-level and never human-level - climbing a ladder of senses from the worm
+  upwards; and, once the Grid can host a stranger's creature, an invitation to the groups
+  simulating AI animals. It is a multi-year arc taken in baby steps, of which the
+  server-authoritative half already stands, on one machine. The page carries "The Long Arc"
+  word for word, as the other repositories and the landing page do, then this worm's part in
+  it: rc-worm, steered from its panel, is v0 of the human client, not a throwaway; the thinking
+  worm still comes after, behind its trigger, and does not retire the panel; and the shape of a
+  User's own client is named as open rather than guessed. The README links it from its opening
+  and from its § The Four Repositories, its doctrine and `TODO.md` say the thinking worm does
+  not retire the panel, `docs/PANEL.md` says what the panel is in the arc, and CONTRIBUTING's
+  documentation table lists it.
 - **The servos' loads felt: Program ABI 10 (Etape 8 movement 5).** `TglSenses::joint_torques`,
   the torque each servo holds its angle with - the world's own current sense through link
   v11's letter - crosses the seam into `SensesSnapshot`, and the panel shows a `loads` row

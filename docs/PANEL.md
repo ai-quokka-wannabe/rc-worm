@@ -1,8 +1,11 @@
 # The panel
 
 The User is the brain. A Qt Widgets window on the Program's own thread shows what the worm senses
-and takes the three controls the ABI carries; the tick never waits for it. This page carries the
-threads, the seam, the silence rule, the tests and the deployment - and the why of each.
+and takes the User's three words: forward and turn, which the worm's own gait turns into the
+angles its servos are asked to hold, and the voice. The tick never waits for it. This page
+carries the threads, the seam, the silence rule, the tests and the deployment - and the why of
+each. In the organisation's long arc this panel is v0 of the human client, not a throwaway
+([VISION.md](VISION.md#rc-worms-part-in-the-arc)).
 
 ## The threads, and the order they stop
 
@@ -63,11 +66,13 @@ the panel with it. Not a bug of the panel's, but worth knowing before chasing on
   vestibular numbers) and stamps a generation. `takeSenses(out, seen)` copies only what is newer
   than `seen`. Latest wins: a panel that polls slower than the Grid ticks sees the newest tick,
   never a backlog.
-- **Intent, panel to tick.** `offerIntent` is latest-wins for forward speed and turn rate; a
-  **call is latched** - the loudest vocalisation offered since the tick last took is what the
-  tick gets, and then it is cleared. A call is one burst per tick (PROGRAM_INTERFACE.md), the
-  panel polls at 25 ms and the Grid ticks at 31.25 ms, so without the latch the panel's own next
-  poll could overwrite a call before any tick heard it. With it a call sounds exactly once.
+- **Intent, panel to tick.** `offerIntent` is latest-wins for the forward and turn words (the
+  `Intent`'s `forward_speed` and `turn_rate`, which the gait reads as fractions of the body's
+  bounds); a **call is latched** - the loudest vocalisation offered since the tick last took is
+  what the tick gets, and then it is cleared. A call is one burst per tick
+  (PROGRAM_INTERFACE.md), the panel polls at 25 ms and the Grid ticks at 31.25 ms, so without
+  the latch the panel's own next poll could overwrite a call before any tick heard it. With it
+  a call sounds exactly once.
 - **Fixed capacities, counted drops.** The snapshot never allocates. A body richer than
   `SEAM_EYES_MAX` eyes of `SEAM_EYE_SAMPLES_MAX` samples, `SEAM_EARS_MAX` ears of
   `SEAM_EAR_BANDS_MAX` x `SEAM_EAR_BINS_MAX`, or `SEAM_CONTACTS_MAX` contacts is not silently
@@ -77,10 +82,11 @@ the panel with it. Not a bug of the panel's, but worth knowing before chasing on
 ## The silence rule
 
 A tick that finds no new intent repeats the last one for `PANEL_REPEAT_TICKS` (four: an eighth of
-a second at 32 Hz) and then brakes - zeroes, and the body stops. The panel offers an intent on
-**every poll**, changed or not, so a live panel is a stream and a stalled or dead one is silence
-the worm can tell within five ticks. A repeat repeats the motion, never the voice. The wire's own
-rule (`LNK_ACTIONS_REPEAT_TICKS`) has the same shape one layer down; this one is the panel's.
+a second at 32 Hz) and then brakes - zeroes, and the wave relaxes until the body comes to rest as
+the floor lets it. The panel offers an intent on **every poll**, changed or not, so a live panel
+is a stream and a stalled or dead one is silence the worm can tell within five ticks. A repeat
+repeats the motion, never the voice. The wire's own rule (`LNK_ACTIONS_REPEAT_TICKS`) has the
+same shape one layer down; this one is the panel's.
 
 `Worm::lastApplied()` names how each tick's answer came to be - `Fresh`, `Repeated`, `Braked` -
 for the tests and for a log.
@@ -189,5 +195,5 @@ The Grid looks in `programs/`; the worm and what it needs land there:
 ## Not yet
 
 - One window per creature; the Grid may rez several, and each gets its own.
-- No settings persistence, no shortcuts beyond the six keys: the ABI carries three numbers and
-  the panel shows no more than the worm knows.
+- No settings persistence, no shortcuts beyond the six keys: the User has three words to give,
+  and the panel shows no more than the worm knows.

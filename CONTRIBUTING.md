@@ -231,9 +231,14 @@ chore: update Qt to 6.11.2
 | `SECURITY.md` | Security policy and vulnerability reporting |
 | the flagship's [`STYLE.md`](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/STYLE.md) | Code style conventions, followed here wholesale |
 | `CHANGELOG.md` | User-facing change history |
-| `docs/PERCEPTION.md` | How creatures perceive: sensor resolutions and the biology behind them |
-| `docs/RELATED_WORK.md` | Prior art: what research labs build in this area, and what is unusual here |
-| `docs/TOPOLOGY.md` | How the Grid becomes a world: the four repositories and the wire, on audited MMO practice |
+| `docs/VISION.md` | The organisation's shared long arc, word for word, and the worm's part in it |
+| `docs/BODY.md` | The body: the icosahedral segment, the chain, the numbers and the why |
+| `docs/PANEL.md` | The panel: what the User sees and steers, the threads, the seam and the silence rule |
+| `docs/FIRST_LIFE.md` | Living and recording a life: what runs, what to look for, where a finding goes |
+| `docs/DEV_ENV_SETUP.md` | Building, testing and deploying the worm from nothing, exactly as CI does |
+| the flagship's [`docs/PERCEPTION.md`](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/docs/PERCEPTION.md) | How creatures perceive: sensor resolutions and the biology behind them |
+| the flagship's [`docs/RELATED_WORK.md`](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/docs/RELATED_WORK.md) | Prior art: what research labs build in this area, and what is unusual here |
+| the flagship's [`docs/TOPOLOGY.md`](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/docs/TOPOLOGY.md) | How the Grid becomes a world: the four repositories and the wire, on audited MMO practice |
 | `TODO.md` | Roadmap and open etapes |
 
 ### Updating Documentation
