@@ -5,9 +5,11 @@ A remote-controlled glass-neon mecha-worm which plugs into TronGrid Lite as a Pr
 The first inhabitant of the Grid. A Program is a shared library the Grid loads through its
 Program ABI (`tgl_program_abi.h`): it is handed a body, it receives what that body senses
 every tick - its eyes, its ears, its feel of the floor - and it answers with what the body
-should do. This Program's brain is a User at a control panel: a Qt window shows the worm what
+should do. This Program's brain is a User at a control panel: a Qt window shows the User what
 the worm sees and hears, and the User steers. Remote-controlled, because the first creature
-to live in a world should be one whose every action somebody can explain.
+to live in a world should be one whose every action somebody can explain. Steered from that
+panel, the worm is also the first step on the human side of the organisation's
+[long arc](docs/VISION.md).
 
 ## The Four Repositories
 
@@ -19,20 +21,25 @@ builds against; [master-control](https://github.com/ai-quokka-wannabe/master-con
 world server every instance of the Grid answers to; [the link repository](https://github.com/ai-quokka-wannabe/link)
 is the wire between them. Who owns what, and why every delegation is the way it is, lives in the
 flagship's [docs/TOPOLOGY.md](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/docs/TOPOLOGY.md) —
-one table, kept in one place, pointed at from everywhere.
+one table, kept in one place, pointed at from everywhere. Where the four are headed together -
+one persistent Grid where AI creatures live and human Users enter with avatars to meet them, a
+multi-year arc taken in baby steps - is told on the organisation's
+[landing page](https://github.com/ai-quokka-wannabe) and, with this worm's part in it, in
+[docs/VISION.md](docs/VISION.md).
 
 ## What Lives Here Today
 
 **The Program that loads.** `rc_worm.dll` / `librc_worm.so`: one exported symbol,
 `tglGetProgramVTable`, behind which a worm is rezzed, ticked and derezzed exactly as the Program
-ABI states - vanilla C++20, `noexcept` at every boundary, standing still for now. It builds on
-every compiler the flagship supports with every Qt kit on the owner's machine - and, on the
-runners, with Qt fetched by the repository's own composite action (aqtinstall through `pipx`,
-pinned; GitHub-owned actions only) - and every one of those libraries loads in the MSVC-built
-Grid: `TronGridLite --list-programs` says USABLE at ABI
-version 6 for all of them, and a `--program rc_worm` host run against Master Control rezzed the
-worm, ticked it two hundred times and left with BYE - a first life, recorded to a Disk, that Clu
-re-simulates and agrees with.
+ABI states - vanilla C++20, `noexcept` at every boundary, answering every tick with the angles
+its own gait asks of its servos. It builds on every compiler the flagship supports with every Qt
+kit on the owner's machine - and, on the runners, with Qt fetched by the repository's own
+composite action (aqtinstall through `pipx`, pinned; GitHub-owned actions only) - and every one
+of those libraries loads in the MSVC-built Grid: `TronGridLite --list-programs` said USABLE for
+all of them when the worm first loaded, at ABI version 6 (the vendored ABI is at version 10
+today), and a `--program rc_worm` host run against Master Control rezzed the worm, ticked it two
+hundred times and left with BYE - a first life, recorded to a Disk, that Clu re-simulates and
+agrees with.
 
 **The panel.** The User is the brain: a Qt Widgets window on the Program's own thread shows
 what the worm senses - eyes where they look, ears as the histograms they are with every
@@ -45,14 +52,15 @@ threads, the seam and the why. [docs/FIRST_LIFE.md](docs/FIRST_LIFE.md) and
 `tools/first_life.ps1` are how a life is lived and recorded: Master Control, the window, the
 host, the panel in your hands, Clu at the end.
 
-**The body.** One segment of eight - the chain is the world's to place along the path the head
-walks and the Grid's to draw, the joint stubs are authored here on the two spikes that meet: a regular icosahedron a quarter metre in circumradius, near-black
-mirror faces and a green neon tube along every one of its thirty edges, built from the golden
-ratio in vanilla C++20 and lent to the Grid at `program_rez`. It rests on a face with its nose
-where the eyes look, passes every rule the Grid and the world judge a model by before either sees
-it, stands grounded in Master Control's world, and in the window it is a green-edged icosahedron
-mirrored in the floor. [docs/BODY.md](docs/BODY.md) carries the numbers and the why. The panel
-and the life somebody lives are staged in [TODO.md](TODO.md).
+**The body.** One segment of eight: a regular icosahedron a quarter metre in circumradius,
+near-black mirror faces and a green neon tube along every one of its thirty edges, built from the
+golden ratio in vanilla C++20 and lent to the Grid at `program_rez`, with the joint stubs
+authored here on the two spikes that meet. It rests on a spike with its nose where the eyes
+look, passes every rule the Grid and the world judge a model by before either sees it, and
+stands grounded in Master Control's world. The chain is the world's to move - a servo at every
+joint and every segment meeting the floor for itself - and the Grid's to draw: in the window,
+green-edged icosahedra mirrored in the floor. [docs/BODY.md](docs/BODY.md) carries the numbers
+and the why. The panel and the life somebody lives are staged in [TODO.md](TODO.md).
 
 ## The Doctrine
 
@@ -66,7 +74,8 @@ and the life somebody lives are staged in [TODO.md](TODO.md).
   builds and loads without it.
 - **Remote-controlled first.** The User is the brain. A worm whose every action has a human
   behind it is the creature a world is debugged with; a thinking one comes after, in its own
-  repository, wearing this body.
+  repository, wearing this body. That does not retire the panel: it is v0 of the human client,
+  not a throwaway.
 - **Cross-toolchain, deliberately.** The Grid is built with MSVC; this Program builds on every
   compiler the flagship supports and every Qt kit on the owner's machine - MSVC, clang-cl,
   MinGW, LLVM-MinGW, GCC and Clang - so the C ABI between a Program and the Grid is proven
@@ -89,9 +98,10 @@ cmake --workflow --preset windows-mingw     # configure, build and test, Debug a
 ```
 
 The library lands in `build/<preset>/bin/<config>/`; copy it into the Grid's `programs/`
-directory beside `TronGridLite` and run `TronGridLite --program rc_worm`. With the panel built,
-the Qt runtime of the kit must be findable by the Grid's process (its `bin` on the PATH) until
-Etape 4 settles deployment.
+directory beside `TronGridLite` and run `TronGridLite --program rc_worm`. With the panel built
+on Windows, install it instead: `cmake --install` runs `windeployqt` beside the library,
+`tools/check_deploy.py` judges the set, and the Grid loads it with no Qt on the PATH
+([docs/PANEL.md](docs/PANEL.md#deployment)).
 
 ## Licence
 

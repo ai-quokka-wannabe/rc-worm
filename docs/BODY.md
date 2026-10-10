@@ -1,8 +1,8 @@
 # The body
 
-One rigid segment: a regular icosahedron, near-black mirror faces, a green neon tube along every
-edge. This is what the worm brings to the Grid in `program_rez` - the Grid decides the senses,
-the Program brings the body - and this page carries the numbers and the why.
+One rigid segment of a chain of eight: a regular icosahedron, near-black mirror faces, a green
+neon tube along every edge. This is what the worm brings to the Grid in `program_rez` - the Grid
+decides the senses, the Program brings the body - and this page carries the numbers and the why.
 
 The body is vanilla C++20 in `src/worm/body.{hpp,cpp}`: arithmetic from the golden ratio and a
 fixed orientation, built once at first use, lent to the Grid through a `TglRenderModel` whose
@@ -103,9 +103,11 @@ owner saw next. So the body is pitched by the waist's 10.8° (turn 3 above): bot
 the axis, the stubs run straight along it, and two neighbours' spikes meet at one point. The
 eyes and the ears are untouched; the posture is a spike on the floor rather than a face.
 
-Where the trailing segments stand is the world's business (Master Control places them along the
-path the head walked - kinematic trail, not articulation) and the Grid's to draw (the mesh once
-per segment). The Program is told nothing of where its tail is: the senses are the head's.
+Where the trailing segments stand is the world's business (Master Control moves every segment
+for itself, a servo at every pivot holding the angle the gait asks for) and the Grid's to draw
+(the mesh once per segment). The Program is never told where its tail is: the eyes and ears are
+the head's, and what it may learn of its own shape comes from what it feels - its joints' angles
+and loads, and where it was touched.
 
 ## What the world sees
 
@@ -115,6 +117,6 @@ rail, `lowest()` just below the standing spike. That is by design: a worm lies o
 
 ## Not yet
 
-- The undulation is whatever the User weaves; a lateral wave as a function of speed is owed in
-  Master Control, authored and said so, once the following looks right in the window.
-- No animation of the body: `program_tick` answers zeroes until the panel gives the worm a will.
+- A gait that listens: the wave is the worm's own (`src/worm/gait.hpp`), asked of the world's
+  servos, but it is open-loop - what the body feels is on the panel before it is in the
+  controller.

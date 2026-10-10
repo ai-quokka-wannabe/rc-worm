@@ -211,10 +211,19 @@ order:
    segment's joints are opposite each other), and the panel shows the chain's poses in the
    feel view from above.
 
+**Since then** (Etape 8, the owner's third ruling, 2026-08-28: the undulation propels): the
+trail along the head's path and the authored wave planned above are superseded. The body is a
+row of servos at its pivots with no velocity actuator, the gait is the worm's own
+(`src/worm/gait.hpp`), the world's physics moves every segment for itself, and the senses carry
+the joints' angles and loads; `CHANGELOG.md` records the movements that landed here (Program
+ABI 8 to 10).
+
 ## Later, with triggers
 
 - **The thinking worm** is another repository (`brain-elegans`), wearing this body - trigger:
-  the first life on the Grid recorded and its lessons banked.
+  the first life on the Grid recorded and its lessons banked. It does not retire the panel: in
+  the organisation's long arc (`docs/VISION.md`) the panel is v0 of the human client, not a
+  throwaway.
 - **MechaQuokka** as a second body for this same RC Program - trigger: the body format being
   worth a second instance.
 - **The Blender body pipeline** (a modelled worm exported to the Grid's model) - trigger: the
