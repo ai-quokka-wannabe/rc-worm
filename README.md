@@ -103,9 +103,23 @@ on Windows, install it instead: `cmake --install` runs `windeployqt` beside the 
 `tools/check_deploy.py` judges the set, and the Grid loads it with no Qt on the PATH
 ([docs/PANEL.md](docs/PANEL.md#deployment)).
 
+## Contributors
+
+Everyone who helps is credited here, for any kind of contribution: code, documentation, bug reports,
+reviews, ideas, answers in Discussions. The list follows the
+[All Contributors](https://allcontributors.org/en/reference/specification/) specification and is kept by hand;
+[CONTRIBUTING.md](CONTRIBUTING.md#credit-and-copyright) says how to add yourself. Contributors keep the
+copyright of what they write.
+
+| Contributor | Contributions |
+|-------------|---------------|
+| [Matej Gomboc](https://github.com/MatejGomboc) | 💻 📖 🎨 🤔 🔬 🚇 🚧 ⚠️ |
+
+The emoji follow the [All Contributors emoji key](https://allcontributors.org/en/reference/emoji-key/).
+
 ## Licence
 
-Copyright © 2026 Matej Gomboc <https://github.com/ai-quokka-wannabe/rc-worm>.
+Copyright © 2026 The AiQuokkaWannabe Authors <https://github.com/ai-quokka-wannabe/rc-worm>, listed under [Contributors](#contributors).
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
