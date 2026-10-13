@@ -6,7 +6,7 @@ the worm senses. What follows is the organisation's long arc, word for word as e
 of [ai-quokka-wannabe](https://github.com/ai-quokka-wannabe) and its landing page carry it, and
 then this worm's part in it.
 
-<!-- The Long Arc: mirrored verbatim in every ai-quokka-wannabe repository (profile/README.md in .github and each docs/VISION.md). Change all five together. -->
+<!-- The Long Arc: mirrored verbatim in every ai-quokka-wannabe repository (profile/README.md in .github and each docs/VISION.md). Change all six together. -->
 
 ## The Long Arc
 

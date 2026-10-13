@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The Long Arc has six copies.** The organisation's open research lab,
+  [iso-lab](https://github.com/ai-quokka-wannabe/iso-lab), carries the block in its own
+  `docs/VISION.md`, so the guard comment above the block in `docs/VISION.md` now says "Change all six
+  together". The block's words are unchanged.
 - **Qt 6.11.2** (the Tool Updates watcher's #21): `QT_VERSION` in both workflows, the presets'
   kit paths and the guides move from 6.11.1. Built and tested on the desk on every Windows kit -
   MSVC 2022, MinGW 13.1.0, LLVM-MinGW 17.0.6 - and, as a second toolchain against the same
