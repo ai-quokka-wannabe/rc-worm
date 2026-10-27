@@ -1,3 +1,16 @@
+# Copyright (C) 2026 The AiQuokkaWannabe Authors https://github.com/ai-quokka-wannabe/rc-worm
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of
+# the GNU General Public License as published by the Free Software Foundation, either version
+# 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program.
+# If not, see https://www.gnu.org/licenses/.
+
 # The worm tested as a class, without a library in the way; the seam tested deviceless; the
 # library tested as the Grid loads it - through the one exported symbol and the table it
 # returns; and, with the panel built, the window tested on Qt Test's own thread.
