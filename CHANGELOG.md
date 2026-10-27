@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The linter's math renderer is the patched one.** markdownlint reaches KaTeX through
+  `micromark-extension-math`, whose `^0.16` range cannot reach the prototype-pollution fix in 0.18.2
+  (Dependabot #7), so `package.json` overrides it to 0.18.2. The linter loads it and passes as before.
 - **The month-end audit: the guide's Qt commands work, and the pin is watched.** DEV_ENV_SETUP
   said its `pipx run aqtinstall` lines were "the way CI does it", but CI pins aqtinstall to the
   commit that supports Qt 6.11's Windows layout, because no release past 3.3.0 carries it; the
