@@ -47,14 +47,16 @@ Built on **every compiler the flagship supports and every Qt kit on the owner's 
 (the owner's ruling, 2026-08-23): `windows-msvc` (Qt `msvc2022_64`), `windows-clang-cl` (the
 same kit - clang-cl is MSVC-ABI), `windows-mingw` (Qt `mingw_64`, the flagship's own MinGW
 13.1), `windows-llvm-mingw` (Qt `llvm-mingw_64`, LLVM-MinGW 17 or 22), `linux-gcc` and `linux-clang`
-(the distribution's Qt 6), with the flagship's ASan and TSan variants on Linux. The Grid is
+(Qt 6.11.2 from aqtinstall - the distributions' Qt 6 is too old), with the flagship's ASan and TSan variants on Linux. The Grid is
 MSVC, so the MinGW and LLVM-MinGW builds prove the C ABI between a Program and the Grid across
 compilers, for real, rather than assuming it within one - and every preset's DLL must load in
 the MSVC Grid alike.
 
 ## Etape 3 — the body
 
-**Done (2026-08-25).** `src/worm/body.{hpp,cpp}`: the icosahedron from the golden ratio, turned
+**Done (2026-08-25); since then the body stands on a spike rather than face-down and is 204
+vertices and 212 triangles - [docs/BODY.md](docs/BODY.md) has today's numbers.** The record as
+it was: `src/worm/body.{hpp,cpp}`: the icosahedron from the golden ratio, turned
 face-down and nose-forward, a triangular neon prism proud of every edge - 192 vertices, 200
 triangles, two materials, lent to the Grid from the body's own storage. `body_tests` holds it to
 every rule the Grid and the world judge by (caps, indices, finite floats, area, outward winding,

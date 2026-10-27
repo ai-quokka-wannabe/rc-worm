@@ -49,6 +49,12 @@ jobs:
                       current: 'grep -ohP ''LYCHEE_VERSION: v\K[0-9.]+'' .github/workflows/ci_pr.yml | head -1'
                       latest: 'gh api repos/lycheeverse/lychee/releases/latest --jq .tag_name | sed ''s/^lychee-v//'''
                       notes: https://github.com/lycheeverse/lychee/releases
+                    - key: aqtinstall
+                      name: aqtinstall
+                      where: 'the commit pin in `.github/actions/setup-qt/action.yml` and the commands in `docs/DEV_ENV_SETUP.md` - a release newer than 3.3.0 is the day to move to a plain `aqtinstall==x.y.z`'
+                      current: 'echo 3.3.0'
+                      latest: 'gh api ''repos/miurahr/aqtinstall/tags?per_page=100'' --jq ''.[].name'' | grep -E ''^v[0-9]+\.[0-9]+\.[0-9]+$'' | sed ''s/^v//'' | sort -V | tail -1'
+                      notes: https://github.com/miurahr/aqtinstall/releases
 
         steps:
             - name: Checkout repository

@@ -30,6 +30,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The month-end audit: the guide's Qt commands work, and the pin is watched.** DEV_ENV_SETUP
+  said its `pipx run aqtinstall` lines were "the way CI does it", but CI pins aqtinstall to the
+  commit that supports Qt 6.11's Windows layout, because no release past 3.3.0 carries it; the
+  guide now runs that same commit and says why. `setup-qt` claimed `tool-updates.yml` watches
+  that pin and nothing did; the watcher gains an aqtinstall row that opens an issue when a
+  release newer than 3.3.0 ships. TODO.md said the Linux presets build on the distribution's Qt
+  6, which the guide and CONTRIBUTING rightly call too old, and PANEL.md said the same; both say
+  Qt 6.11 now, and `find_package(Qt6 6.11 ...)` refuses an older Qt at configure rather than late.
+  Etape 3's record gains a note that the body has since become 204 vertices and 212 triangles on
+  a spike. The weekly link check gets the flagship's `--timeout 45` and its reason.
+- **Every code file carries its notice.** The twelve CMake files, the three `tools/` scripts and
+  the CI cache script open with the GPL notice the C++ sources carry, in their own comment syntax.
 - **The documents no longer describe the worm before Etape 8.** Read beside `docs/VISION.md`,
   some "today" text still told of an older worm. The README's worm was "standing still for now"
   and "USABLE at ABI version 6" (kept as the history it is, beside today's version 10), its chain

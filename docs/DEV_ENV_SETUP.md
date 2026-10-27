@@ -72,12 +72,14 @@ Or, without the installer, the way CI does it - aqtinstall, kept out of the syst
 pipx:
 
 ```text
-pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.2 win64_msvc2022_64
-pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.2 win64_mingw
-pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.2 win64_llvm_mingw
+pipx run --spec "git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b" aqt install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.2 win64_msvc2022_64
+pipx run --spec "git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b" aqt install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.2 win64_mingw
+pipx run --spec "git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b" aqt install-qt --base https://download.qt.io/ --outputdir C:\Qt windows desktop 6.11.2 win64_llvm_mingw
 ```
 
-(`.github/actions/setup-qt/action.yml` is the pinned, checksummed version of this.)
+(`.github/actions/setup-qt/action.yml` is the pinned, checksummed version of this. aqtinstall is
+pinned to a commit, not a release: Qt 6.11 changed the Windows repository layout and no PyPI
+release past 3.3.0 carries the fix yet, so a plain `pipx run aqtinstall` fails on these kits.)
 
 ### Step 2 - The compiler's shell
 
@@ -129,7 +131,7 @@ sudo apt install -y build-essential clang cmake ninja-build git python3 pipx \
     libgl1-mesa-dev libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
     libxcb-render-util0 libxcb-shape0 libxcb-cursor0 libxcb-xinerama0 libfontconfig1 \
     xvfb fonts-dejavu-core
-pipx run aqtinstall install-qt --base https://download.qt.io/ --outputdir ~/Qt linux desktop 6.11.2 linux_gcc_64
+pipx run --spec "git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b" aqt install-qt --base https://download.qt.io/ --outputdir ~/Qt linux desktop 6.11.2 linux_gcc_64
 git clone https://github.com/ai-quokka-wannabe/rc-worm.git
 cd rc-worm
 cmake --preset linux-gcc -DCMAKE_PREFIX_PATH=~/Qt/6.11.2/gcc_64

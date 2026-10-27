@@ -189,8 +189,8 @@ The Grid looks in `programs/`; the worm and what it needs land there:
   (tron-grid-lite `LoadLibraryEx` with `LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR`; `$ORIGIN` on Linux) -
   proven on the desk with no Qt on the PATH.
 - On Linux the library's RPATH is `$ORIGIN`, so a Qt placed beside it is found first and the
-  system's otherwise; bundling a Linux Qt is not done here - the Grid on Linux has a kit or a
-  distribution Qt, and `ldd` is recorded per Qt build for the day that changes.
+  system's otherwise; bundling a Linux Qt is not done here - the Grid on Linux has a Qt 6.11
+  kit beside it or on its library path, and `ldd` is recorded per Qt build for the day that changes.
 
 ## Not yet
 

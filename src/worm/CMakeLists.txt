@@ -1,3 +1,16 @@
+# Copyright (C) 2026 The AiQuokkaWannabe Authors https://github.com/ai-quokka-wannabe/rc-worm
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of
+# the GNU General Public License as published by the Free Software Foundation, either version
+# 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program.
+# If not, see https://www.gnu.org/licenses/.
+
 # The Program: one shared library the Grid loads by name - `rc_worm.dll`, `librc_worm.so` - with
 # one exported symbol. The worm itself is a static library of vanilla C++20 beneath it, so the
 # tests reach the class without a DLL in the way and the panel (when built) is one more thing the
