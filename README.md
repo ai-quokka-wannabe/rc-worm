@@ -36,7 +36,7 @@ its own gait asks of its servos. It builds on every compiler the flagship suppor
 kit on the owner's machine - and, on the runners, with Qt fetched by the repository's own
 composite action (aqtinstall through `pipx`, pinned; GitHub-owned actions only) - and every one
 of those libraries loads in the MSVC-built Grid: `TronGridLite --list-programs` said USABLE for
-all of them when the worm first loaded, at ABI version 6 (the vendored ABI is at version 10
+all of them when the worm first loaded, at ABI version 6 (the vendored ABI is at version 11
 today), and a `--program rc_worm` host run against Master Control rezzed the worm, ticked it two
 hundred times and left with BYE - a first life, recorded to a Disk, that Clu re-simulates and
 agrees with.

@@ -22,6 +22,7 @@
 
 #include "../panel/window.hpp"
 
+#include <limits>
 #include <seam.hpp>
 
 #include <QtCore/QElapsedTimer>
@@ -132,6 +133,8 @@ private slots:
         mailbox.publishSenses(aTick(77u));
         QTRY_COMPARE_WITH_TIMEOUT(window.sensesSeen(), 1u, 5000);
         QVERIFY2(window.statusText().contains(QStringLiteral("tick 77")), qPrintable(window.statusText()));
+        // The smell view drew the same tick: a gut that has swallowed nothing says so.
+        QVERIFY2(window.gutText().contains(QStringLiteral("nothing swallowed since rez")), qPrintable(window.gutText()));
 
         // Every poll offers: a silent panel is a panel that stopped polling, not one that said nothing.
         QTRY_VERIFY_WITH_TIMEOUT(mailbox.intentGeneration() >= 3u, 5000);
@@ -213,6 +216,65 @@ private slots:
         QVERIFY2(found > 0, "no neon anywhere: the declared chain is not drawn");
         QVERIFY2((rightmost - leftmost) > (drawn.width() / 2),
             qPrintable(QStringLiteral("the neon spans %1..%2 of %3 wide: a chain runs further than that").arg(leftmost).arg(rightmost).arg(drawn.width())));
+    }
+
+    void the_smell_shows_each_amphids_readings_where_they_are_and_counts_the_pumps()
+    {
+        // One receptor bound to saturation in the left amphid, the right smelling nothing: the
+        // worm's green stands in the left half only. The gut says the seam's count, not a guess.
+        WormLib::SensesSnapshot senses{aTick(90u)};
+        senses.odour[0][2] = 1.0f;
+        senses.intake = 0.5f;
+        senses.intake_total = 1.5f;
+        senses.pumps = 3u;
+        senses.last_pump_tick = 90u;
+        PanelLib::SmellView smell;
+        QVERIFY2(smell.gutText().contains(QStringLiteral("nothing sensed yet")), qPrintable(smell.gutText()));
+        smell.resize(430, 170);
+        smell.showSenses(senses);
+        QVERIFY2(smell.gutText().contains(QStringLiteral("3 pump(s), 1.500 swallowed since rez, the last at tick 90")), qPrintable(smell.gutText()));
+        QVERIFY2(smell.gutText().contains(QStringLiteral("0.500 this tick")), qPrintable(smell.gutText()));
+
+        const QImage drawn{smell.grab().toImage()};
+        const auto neon{[](const QRgb pixel) {
+            return (qAbs(qRed(pixel) - 74) < 40) && (qAbs(qGreen(pixel) - 222) < 40) && (qAbs(qBlue(pixel) - 128) < 40);
+        }};
+        int left_half{0};
+        int right_half{0};
+        for (int x{0}; x < drawn.width(); ++x) {
+            for (int y{40}; y < drawn.height(); ++y) {
+                if (neon(drawn.pixel(x, y))) {
+                    ++(x < (drawn.width() / 2) ? left_half : right_half);
+                }
+            }
+        }
+        QVERIFY2(left_half > 100, qPrintable(QStringLiteral("only %1 green pixels in the left amphid: its saturated receptor is not drawn").arg(left_half)));
+        QCOMPARE(right_half, 0);
+    }
+
+    void a_reading_the_world_had_no_right_to_send_is_never_invisible()
+    {
+        // Below empty and not a number are the world breaking its word as surely as above full:
+        // each is drawn in magenta, never as an empty receptor.
+        WormLib::SensesSnapshot senses{aTick(90u)};
+        senses.odour[1][0] = -0.2f;
+        senses.odour[1][5] = std::numeric_limits<float>::quiet_NaN();
+        PanelLib::SmellView smell;
+        smell.resize(430, 170);
+        smell.showSenses(senses);
+        const QImage drawn{smell.grab().toImage()};
+        const auto magenta{[](const QRgb pixel) {
+            return (qAbs(qRed(pixel) - 232) < 40) && (qAbs(qGreen(pixel) - 121) < 40) && (qAbs(qBlue(pixel) - 249) < 40);
+        }};
+        int right_half{0};
+        for (int x{drawn.width() / 2}; x < drawn.width(); ++x) {
+            for (int y{40}; y < drawn.height(); ++y) {
+                if (magenta(drawn.pixel(x, y))) {
+                    ++right_half;
+                }
+            }
+        }
+        QVERIFY2(right_half > 20, qPrintable(QStringLiteral("only %1 magenta pixels for two unlawful readings in the right amphid").arg(right_half)));
     }
 
     void publishing_never_waits_for_the_window()

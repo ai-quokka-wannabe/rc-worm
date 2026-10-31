@@ -63,7 +63,7 @@ the panel with it. Not a bug of the panel's, but worth knowing before chasing on
 
 - **Senses, tick to panel.** `publishSenses` copies a `SensesSnapshot` (some thirty kilobytes:
   every eye's samples, every ear's band-by-bin energy and its arrivals, every contact, the
-  vestibular numbers) and stamps a generation. `takeSenses(out, seen)` copies only what is newer
+  vestibular numbers, the gut and the two amphids' readings) and stamps a generation. `takeSenses(out, seen)` copies only what is newer
   than `seen`. Latest wins: a panel that polls slower than the Grid ticks sees the newest tick,
   never a backlog.
 - **Intent, panel to tick.** `offerIntent` is latest-wins for the forward and turn words (the
@@ -78,6 +78,11 @@ the panel with it. Not a bug of the panel's, but worth knowing before chasing on
   `SEAM_EAR_BANDS_MAX` x `SEAM_EAR_BINS_MAX`, or `SEAM_CONTACTS_MAX` contacts is not silently
   trimmed: every drop is counted in the snapshot and the panel says so in magenta, by name.
   No information may be lost without a word.
+- **The gut is counted, not just copied.** A pump lives one tick - one bite on every ninth tick at
+  32 Hz, the world's 3.5 Hz pumping - and latest-wins would let the panel poll straight past most of them. So
+  `snapshotSenses` adds each tick's `intake` into `intake_total`, counts `pumps` and keeps
+  `last_pump_tick` in the worm's one snapshot, which lives as long as the worm: the panel reads
+  every bite the gut reported, and the seam infers nothing it did not report.
 
 ## The silence rule
 
@@ -126,6 +131,15 @@ Drawn from the seam's structs at the Qt side's edge, nothing more than the worm 
   first tick; from then on bent joint by joint as the servos report, fitted to the strip
   whatever shape the body holds - the one place the panel shows the body it feels rather than
   the body it declared. Where the chain *is* stays the world's, heard through the ears.
+- **Smell and gut** (Program ABI 11, beneath the feel): a disc that lights orange for four ticks
+  after each pump and is dark between, so the worm's 3.5 Hz pumping reads as a pulse, and beside
+  it what this tick swallowed, the pumps since rez, the bites they brought and the tick of the
+  last (`TglSenses::intake`, counted by the seam). Below, the left amphid and then the right,
+  each its eight receptor types as green bars of the bound fraction, empty at the bottom of the
+  box and saturated at its top (`TglSenses::odour`). The bars are readings, not a map: nothing
+  says which orb, how far or which way, because the worm is not told - a User who wants the food
+  swings the head and watches the bars move, as the worm would. A reading outside [0, 1] is the
+  world breaking its word, drawn clamped in magenta rather than trimmed silently.
 - **Controls**: forward, turn (left positive, as the ABI has it) and voice sliders scaled to the
   body's own bounds; `W`/`S`, `A`/`D` override the sliders while held, `Space` calls once at the
   voice slider's strength, `X` brakes. Since the third ruling (2026-08-28: the undulation
@@ -144,13 +158,16 @@ by the screen; the header states the declaration - the chain included - and
 
 ## The tests
 
-- `seam_tests` (deviceless, the flagship's `testing`): copies whole with drops counted; the
-  mailbox's latest-once and the latch; the worm's fresh / repeated x4 / braked sequence with the
-  test playing the panel; two thousand offers from another thread never lose the newest word.
+- `seam_tests` (deviceless, the flagship's `testing`): copies whole with drops counted, the
+  gut and every amphid's every receptor in its slot; every pump counted when only the newest
+  tick is taken; the mailbox's latest-once and the latch; the worm's fresh / repeated x4 /
+  braked sequence with the test playing the panel; two thousand offers from another thread
+  never lose the newest word.
 - `tst_panel` (Qt Test, on Qt Test's own thread): the window draws the newest tick, offers what
-  the keys say, latches a call once; two thousand publishes from another thread while it draws,
-  the slowest under a generous bound with the measured value in the failure message. Shapes
-  adopted from the owner's `claude-chats-browser`; a `QTRY_` re-evaluates once after it is
+  the keys say, latches a call once; the smell view draws a saturated receptor in its own
+  amphid's half and nothing in the other's, and says the seam's pump count; two thousand
+  publishes from another thread while it draws, the slowest under a generous bound with the
+  measured value in the failure message. Shapes adopted from the owner's `claude-chats-browser`; a `QTRY_` re-evaluates once after it is
   satisfied, so a take that consumes is made to stick.
 - **Under ThreadSanitizer, with the panel on** (CI, "TSan with Qt"): the same two suites
   with every access instrumented, on Qt's offscreen platform with the glib dispatcher off,

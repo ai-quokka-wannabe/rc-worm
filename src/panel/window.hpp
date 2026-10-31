@@ -117,6 +117,30 @@ namespace PanelLib
         bool m_have_senses{false};
     };
 
+    //! The gut and the nose: a pump lit as it happens and the bites counted since rez, and each
+    //! amphid's eight receptor types as bars of their bound fraction - left amphid, then right.
+    //! Readings, not a map: nothing here says where the food is, because the worm is not told.
+    class SmellView : public QWidget {
+        Q_OBJECT
+
+    public:
+        explicit SmellView(QWidget* parent = nullptr);
+
+        void showSenses(const WormLib::SensesSnapshot& senses);
+
+        //! What the gut row says - for a test to read.
+        [[nodiscard]] QString gutText() const;
+
+        [[nodiscard]] QSize sizeHint() const override;
+
+    protected:
+        void paintEvent(QPaintEvent* event) override;
+
+    private:
+        WormLib::SensesSnapshot m_senses{};
+        bool m_have_senses{false};
+    };
+
     class PanelWindow : public QWidget {
         Q_OBJECT
 
@@ -135,6 +159,9 @@ namespace PanelLib
 
         //! What the header says: the body's declaration, the chain included - for a test to read.
         [[nodiscard]] QString headerText() const;
+
+        //! What the smell view's gut row says: the pumps and the bites - for a test to read.
+        [[nodiscard]] QString gutText() const;
 
         //! The generation of the newest senses this window has drawn.
         [[nodiscard]] std::uint64_t sensesSeen() const noexcept
@@ -178,6 +205,7 @@ namespace PanelLib
         QSlider* m_turn{nullptr};
         QSlider* m_voice{nullptr};
         FeelView* m_feel{nullptr};
+        SmellView* m_smell{nullptr};
         QList<EyeView*> m_eyes;
         QList<EarView*> m_ears;
     };

@@ -103,6 +103,18 @@ namespace WormLib
         copy3(out.specific_force, senses.specific_force);
         copy3(out.angular_velocity, senses.angular_velocity);
         out.irradiance = senses.irradiance;
+        // The gut and the nose, copied; the pumps counted, because a pump lives one tick.
+        out.intake = senses.intake;
+        if (senses.intake > 0.0f) {
+            out.intake_total += static_cast<double>(senses.intake);
+            ++out.pumps;
+            out.last_pump_tick = senses.tick;
+        }
+        for (std::size_t amphid{0u}; amphid < TGL_AMPHIDS; ++amphid) {
+            for (std::size_t receptor{0u}; receptor < TGL_ODOUR_RECEPTORS; ++receptor) {
+                out.odour[amphid][receptor] = senses.odour[amphid][receptor];
+            }
+        }
 
         out.eye_count = std::min(senses.eye_count, SEAM_EYES_MAX);
         out.eyes_dropped = senses.eye_count - out.eye_count;
