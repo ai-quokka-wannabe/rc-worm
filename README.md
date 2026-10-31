@@ -2,6 +2,77 @@
 
 A remote-controlled glass-neon mecha-worm which plugs into TronGrid Lite as a Program.
 
+**In one sentence:** rc-worm is a small C++ library the TronGrid Lite world loads as a robot worm of
+eight segments, which you steer from a Qt panel - your forward and turn become a travelling wave of
+joint angles, and everything the worm senses comes back to the panel.
+
+![The gait: seven rows, one per joint from head to tail, each tracing the angle that joint's servo is asked to hold over eight seconds of rest, full forward, forward with a left turn and letting go; orange crest dots step tailward row by row, and below them the User's forward and turn words.](docs/figures/gait.svg)
+
+*The worm's real gait code, ticked at the Grid's 32 Hz: each row is one joint's servo target. Forward
+runs a wave down the body (the orange crests step towards the tail), a turn bends every joint the
+same way on top of it, and letting go relaxes the wave. Drawn by
+[`tools/gait_figure`](tools/README.md#gait_figure), byte for byte the same on every rerun.*
+
+## Start here
+
+- **Build and test**, from a Visual Studio x64 shell with Qt 6.11.2 at `C:\Qt\6.11.2`:
+  `cmake --workflow --preset windows-msvc` (configure, build and test, Debug and Release). On
+  Linux: `cmake --preset linux-gcc -DCMAKE_PREFIX_PATH=~/Qt/6.11.2/gcc_64`, then
+  `cmake --workflow --preset linux-gcc`. No Qt at all? Add `-DRC_WORM_PANEL=OFF` to the configure.
+- **Deploy** beside the Grid: `cmake --install build/windows-msvc --config Release --prefix build/windows-msvc-deploy`,
+  then `python tools/check_deploy.py build/windows-msvc-deploy/programs`, and copy that directory's
+  contents into the Grid's `programs/`. [docs/DEV_ENV_SETUP.md](docs/DEV_ENV_SETUP.md) walks every
+  step from nothing, and [docs/FIRST_LIFE.md](docs/FIRST_LIFE.md) is how you then live a life with it.
+- **Pick something to do:** the
+  [good first issues](https://github.com/ai-quokka-wannabe/rc-worm/issues?q=is%3Aopen+label%3A%22good+first+issue%22)
+  are sized for a first pull request, and [CONTRIBUTING.md](CONTRIBUTING.md) says how one is made
+  and how you are credited.
+
+## The Loop
+
+What one tick does, from the User's keys to the worm's servos and back - every box is code in this
+repository or a sibling's:
+
+```mermaid
+flowchart LR
+    subgraph panel["The panel: Qt thread, polls every 25 ms"]
+        keys["Keys W/S, A/D, Space, X<br/>and the sliders"]
+        views["Eyes, ears, feel,<br/>smell and gut views"]
+    end
+    subgraph program["rc_worm: the Grid's tick thread, 32 Hz"]
+        mailbox[("Mailbox<br/>src/worm/seam.hpp")]
+        worm["Worm::tick<br/>fresh word, repeat up to 4 ticks, or brake"]
+        gait["Gait::tick<br/>travelling wave + turn bend"]
+    end
+    subgraph world["TronGrid Lite and Master Control"]
+        host["The Grid's creature host<br/>sends ACTIONS over Link"]
+        mc["Master Control<br/>servos, physics, the floor"]
+        senses["The Grid renders the senses<br/>from the settled tick"]
+    end
+    keys -- "Intent: forward, turn, voice" --> mailbox
+    mailbox -- "newest Intent" --> worm
+    worm -- "fractions of the body's bounds" --> gait
+    gait -- "TglActions: joint_targets, voice" --> host
+    host --> mc
+    mc -- "TICK_STATE" --> senses
+    senses -- "TglSenses" --> worm
+    worm -- "SensesSnapshot" --> mailbox
+    mailbox -- "newest snapshot" --> views
+    classDef neon fill:#05080d,stroke:#00e5ff,color:#d6f5ff
+    classDef hot fill:#05080d,stroke:#ff9e3d,color:#ffe2c4
+    classDef far fill:#05080d,stroke:#ff3df2,color:#ffd6fb
+    class keys,views neon
+    class mailbox,worm,gait hot
+    class host,mc,senses far
+```
+
+The tick never waits for the panel, and the panel never sees more than the senses carry:
+[docs/PANEL.md](docs/PANEL.md) has the threads, the seam and the silence rule, and the flagship's
+[docs/TOPOLOGY.md](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/docs/TOPOLOGY.md)
+the tick between the Grid and Master Control.
+
+## What a Program Is
+
 The first inhabitant of the Grid. A Program is a shared library the Grid loads through its
 Program ABI (`tgl_program_abi.h`): it is handed a body, it receives what that body senses
 every tick - its eyes, its ears, its feel of the floor - and it answers with what the body
@@ -41,9 +112,17 @@ today), and a `--program rc_worm` host run against Master Control rezzed the wor
 hundred times and left with BYE - a first life, recorded to a Disk, that Clu re-simulates and
 agrees with.
 
+![The rc-worm panel: two eyes, two ears as frequency histograms, the felt chain of eight segments, the left and right amphids' smell bars, and the forward, turn and voice sliders with the call and brake buttons](docs/media/panel.webp)
+
+*The panel during a live life. Read it honestly: the sliders ask for 1.00 m/s, yet the body reports
+0.00 - the world dropped the late intents
+([tron-grid-lite#170](https://github.com/ai-quokka-wannabe/tron-grid-lite/issues/170)), and the smell
+bars sit full at a dense 0.43 orbs per 100 m^2. Both are open; the panel is how you see them.*
+
 **The panel.** The User is the brain: a Qt Widgets window on the Program's own thread shows
 what the worm senses - eyes where they look, ears as the histograms they are with every
-arrival marked, the feel of the floor from above - and takes forward, turn and voice from keys
+arrival marked, the feel of the floor from above, the two amphids' smell as bars and the gut's
+count of every bite - and takes forward, turn and voice from keys
 or sliders scaled to the body's bounds. The tick never waits for it: a vanilla-C++20 mailbox of
 plain structs sits between them, and a worm nobody steers repeats four ticks and brakes. It
 deploys beside `rc_worm.dll` with `windeployqt`, judged a closed set by `tools/check_deploy.py`,
@@ -83,19 +162,16 @@ and the why. The panel and the life somebody lives are staged in [TODO.md](TODO.
 
 ## Building
 
-> **New here?** [docs/DEV_ENV_SETUP.md](docs/DEV_ENV_SETUP.md) builds, tests and deploys the worm from
-> nothing on Windows or Linux, with or without its panel, exactly as CI does; the flagship's
-> [RUNNING_THE_GRID.md](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/docs/RUNNING_THE_GRID.md)
-> stands the whole ecosystem up around it.
+The commands are in [Start here](#start-here) and, step by step, in
+[docs/DEV_ENV_SETUP.md](docs/DEV_ENV_SETUP.md); the flagship's
+[RUNNING_THE_GRID.md](https://github.com/ai-quokka-wannabe/tron-grid-lite/blob/main/docs/RUNNING_THE_GRID.md)
+stands the whole ecosystem up around the worm.
 
 CMake 3.25+, Ninja, a C++20 compiler, and - for the panel - Qt 6.11 for the kit of the preset
 (`RC_WORM_PANEL=OFF` builds the worm with no Qt at all). The presets are the flagship's:
 `windows-msvc`, `windows-clang-cl`, `windows-mingw`, `windows-llvm-mingw`, `linux-gcc`,
-`linux-clang`, with `linux-clang-asan` and `linux-clang-tsan` beside them.
-
-```text
-cmake --workflow --preset windows-mingw     # configure, build and test, Debug and Release
-```
+`linux-clang`, with `linux-clang-asan` and `linux-clang-tsan` beside them; `cmake --workflow
+--preset <preset>` configures, builds and tests Debug and Release.
 
 The library lands in `build/<preset>/bin/<config>/`; copy it into the Grid's `programs/`
 directory beside `TronGridLite` and run `TronGridLite --program rc_worm`. With the panel built
