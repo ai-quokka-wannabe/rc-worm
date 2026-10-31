@@ -112,6 +112,13 @@ today), and a `--program rc_worm` host run against Master Control rezzed the wor
 hundred times and left with BYE - a first life, recorded to a Disk, that Clu re-simulates and
 agrees with.
 
+![The rc-worm panel: two eyes, two ears as frequency histograms, the felt chain of eight segments, the left and right amphids' smell bars, and the forward, turn and voice sliders with the call and brake buttons](docs/media/panel.webp)
+
+*The panel during a live life. Read it honestly: the sliders ask for 1.00 m/s, yet the body reports
+0.00 - the world dropped the late intents
+([tron-grid-lite#170](https://github.com/ai-quokka-wannabe/tron-grid-lite/issues/170)), and the smell
+bars sit full at a dense 0.43 orbs per 100 m^2. Both are open; the panel is how you see them.*
+
 **The panel.** The User is the brain: a Qt Widgets window on the Program's own thread shows
 what the worm senses - eyes where they look, ears as the histograms they are with every
 arrival marked, the feel of the floor from above, the two amphids' smell as bars and the gut's
