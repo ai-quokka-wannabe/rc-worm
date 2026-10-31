@@ -123,6 +123,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   live world, how to build and check on the Windows desk, and the way from a change to a PR - each mirrored verbatim
   in every repo that uses it and improved every time it is used, so no session reinvents them.
 
+- **The README opens with a picture and a way in.** One plain sentence of what rc-worm is, the gait
+  figure, and a "Start here" block - the build, test and deploy commands that exist, the good first
+  issues and CONTRIBUTING.md - then a Mermaid diagram of the loop, derived from the code: the panel's
+  keys and sliders, the mailbox, `Worm::tick`, `Gait::tick`, the Grid and Master Control, and the
+  senses back to the panel's views. The building notes below no longer repeat the commands.
+- **`docs/figures/gait.svg`, drawn by the real gait.** `tools/gait_figure` ticks `WormLib::Gait`
+  itself at 32 Hz through eight scripted seconds - rest, full forward, forward with a full left turn,
+  letting go - and writes every joint's servo target as hand-built SVG in the glass-neon look, the
+  straight run's crests marked as they step tailward. Same bytes on every rerun (MSVC Debug and
+  Release and clang-cl Release agree); built with everything else, run once by `ctest`, never
+  installed. `tools/README.md` gives the regenerate command.
 - **The gut and the nose felt: Program ABI 11 (chemoreception).** `TglSenses::intake` - what
   the body swallowed this tick, one bite on a pump - and `TglSenses::odour[2][8]` - each
   amphid's bound fraction per receptor type, left then right, never a direction - cross the seam
