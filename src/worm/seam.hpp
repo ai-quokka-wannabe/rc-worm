@@ -154,9 +154,27 @@ namespace WormLib
         float specific_force[3];
         float angular_velocity[3];
         float irradiance;
+        //! What the body swallowed this tick, in the world's food unit: zero on most ticks, one
+        //! bite on a pump - the gut's own report, copied.
+        float intake;
+        //! Every bite since rez, and how many pumps brought them, and the tick of the last: kept
+        //! by the seam across ticks, because a pump lives one tick and the panel, polling the
+        //! newest snapshot only, would otherwise miss most of them. A count of what the gut
+        //! reported, nothing inferred.
+        float intake_total;
+        std::uint64_t pumps;
+        std::uint64_t last_pump_tick;
+        //! What the two amphids smell: odour[a][r] the fraction of amphid a's receptors of type
+        //! r that are bound, in [0, 1], left amphid first - never a direction, copied as it came.
+        float odour[TGL_AMPHIDS][TGL_ODOUR_RECEPTORS];
     };
 
-    //! Copies what the Grid lent into `out`, counting what did not fit. Never touches `generation`.
+    /*!
+        Copies what the Grid lent into `out`, counting what did not fit. Never touches
+        `generation`. The gut's running count - `intake_total`, `pumps`, `last_pump_tick` - is
+        the one thing it adds to rather than overwrites, so it counts across calls on the same
+        `out`: the worm keeps one snapshot for its whole life.
+    */
     void snapshotSenses(const TglSenses& senses, SensesSnapshot& out) noexcept;
 
     //! What the User asks of the body: the three members of TglActions, and when they were asked.

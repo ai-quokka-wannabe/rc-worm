@@ -119,7 +119,7 @@ is designed ahead of those decisions, and nothing is promised by a date.
 ## What Exists Today
 
 - **The Program.** `rc_worm.dll` / `librc_worm.so`, one exported symbol (`tglGetProgramVTable`),
-  built against the Program ABI vendored at version 10: vanilla C++20, with Qt in the panel and
+  built against the Program ABI vendored at version 11: vanilla C++20, with Qt in the panel and
   nowhere else. It builds with MSVC, clang-cl, MinGW, LLVM-MinGW, GCC and Clang; CI builds all
   but LLVM-MinGW, and the panel's MinGW and LLVM-MinGW kits are built locally.
 - **The body.** A chain of eight regular icosahedra, a quarter metre in circumradius, joined
@@ -129,7 +129,8 @@ is designed ahead of those decisions, and nothing is promised by a date.
   0.45 Hz at full forward, the turn a bend on top, everything ramping the way muscles do. It is
   open-loop for now: what the worm feels is on the panel before it is in the controller.
 - **The panel.** The eyes, the ears with every arrival marked cyan approaching or orange
-  receding, the feel from above, the joints and their loads, the chain bent as the servos report;
+  receding, the feel from above, the joints and their loads, the chain bent as the servos report,
+  the gut's pumps and the two amphids' eight readings each;
   `W`/`S`, `A`/`D`, `Space`, `X` and sliders. A worm nobody steers repeats four ticks and brakes,
   and every sense the seam has to drop is counted and named in magenta. [PANEL.md](PANEL.md)
   carries the threads, the seam and the why.

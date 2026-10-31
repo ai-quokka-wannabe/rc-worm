@@ -120,6 +120,13 @@ namespace
             senses.joint_angles[6] = -0.9f;
             senses.joint_torques[2] = -5.0f;
             senses.joint_torques[6] = 1.25f;
+            senses.intake = 0.5f;
+            // Receptor r of amphid a bound at 0.05 + 0.1r + 0.01a: every slot says which it is.
+            for (std::uint32_t amphid{0u}; amphid < TGL_AMPHIDS; ++amphid) {
+                for (std::uint32_t receptor{0u}; receptor < TGL_ODOUR_RECEPTORS; ++receptor) {
+                    senses.odour[amphid][receptor] = 0.05f + (0.1f * static_cast<float>(receptor)) + (0.01f * static_cast<float>(amphid));
+                }
+            }
         }
     };
 
@@ -167,6 +174,13 @@ TEST_CASE(a_body_and_a_tick_are_copied_whole_and_nothing_that_did_not_fit_goes_u
     TEST_CHECK_EQUAL(snapshot.joint_torques[2], -5.0f);
     TEST_CHECK_EQUAL(snapshot.joint_torques[6], 1.25f);
     TEST_CHECK_EQUAL(snapshot.joint_torques[0], 0.0f);
+    // The gut and the nose, as the Grid lent them: every amphid's every receptor in its slot.
+    TEST_CHECK_EQUAL(snapshot.intake, 0.5f);
+    for (std::uint32_t amphid{0u}; amphid < TGL_AMPHIDS; ++amphid) {
+        for (std::uint32_t receptor{0u}; receptor < TGL_ODOUR_RECEPTORS; ++receptor) {
+            TEST_CHECK_EQUAL(snapshot.odour[amphid][receptor], 0.05f + (0.1f * static_cast<float>(receptor)) + (0.01f * static_cast<float>(amphid)));
+        }
+    }
 
     // A body richer than the seam: nothing is silently trimmed, every drop is counted.
     std::vector<float> many_directions(3u * 300u, 0.0f);
@@ -196,6 +210,38 @@ TEST_CASE(a_body_and_a_tick_are_copied_whole_and_nothing_that_did_not_fit_goes_u
     WormLib::snapshotSenses(crowded, snapshot);
     TEST_CHECK_EQUAL(snapshot.contact_count, WormLib::SEAM_CONTACTS_MAX);
     TEST_CHECK_EQUAL(snapshot.contacts_dropped, 40u - WormLib::SEAM_CONTACTS_MAX);
+}
+
+TEST_CASE(every_pump_is_counted_even_when_the_panel_sees_only_the_newest_tick)
+{
+    /*
+        A pump lives one tick and the panel takes only the newest snapshot, so a bite the panel
+        polled past would be lost. The worm's one snapshot counts them instead: three ticks -
+        a pump, nothing, a pump - published and taken once, read as two pumps, a whole bite
+        swallowed, the last at the third tick, and nothing swallowed on the tick the panel sees.
+    */
+    const FirstBody first;
+    WormLib::Worm worm{first.desc, 0.03125f};
+    TglActions actions{};
+    FirstSenses pump{9u};
+    worm.tick(pump.senses, actions);
+    FirstSenses between{10u};
+    between.senses.intake = 0.0f;
+    worm.tick(between.senses, actions);
+    FirstSenses again{18u};
+    worm.tick(again.senses, actions);
+    FirstSenses after{19u};
+    after.senses.intake = 0.0f;
+    worm.tick(after.senses, actions);
+
+    WormLib::SensesSnapshot seen{};
+    std::uint64_t generation{0u};
+    TEST_CHECK(worm.mailbox().takeSenses(seen, generation));
+    TEST_CHECK_EQUAL(seen.tick, 19u);
+    TEST_CHECK_EQUAL(seen.intake, 0.0f);
+    TEST_CHECK_EQUAL(seen.pumps, 2u);
+    TEST_CHECK_EQUAL(seen.intake_total, 1.0f);
+    TEST_CHECK_EQUAL(seen.last_pump_tick, 18u);
 }
 
 TEST_CASE(the_mailbox_hands_over_the_latest_once_and_latches_a_call_until_a_tick_hears_it)

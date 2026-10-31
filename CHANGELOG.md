@@ -119,6 +119,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The gut and the nose felt: Program ABI 11 (chemoreception).** `TglSenses::intake` - what
+  the body swallowed this tick, one bite on a pump - and `TglSenses::odour[2][8]` - each
+  amphid's bound fraction per receptor type, left then right, never a direction - cross the seam
+  into `SensesSnapshot` as link v12's letter brought them to the Grid. A pump lives one tick and
+  the panel sees only the newest, so the seam also counts every pump since rez, the bites they
+  brought and the tick of the last; nothing is inferred. The panel gains a smell view beneath
+  the feel: a disc that lights orange for the few ticks after each pump, so the 3.5 Hz pumping
+  reads as a pulse, the count beside it, and each amphid's eight readings as green bars from
+  empty to saturated, a reading outside [0, 1] drawn in magenta. No steering: the User is still
+  the brain, and the bars are what the User smells with. ABI re-vendored at v11.
 - **Every contributor credited, and their copyright kept.** README.md gains a Contributors section that
   lists everyone who helps, for any kind of contribution - code, documentation, bug reports, reviews,
   ideas, answers in Discussions - following the All Contributors specification and its emoji key, kept by

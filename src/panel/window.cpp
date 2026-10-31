@@ -473,6 +473,98 @@ namespace PanelLib
         }
     }
 
+    // ---- SmellView ------------------------------------------------------------------------------
+
+    SmellView::SmellView(QWidget* parent) :
+        QWidget(parent)
+    {
+        setMinimumSize(340, 150);
+    }
+
+    void SmellView::showSenses(const WormLib::SensesSnapshot& senses)
+    {
+        m_senses = senses;
+        m_have_senses = true;
+        update();
+    }
+
+    QString SmellView::gutText() const
+    {
+        if (!m_have_senses) {
+            return QStringLiteral("gut: nothing sensed yet");
+        }
+        const WormLib::SensesSnapshot& s{m_senses};
+        if (s.pumps == 0u) {
+            return QStringLiteral("gut: nothing swallowed since rez");
+        }
+        return QStringLiteral("gut: %1 this tick   %2 pump(s), %3 swallowed since rez, the last at tick %4")
+            .arg(s.intake, 0, 'f', 3)
+            .arg(s.pumps)
+            .arg(s.intake_total, 0, 'f', 3)
+            .arg(s.last_pump_tick);
+    }
+
+    QSize SmellView::sizeHint() const
+    {
+        return {560, 170};
+    }
+
+    void SmellView::paintEvent(QPaintEvent* const event)
+    {
+        (void)event;
+        QPainter painter{this};
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.fillRect(rect(), GLASS);
+        painter.setPen(INK);
+        painter.drawText(QPointF{8.0, 15.0}, QStringLiteral("smell and gut"));
+        if (!m_have_senses) {
+            painter.setPen(DIM);
+            painter.drawText(QPointF{8.0, 34.0}, QStringLiteral("nothing sensed yet"));
+            return;
+        }
+        const WormLib::SensesSnapshot& s{m_senses};
+
+        // The pump: a disc lit for the few ticks after a bite and dark between, so the worm's
+        // 3.5 Hz pumping reads as a pulse; the count beside it never misses one, because the
+        // seam counted every pump the panel polled past.
+        constexpr std::uint64_t PUMP_GLOW_TICKS{4u};
+        const bool pumping{(s.pumps > 0u) && (s.tick >= s.last_pump_tick) && ((s.tick - s.last_pump_tick) < PUMP_GLOW_TICKS)};
+        const QPointF disc{14.0, 30.0};
+        painter.setPen(QPen{pumping ? ORANGE : DIM, 1.5});
+        painter.setBrush(pumping ? QBrush{ORANGE} : QBrush{Qt::NoBrush});
+        painter.drawEllipse(disc, 5.0, 5.0);
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(DIM);
+        painter.drawText(QPointF{26.0, 34.0}, painter.fontMetrics().elidedText(gutText(), Qt::ElideRight, width() - 34));
+
+        // The two amphids, left then right, each its eight receptor types as bars of the bound
+        // fraction from empty to saturated. A reading outside [0, 1] is the world breaking its
+        // word: drawn clamped, in magenta, so it is never silently trimmed.
+        const double top{50.0};
+        const double bottom{height() - 18.0};
+        const double gap{12.0};
+        const double group_width{(width() - 16.0 - gap) / 2.0};
+        for (std::uint32_t amphid{0u}; amphid < TGL_AMPHIDS; ++amphid) {
+            const double left{8.0 + (amphid * (group_width + gap))};
+            const QRectF box{left, top, group_width, bottom - top};
+            painter.setPen(DIM);
+            painter.drawText(QPointF{left, top - 4.0}, amphid == 0u ? QStringLiteral("left amphid") : QStringLiteral("right amphid"));
+            painter.setPen(QPen{DIM, 1.0});
+            painter.drawRect(box);
+            const double slot{box.width() / TGL_ODOUR_RECEPTORS};
+            for (std::uint32_t receptor{0u}; receptor < TGL_ODOUR_RECEPTORS; ++receptor) {
+                const float bound{s.odour[amphid][receptor]};
+                const bool lawful{(bound >= 0.0f) && (bound <= 1.0f)};
+                const double fill{lawful ? static_cast<double>(bound) : (bound > 1.0f ? 1.0 : 0.0)};
+                const double bar_height{fill * (box.height() - 2.0)};
+                const QRectF bar{box.left() + (receptor * slot) + 2.0, box.bottom() - 1.0 - bar_height, slot - 4.0, bar_height};
+                painter.fillRect(bar, lawful ? GREEN : MAGENTA);
+                painter.setPen(DIM);
+                painter.drawText(QRectF{box.left() + (receptor * slot), box.bottom() + 1.0, slot, 14.0}, Qt::AlignHCenter | Qt::AlignTop, QString::number(receptor));
+            }
+        }
+    }
+
     // ---- PanelWindow ----------------------------------------------------------------------------
 
     PanelWindow::PanelWindow(WormLib::Mailbox& mailbox, const WormLib::BodySnapshot& body, QWidget* parent) :
@@ -511,9 +603,13 @@ namespace PanelLib
         }
         ears->addStretch(1);
         m_feel = new FeelView{m_body, this};
+        m_smell = new SmellView{this};
+        auto* const feel_and_smell{new QVBoxLayout{}};
+        feel_and_smell->addWidget(m_feel, 3);
+        feel_and_smell->addWidget(m_smell, 1);
         senses->addLayout(eyes, 2);
         senses->addLayout(ears, 3);
-        senses->addWidget(m_feel, 3);
+        senses->addLayout(feel_and_smell, 3);
         column->addLayout(senses, 1);
 
         auto* const controls{new QGroupBox{QStringLiteral("controls  -  W/S forward, A/D turn, Space call, X brake; sliders hold a course"), this}};
@@ -591,6 +687,11 @@ namespace PanelLib
         return m_header->text();
     }
 
+    QString PanelWindow::gutText() const
+    {
+        return m_smell->gutText();
+    }
+
     WormLib::Intent PanelWindow::currentIntent() const noexcept
     {
         WormLib::Intent intent{};
@@ -640,6 +741,7 @@ namespace PanelLib
                 }
             }
             m_feel->showSenses(m_senses);
+            m_smell->showSenses(m_senses);
         } else if (m_silent_polls < 1000000u) {
             ++m_silent_polls;
         }
