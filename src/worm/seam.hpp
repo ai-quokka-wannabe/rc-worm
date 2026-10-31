@@ -161,7 +161,7 @@ namespace WormLib
         //! by the seam across ticks, because a pump lives one tick and the panel, polling the
         //! newest snapshot only, would otherwise miss most of them. A count of what the gut
         //! reported, nothing inferred.
-        float intake_total;
+        double intake_total;
         std::uint64_t pumps;
         std::uint64_t last_pump_tick;
         //! What the two amphids smell: odour[a][r] the fraction of amphid a's receptors of type

@@ -22,6 +22,7 @@
 
 #include "../panel/window.hpp"
 
+#include <limits>
 #include <seam.hpp>
 
 #include <QtCore/QElapsedTimer>
@@ -249,6 +250,31 @@ private slots:
         }
         QVERIFY2(left_half > 100, qPrintable(QStringLiteral("only %1 green pixels in the left amphid: its saturated receptor is not drawn").arg(left_half)));
         QCOMPARE(right_half, 0);
+    }
+
+    void a_reading_the_world_had_no_right_to_send_is_never_invisible()
+    {
+        // Below empty and not a number are the world breaking its word as surely as above full:
+        // each is drawn in magenta, never as an empty receptor.
+        WormLib::SensesSnapshot senses{aTick(90u)};
+        senses.odour[1][0] = -0.2f;
+        senses.odour[1][5] = std::numeric_limits<float>::quiet_NaN();
+        PanelLib::SmellView smell;
+        smell.resize(430, 170);
+        smell.showSenses(senses);
+        const QImage drawn{smell.grab().toImage()};
+        const auto magenta{[](const QRgb pixel) {
+            return (qAbs(qRed(pixel) - 232) < 40) && (qAbs(qGreen(pixel) - 121) < 40) && (qAbs(qBlue(pixel) - 249) < 40);
+        }};
+        int right_half{0};
+        for (int x{drawn.width() / 2}; x < drawn.width(); ++x) {
+            for (int y{40}; y < drawn.height(); ++y) {
+                if (magenta(drawn.pixel(x, y))) {
+                    ++right_half;
+                }
+            }
+        }
+        QVERIFY2(right_half > 20, qPrintable(QStringLiteral("only %1 magenta pixels for two unlawful readings in the right amphid").arg(right_half)));
     }
 
     void publishing_never_waits_for_the_window()

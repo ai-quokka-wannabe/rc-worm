@@ -240,7 +240,7 @@ TEST_CASE(every_pump_is_counted_even_when_the_panel_sees_only_the_newest_tick)
     TEST_CHECK_EQUAL(seen.tick, 19u);
     TEST_CHECK_EQUAL(seen.intake, 0.0f);
     TEST_CHECK_EQUAL(seen.pumps, 2u);
-    TEST_CHECK_EQUAL(seen.intake_total, 1.0f);
+    TEST_CHECK_EQUAL(seen.intake_total, 1.0);
     TEST_CHECK_EQUAL(seen.last_pump_tick, 18u);
 }
 

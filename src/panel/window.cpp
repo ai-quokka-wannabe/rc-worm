@@ -534,7 +534,9 @@ namespace PanelLib
         painter.setBrush(pumping ? QBrush{ORANGE} : QBrush{Qt::NoBrush});
         painter.drawEllipse(disc, 5.0, 5.0);
         painter.setBrush(Qt::NoBrush);
-        painter.setPen(DIM);
+        // A gut that reports less than nothing, or no number, is the world breaking its word too.
+        const bool gut_lawful{s.intake >= 0.0f};
+        painter.setPen(gut_lawful ? DIM : MAGENTA);
         painter.drawText(QPointF{26.0, 34.0}, painter.fontMetrics().elidedText(gutText(), Qt::ElideRight, width() - 34));
 
         // The two amphids, left then right, each its eight receptor types as bars of the bound
@@ -556,7 +558,10 @@ namespace PanelLib
                 const float bound{s.odour[amphid][receptor]};
                 const bool lawful{(bound >= 0.0f) && (bound <= 1.0f)};
                 const double fill{lawful ? static_cast<double>(bound) : (bound > 1.0f ? 1.0 : 0.0)};
-                const double bar_height{fill * (box.height() - 2.0)};
+                // An unlawful reading below empty, or no number at all, still shows: a magenta stub at
+                // the floor of its slot, never an empty receptor.
+                constexpr double UNLAWFUL_STUB{4.0};
+                const double bar_height{lawful ? fill * (box.height() - 2.0) : std::max(fill * (box.height() - 2.0), UNLAWFUL_STUB)};
                 const QRectF bar{box.left() + (receptor * slot) + 2.0, box.bottom() - 1.0 - bar_height, slot - 4.0, bar_height};
                 painter.fillRect(bar, lawful ? GREEN : MAGENTA);
                 painter.setPen(DIM);

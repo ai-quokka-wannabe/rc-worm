@@ -106,7 +106,7 @@ namespace WormLib
         // The gut and the nose, copied; the pumps counted, because a pump lives one tick.
         out.intake = senses.intake;
         if (senses.intake > 0.0f) {
-            out.intake_total += senses.intake;
+            out.intake_total += static_cast<double>(senses.intake);
             ++out.pumps;
             out.last_pump_tick = senses.tick;
         }

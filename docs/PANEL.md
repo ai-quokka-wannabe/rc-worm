@@ -78,8 +78,8 @@ the panel with it. Not a bug of the panel's, but worth knowing before chasing on
   `SEAM_EAR_BANDS_MAX` x `SEAM_EAR_BINS_MAX`, or `SEAM_CONTACTS_MAX` contacts is not silently
   trimmed: every drop is counted in the snapshot and the panel says so in magenta, by name.
   No information may be lost without a word.
-- **The gut is counted, not just copied.** A pump lives one tick - one bite on every ninth at
-  the worm's 3.5 Hz - and latest-wins would let the panel poll straight past most of them. So
+- **The gut is counted, not just copied.** A pump lives one tick - one bite on every ninth tick at
+  32 Hz, the world's 3.5 Hz pumping - and latest-wins would let the panel poll straight past most of them. So
   `snapshotSenses` adds each tick's `intake` into `intake_total`, counts `pumps` and keeps
   `last_pump_tick` in the worm's one snapshot, which lives as long as the worm: the panel reads
   every bite the gut reported, and the seam infers nothing it did not report.
@@ -167,8 +167,7 @@ by the screen; the header states the declaration - the chain included - and
   the keys say, latches a call once; the smell view draws a saturated receptor in its own
   amphid's half and nothing in the other's, and says the seam's pump count; two thousand
   publishes from another thread while it draws, the slowest under a generous bound with the
-  measured value in the failure message. Shapes
-  adopted from the owner's `claude-chats-browser`; a `QTRY_` re-evaluates once after it is
+  measured value in the failure message. Shapes adopted from the owner's `claude-chats-browser`; a `QTRY_` re-evaluates once after it is
   satisfied, so a take that consumes is made to stick.
 - **Under ThreadSanitizer, with the panel on** (CI, "TSan with Qt"): the same two suites
   with every access instrumented, on Qt's offscreen platform with the glib dispatcher off,
