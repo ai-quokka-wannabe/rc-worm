@@ -126,10 +126,11 @@ namespace WormLib
             }
             const TglEyeView& from{senses.eyes[index]};
             to.channels = std::min(from.channels, SEAM_EYE_CHANNELS_MAX);
-            // A sample is copied whole or not at all: channels beyond the cap drop the sample.
-            to.sample_count = (from.channels > SEAM_EYE_CHANNELS_MAX) ? 0u : std::min(from.sample_count, SEAM_EYE_SAMPLES_MAX);
+            // A sample is copied whole or not at all: channels beyond the cap drop the sample, and
+            // so does a view with no array behind its count - counted, never last tick's values.
+            to.sample_count = ((from.channels > SEAM_EYE_CHANNELS_MAX) || (from.samples == nullptr)) ? 0u : std::min(from.sample_count, SEAM_EYE_SAMPLES_MAX);
             to.samples_dropped = from.sample_count - to.sample_count;
-            if ((from.samples != nullptr) && (to.sample_count > 0u)) {
+            if (to.sample_count > 0u) {
                 std::memcpy(to.samples, from.samples, sizeof(float) * to.sample_count * to.channels);
             }
         }
@@ -143,16 +144,18 @@ namespace WormLib
                 continue;
             }
             const TglEarView& from{senses.ears[index]};
-            to.band_count = std::min(from.band_count, SEAM_EAR_BANDS_MAX);
+            // An ear with no energy array behind its counts drops every band, and one with no
+            // arrivals array has none: counted as nothing, never left holding last tick's.
+            to.band_count = (from.energy == nullptr) ? 0u : std::min(from.band_count, SEAM_EAR_BANDS_MAX);
             to.bands_dropped = from.band_count - to.band_count;
             to.bin_count = std::min(from.bin_count, SEAM_EAR_BINS_MAX);
             to.bins_dropped = from.bin_count - to.bin_count;
             // Band-major on both sides; a band is one contiguous run of bins.
-            for (std::uint32_t band{0u}; (band < to.band_count) && (from.energy != nullptr); ++band) {
+            for (std::uint32_t band{0u}; band < to.band_count; ++band) {
                 std::memcpy(&to.energy[band * SEAM_EAR_BINS_MAX], &from.energy[band * from.bin_count], sizeof(float) * to.bin_count);
             }
-            to.arrival_count = std::min(from.arrival_count, TGL_EAR_ARRIVALS_MAX);
-            if ((from.arrivals != nullptr) && (to.arrival_count > 0u)) {
+            to.arrival_count = (from.arrivals == nullptr) ? 0u : std::min(from.arrival_count, TGL_EAR_ARRIVALS_MAX);
+            if (to.arrival_count > 0u) {
                 std::memcpy(to.arrivals, from.arrivals, sizeof(TglArrival) * to.arrival_count);
             }
         }

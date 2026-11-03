@@ -127,9 +127,9 @@ namespace WormLib
 
     Body::Body()
     {
-        // Scale to the circumradius, then orient: face 0 down (the body rests on a face, not a
-        // point), then turn about the vertical so the vertex nearest the nose direction sits
-        // exactly on -Z, where the first body's eyes look.
+        // Scale to the circumradius, then orient: face 0 down, then turn about the vertical so the
+        // vertex nearest the nose direction sits exactly on -Z as seen from above, where the first
+        // body's head eye looks - and last, the pitch below, which stands the body on a spike.
         const float raw_radius{std::sqrt(1.0f + (PHI * PHI))};
         std::array<V3, 12> vertices{};
         for (std::size_t index{0u}; index < vertices.size(); ++index) {
@@ -334,7 +334,7 @@ namespace WormLib
         model.vertex_count = vertexCount();
         model.triangle_count = static_cast<std::uint32_t>(m_triangles.size());
         model.material_count = static_cast<std::uint32_t>(m_materials.size());
-        // The chain: eight of these, joined stub to stub.
+        // The chain: eight of these, joined spike to spike, their stubs meeting tip to tip.
         model.segment_count = BODY_SEGMENTS;
         model.segment_spacing = SEGMENT_SPACING;
         model.padding0 = 0u;

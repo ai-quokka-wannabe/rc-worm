@@ -73,7 +73,8 @@ TEST_CASE(the_body_passes_every_rule_the_grid_and_the_world_judge_a_model_by)
         TEST_CHECK(normalFloat(value));
     }
     TEST_CHECK(body.extent() < BODY_MAX_EXTENT);
-    TEST_CHECK(body.extent() > 0.2f);
+    // The farthest a vertex reaches is a joint tip, on the axis: docs/BODY.md's extent.
+    TEST_CHECK_CLOSE(body.extent(), WormLib::JOINT_TIP_REACH, 1e-5f);
 
     for (const TglRenderTriangle& triangle : body.triangles()) {
         for (const std::uint32_t vertex : triangle.vertices) {

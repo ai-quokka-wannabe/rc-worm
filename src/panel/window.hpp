@@ -28,10 +28,11 @@ class QSlider;
 class QTimer;
 
 /*!
-    The window: the senses as the worm has them, and the three controls the ABI carries. Lives on
-    the Qt thread, polls the mailbox on a timer (never a signal from the tick - the tick knows no
-    window), converts the seam's plain structs at its own edge, and offers an intent every poll so
-    the worm's silence rule sees a live panel as a stream and a dead one as silence.
+    The window: the senses as the worm has them, and the User's three words - forward, turn and
+    voice - which the worm's gait turns into joint targets. Lives on the Qt thread, polls the
+    mailbox on a timer (never a signal from the tick - the tick knows no window), converts the
+    seam's plain structs at its own edge, and offers an intent every poll so the worm's silence
+    rule sees a live panel as a stream and a dead one as silence.
 */
 namespace PanelLib
 {

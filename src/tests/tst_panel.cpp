@@ -22,18 +22,18 @@
 
 #include "../panel/window.hpp"
 
-#include <limits>
 #include <seam.hpp>
 
 #include <QtCore/QElapsedTimer>
 #include <QtGui/QImage>
-#include <QtTest/QSignalSpy>
 #include <QtTest/QTest>
 #include <QtWidgets/QApplication>
 
 #include <algorithm>
 #include <atomic>
 #include <cstdint>
+#include <limits>
+#include <optional>
 #include <thread>
 
 namespace

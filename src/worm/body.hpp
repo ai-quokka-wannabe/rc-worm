@@ -22,11 +22,12 @@
 #include <vector>
 
 /*!
-    The worm's body: one rigid segment, an icosahedron, near-black mirror faces and a green neon
-    tube along every edge. The shape lives in this Program (the Grid decides the senses, the
-    Program brings the body - PROGRAM_INTERFACE.md), built once at first use from the golden
-    ratio and a fixed orientation, and lent to the Grid through a `TglRenderModel` whose arrays
-    point at the body's own storage - borrowed for the rez call, exactly as the ABI states.
+    The worm's body: one rigid segment of a chain of eight, an icosahedron, near-black mirror
+    faces and a green neon tube along every edge. The shape lives in this Program (the Grid
+    decides the senses, the Program brings the body - PROGRAM_INTERFACE.md), built once at first
+    use from the golden ratio and a fixed orientation, and lent to the Grid through a
+    `TglRenderModel` whose arrays point at the body's own storage - borrowed for the rez call,
+    exactly as the ABI states.
 
     Vanilla C++20, no Qt: a body is arithmetic. docs/BODY.md carries the numbers and the why.
 */
@@ -36,7 +37,7 @@ namespace WormLib
     /*!
         The circumradius of the icosahedron, metres: the distance from the body's origin to any of
         its twelve vertices. A quarter metre makes the edge 0.263 m and the body about half a metre
-        across - a creature the first body's eyes at z = -0.2 sit just inside the nose of.
+        across - a segment the first body's eyes and ears, at z = -0.2 and z = +0.2, sit just inside.
     */
     inline constexpr float BODY_CIRCUMRADIUS{0.25f};
 

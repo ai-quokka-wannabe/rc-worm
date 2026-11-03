@@ -212,6 +212,34 @@ TEST_CASE(a_body_and_a_tick_are_copied_whole_and_nothing_that_did_not_fit_goes_u
     TEST_CHECK_EQUAL(snapshot.contacts_dropped, 40u - WormLib::SEAM_CONTACTS_MAX);
 }
 
+TEST_CASE(a_view_with_no_array_behind_its_count_is_counted_as_dropped_never_left_stale)
+{
+    // The worm keeps one snapshot for its whole life, so a view the Grid sent with a count and
+    // no array must not leave last tick's samples, energy or arrivals standing in the copy: it
+    // is nothing this tick, and what it claimed is counted as dropped.
+    const FirstSenses full{1u};
+    WormLib::SensesSnapshot snapshot{};
+    WormLib::snapshotSenses(full.senses, snapshot);
+    TEST_CHECK_EQUAL(snapshot.eyes[0].sample_count, 1u);
+    TEST_CHECK_EQUAL(snapshot.ears[1].band_count, 4u);
+    TEST_CHECK_EQUAL(snapshot.ears[1].arrival_count, 2u);
+
+    FirstSenses hollow{2u};
+    hollow.eyes[0].samples = nullptr;
+    hollow.ears[1].energy = nullptr;
+    hollow.ears[1].arrivals = nullptr;
+    WormLib::snapshotSenses(hollow.senses, snapshot);
+    TEST_CHECK_EQUAL(snapshot.tick, 2u);
+    TEST_CHECK_EQUAL(snapshot.eyes[0].sample_count, 0u);
+    TEST_CHECK_EQUAL(snapshot.eyes[0].samples_dropped, 1u);
+    TEST_CHECK_EQUAL(snapshot.eyes[1].sample_count, 1u);
+    TEST_CHECK_EQUAL(snapshot.ears[1].band_count, 0u);
+    TEST_CHECK_EQUAL(snapshot.ears[1].bands_dropped, 4u);
+    TEST_CHECK_EQUAL(snapshot.ears[1].arrival_count, 0u);
+    TEST_CHECK_EQUAL(snapshot.ears[0].band_count, 4u);
+    TEST_CHECK_EQUAL(snapshot.ears[0].arrival_count, 1u);
+}
+
 TEST_CASE(every_pump_is_counted_even_when_the_panel_sees_only_the_newest_tick)
 {
     /*

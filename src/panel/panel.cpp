@@ -31,15 +31,16 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <QtCore/QLibraryInfo>
 #include <QtCore/QMetaObject>
 #include <QtCore/QObject>
 #include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QtCore/QtGlobal>
 #include <QtWidgets/QApplication>
 
 #include <atomic>
 #include <condition_variable>
+#include <cstdint>
 #include <iterator>
 #include <mutex>
 #include <thread>

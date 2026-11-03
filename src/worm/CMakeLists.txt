@@ -51,8 +51,9 @@ set_target_properties(rc_worm PROPERTIES
 
 # Deployment: the Program lands in `programs/`, which is where the Grid looks, and on Windows the
 # Qt runtime it needs lands beside it - windeployqt, told the DLL, with the compiler runtime's
-# redistributable and without the translations, the software OpenGL and the plugin families
-# (image formats, icon engines, network, TLS, touch) a panel of labels and sliders never loads.
+# redistributable and without the translations, the software OpenGL, the D3D and DXC shader
+# compilers and the plugin families (image formats, icon engines, network, TLS, touch) a panel
+# of labels and sliders never loads.
 # What it produced is judged by tools/check_deploy.py: every import beside the worm or the
 # system's, the platform plugin and the style included.
 install(TARGETS rc_worm
@@ -66,7 +67,7 @@ if(RC_WORM_PANEL AND WIN32)
     install(CODE "
         message(STATUS \"windeployqt: \${CMAKE_INSTALL_PREFIX}/programs/$<TARGET_FILE_NAME:rc_worm>\")
         execute_process(
-            COMMAND \"${RC_WORM_WINDEPLOYQT}\" --compiler-runtime --no-translations --no-opengl-sw --no-system-d3d-compiler
+            COMMAND \"${RC_WORM_WINDEPLOYQT}\" --compiler-runtime --no-translations --no-opengl-sw --no-system-d3d-compiler --no-system-dxc-compiler
                     --skip-plugin-types generic,networkinformation,tls,imageformats,iconengines
                     --dir \"\${CMAKE_INSTALL_PREFIX}/programs\" \"\${CMAKE_INSTALL_PREFIX}/programs/$<TARGET_FILE_NAME:rc_worm>\"
             RESULT_VARIABLE deploy_result

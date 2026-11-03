@@ -36,8 +36,9 @@ add_test(NAME vtable_tests COMMAND vtable_tests)
 # tools/check_deploy.py). The window test is a Qt Test executable with moc of its own.
 if(RC_WORM_PANEL)
     if(WIN32)
+        # Qt's warnings from the panel's real windows reach the test's output, not a debugger.
         set_tests_properties(vtable_tests PROPERTIES
-            ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
+            ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>;QT_FORCE_STDERR_LOGGING=set:1"
         )
     endif()
 
@@ -47,12 +48,14 @@ if(RC_WORM_PANEL)
     add_executable(tst_panel tst_panel.cpp)
     set_target_properties(tst_panel PROPERTIES AUTOMOC ON)
     target_link_libraries(tst_panel PRIVATE panel worm Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Test)
-    # Plain text to stdout, asked for by name: Qt Test on Windows otherwise writes where a
-    # captured console does not look, and a failure in CI would be a silent one.
+    # Plain text to stdout, asked for by name. On Windows that is not enough: with no console
+    # attached - ctest's pipe, a CI runner - Qt sends its logging, the test log included, to the
+    # debugger instead, and a failure would be a silent one. QT_FORCE_STDERR_LOGGING keeps it in
+    # the captured output.
     add_test(NAME tst_panel COMMAND tst_panel -o -,txt)
     if(WIN32)
         set_tests_properties(tst_panel PROPERTIES
-            ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
+            ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>;QT_FORCE_STDERR_LOGGING=set:1"
         )
     endif()
 endif()
