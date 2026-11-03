@@ -19,7 +19,7 @@ Fixes #(issue number)
 
 - [ ] I have tested these changes locally
 - [ ] Builds and tests pass on all relevant presets (`cmake --workflow --preset=<name>`)
-- [ ] No Vulkan validation layer errors
+- [ ] The Program loads in the Grid (`TronGridLite --list-programs` says USABLE)
 
 ## Code Quality
 
@@ -29,7 +29,7 @@ Fixes #(issue number)
 
 ## Screenshots / Logs
 
-If applicable, add screenshots or relevant validation layer output.
+If applicable, add screenshots of the panel or the Grid's window, or the Grid's log lines around the Program load.
 
 ## Additional Notes
 

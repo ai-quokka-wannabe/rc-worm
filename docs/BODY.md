@@ -43,10 +43,11 @@ and face tables.
 | `JOINT_STUB_LENGTH` | 0.03 m | how far past the circumradius a joint tip lies |
 | `JOINT_TIP_REACH` | 0.28 m | the joint tips, on the axis: `(0, 0, ±0.28)`; two segments meet at one, a pivot |
 | `SEGMENT_SPACING` | 0.56 m | twice the reach - tip to tip through one segment |
-| Extent | 0.25 m | under the world's `BODY_MAX_EXTENT` of 4 m |
+| Extent | 0.28 m | the joint tips, the farthest any vertex reaches; under the world's `BODY_MAX_EXTENT` of 4 m |
 
-The first body's eyes sit at body-frame `(0, 0, -0.2)` and its ears at `(0, 0, 0.2)`; a
-quarter-metre circumradius puts both just inside the shell, the eyes behind the nose.
+The first body's two eyes and two ears sit in pairs at body-frame `(0, 0, -0.2)` and
+`(0, 0, 0.2)` - an eye and an ear behind the nose, an eye and an ear before the tail spike - and a
+quarter-metre circumradius puts all four just inside the shell.
 
 ## Orientation
 

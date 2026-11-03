@@ -220,6 +220,24 @@ row of servos at its pivots with no velocity actuator, the gait is the worm's ow
 the joints' angles and loads; `CHANGELOG.md` records the movements that landed here (Program
 ABI 8 to 10).
 
+## Etape 8 — the undulation propels
+
+**Done here, movements 3 to 5.** The owner's third ruling (2026-08-28): the undulation must
+propel the worm, so the world moves every segment for itself and the worm owns its gait. This
+repository's movements, each a re-vendored Program ABI and recorded in `CHANGELOG.md`:
+
+- **Movement 3, the gait (ABI 8).** `src/worm/gait.hpp`: a travelling wave of joint angles four
+  segments long, crest running tailward, the turn a bend on top, everything ramping the way
+  muscles do; `TglActions::joint_targets` carries it, and the velocity actuators stay at zero.
+- **Movement 4, the joints felt (ABI 9).** `TglSenses::joint_angles` crosses the seam; the panel
+  shows a `joints` row and bends the chain along the feel's bottom as the body reports.
+- **Movement 5, the loads felt (ABI 10).** `TglSenses::joint_torques` crosses the seam; the
+  panel's `loads` row marks a stalled servo with `!`.
+
+Since then the gut and the nose (ABI 11, chemoreception) crossed the seam too, into the panel's
+smell view. Still open: a gait that listens - it is open-loop, and what the body feels is on the
+panel before it is in the controller (`docs/BODY.md` § Not yet).
+
 ## Later, with triggers
 
 - **The thinking worm** is another repository (`brain-elegans`), wearing this body - trigger:
