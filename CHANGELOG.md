@@ -256,6 +256,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The shared skills learn the day's lessons.** `windows-build` says how to catch a stale CMake cache that turns
+  Release into an unoptimised validation build, `org-pr-flow` how parallel PRs, self-filed dismissals and
+  `temp_dir()` in tests go wrong, and `live-world` (where present) how to measure a life's timing - mirrored
+  verbatim across the repositories.
+
 - **One licence notice, the full one, everywhere.** Every file now carries the FSF's three-paragraph GPL notice
   (the copyright line, the grant, the warranty disclaimer and "You should have received a copy"), the form most files
   already used; the short two-paragraph variant and the one file without a notice are gone. Comments only.
