@@ -256,6 +256,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Shell scripts keep LF.** `.gitattributes` gains `*.sh text eol=lf`, as link and `.github` now carry: with
+  `core.autocrlf` on Windows a script would otherwise check out with CRLF, which bash refuses.
+
 - **The deep audit: what the logs hid, what the seam kept, and what the words said wrong.**
   The panel's Qt Test wrote nothing to ctest's output on Windows: with no console attached Qt
   sends its logging, the test log included, to the debugger, so `-o -,txt` alone left a failure
