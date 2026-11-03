@@ -267,8 +267,10 @@ namespace PanelLib
                 .arg(m_station.bin_seconds * 1000.0f, 0, 'f', 1)
                 .arg(m_view.arrival_count));
         if ((m_station.bands_dropped > 0u) || (m_station.bins_dropped > 0u)) {
+            // At the top of the grid: the bottom line is the last arrivals', and the two must
+            // never be drawn over each other.
             painter.setPen(MAGENTA);
-            painter.drawText(QPointF{grid.left() + 4.0, grid.bottom() - 4.0},
+            painter.drawText(QPointF{grid.left() + 4.0, grid.top() + 12.0},
                 QStringLiteral("%1 band(s), %2 bin(s) beyond the seam's capacity, not shown").arg(m_station.bands_dropped).arg(m_station.bins_dropped));
         }
     }

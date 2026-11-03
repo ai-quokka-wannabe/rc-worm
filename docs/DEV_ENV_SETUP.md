@@ -158,8 +158,10 @@ beside the worm).
 | CodeQL | C/C++, Python, workflows | Read an alert; close it by code, by containment |
 
 The C++ formatter is **clang-format 23.1**, pinned; install exactly that into your user site and
-run it on every changed source (`python -m pip install --user "clang-format~=23.1"`, then
-`python -m clang_format -i src/...`). Never an LLVM `clang-format` of another major.
+run it on every changed source (`python -m pip install --user "clang-format~=23.1"`, then the
+`clang-format -i src/...` it puts in the user scripts directory - `Scripts\` on Windows, `bin/` on
+Linux, under `python -c "import site; print(site.getuserbase())"`; the package has no
+`python -m` entry). Never an LLVM `clang-format` of another major.
 
 ---
 
@@ -220,11 +222,11 @@ default) and named by `CMAKE_PREFIX_PATH`, which the preset does.
 
 The Grid moved its ABI. Re-vendor as above and rebuild.
 
-### `check_deploy.py` names an import from `C:\Qt\...`
+### `check_deploy.py` says an import is "neither beside it ... nor Windows' own"
 
-Something was built against the kit's directory rather than deployed; re-run the install into a
-fresh prefix. The closed set is the point: a worm that works only where Qt is installed is a
-worm nobody else can run.
+The library it names was not deployed beside the worm - it would have been found only in the
+kit's directory, a build tree or the `PATH`. Re-run the install into a fresh prefix. The closed
+set is the point: a worm that works only where Qt is installed is a worm nobody else can run.
 
 ### A warning stops the build
 

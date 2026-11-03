@@ -34,7 +34,7 @@ Before submitting a bug report:
 2. Ensure you're using the latest version
 3. Collect relevant information:
     - Operating system and version
-    - Qt version and kit (MinGW or MSVC)
+    - Qt version and kit (MSVC, MinGW or LLVM-MinGW), or the panel off
     - The TronGrid Lite and Master Control builds the worm was plugged into
     - Compiler and CMake preset used
     - Steps to reproduce

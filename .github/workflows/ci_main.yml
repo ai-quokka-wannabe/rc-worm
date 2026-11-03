@@ -305,8 +305,8 @@ jobs:
             # the Qt kit's directory or the build tree. On Windows the install runs windeployqt
             # on the DLL and tools/check_deploy.py judges what it produced: a closed set beside
             # rc_worm.dll, the platform plugin and the style included (docs/PANEL.md). On Linux
-            # the Qt is the kit's or the distribution's, and ldd is recorded for the day that
-            # changes.
+            # the Qt is the aqtinstall kit's (the distributions' is too old), and ldd is recorded
+            # for the day that changes.
             - name: Deploy the worm and judge what it needs
               shell: bash
               run: |

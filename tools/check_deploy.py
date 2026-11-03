@@ -23,10 +23,11 @@ another machine has none of those.
 Exit status 0 with the closed set of libraries listed; 1 naming the first import that is
 neither beside the worm nor the system's. Standard library only; reads import tables through
 tools/dll_imports.py. The directory is taken from the operator and required to sit inside the
-working directory, as every path this repository's tools take is.
+working directory, as tools/dll_imports.py requires of its file.
 """
 
 import os
+import struct
 import sys
 from pathlib import Path
 
@@ -52,9 +53,9 @@ SYSTEM_EXACT = {
     # What the platform plugin and the styles draw with: DirectX, DirectComposition, the imaging
     # codecs, the print spooler's stub and the schannel TLS that windeployqt insists on shipping.
     "d3d9.dll", "dcomp.dll", "windowscodecs.dll", "winspool.drv", "msimg32.dll", "wintrust.dll",
-    "usp10.dll", "oleacc.dll", "uiautomationcore.dll", "shell32.dll", "winmm.dll", "hid.dll",
+    "usp10.dll", "oleacc.dll", "uiautomationcore.dll", "hid.dll",
     "dinput8.dll", "xinput1_4.dll", "avrt.dll", "mfplat.dll", "mf.dll", "dxva2.dll", "evr.dll",
-    "kernel32.dll", "cryptui.dll", "schannel.dll", "sspicli.dll", "urlmon.dll", "wldap32.dll",
+    "cryptui.dll", "schannel.dll", "sspicli.dll", "urlmon.dll", "wldap32.dll",
 }
 PLUGIN_DIRECTORIES = ("platforms", "styles", "imageformats", "iconengines", "generic", "tls", "networkinformation")
 SYSTEM_PREFIXES = ("api-ms-win-", "ext-ms-win-")
@@ -101,7 +102,7 @@ def main(argv: list[str]) -> int:
             continue
         try:
             names = dll_imports.imports(library)
-        except (OSError, ValueError) as error:
+        except (OSError, ValueError, struct.error) as error:
             print(f"{library.name}: cannot read its imports: {error}", file=sys.stderr)
             return 1
         closed[key] = names

@@ -7,122 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- **The Long Arc has six copies.** The organisation's open research lab,
-  [iso-lab](https://github.com/ai-quokka-wannabe/iso-lab), carries the block in its own
-  `docs/VISION.md`, so the guard comment above the block in `docs/VISION.md` now says "Change all six
-  together". The block's words are unchanged.
-- **Qt 6.11.2** (the Tool Updates watcher's #21): `QT_VERSION` in both workflows, the presets'
-  kit paths and the guides move from 6.11.1. Built and tested on the desk on every Windows kit -
-  MSVC 2022, MinGW 13.1.0, LLVM-MinGW 17.0.6 - and, as a second toolchain against the same
-  `llvm-mingw_64` kit, LLVM-MinGW 22.1.7; Debug and Release, 9/9 each. The line the org rides is
-  the latest minor: Qt's LTS patch releases past the first are commercial-only, so for an
-  open-source Program the current minor is the supported one (6.12 LTS, due in the autumn, will
-  be just another latest).
-- **clang-format 23** (the Tool Updates watcher's #22): the pin moves from 22.1 in both workflows
-  and the guides. Under 23 the formatter reformats nothing in the tree - twenty-seven files
-  unchanged - so the gate moves and the code does not.
-- `docs/PANEL.md` and `docs/FIRST_LIFE.md` say what a dragging worm now hears: its own spikes on
-  the floor, in the ears' earliest bins with fading tails and an arrival count that stays at
-  zero (master-control #34 sounds the scrapes, tron-grid-lite #119 delivers them to creature
-  ears). What to look for, and what would be a finding, is written down for the first life.
-
-### Fixed
-
-- **The linter's regular expressions are the patched ones.** markdownlint 0.42.0 pins re2js 2.8.6, which has a
-  quadratic-time denial of service in lookbehind matching (Dependabot #9 in link, #8 in master-control and the
-  siblings' own); `package.json` overrides it to 2.8.7, the patch release. The linter passes as before.
-- **The linter's math renderer is the patched one.** markdownlint reaches KaTeX through
-  `micromark-extension-math`, whose `^0.16` range cannot reach the prototype-pollution fix in 0.18.2
-  (Dependabot #7), so `package.json` overrides it to 0.18.2. The linter loads it and passes as before.
-- **The month-end audit: the guide's Qt commands work, and the pin is watched.** DEV_ENV_SETUP
-  said its `pipx run aqtinstall` lines were "the way CI does it", but CI pins aqtinstall to the
-  commit that supports Qt 6.11's Windows layout, because no release past 3.3.0 carries it; the
-  guide now runs that same commit and says why. `setup-qt` claimed `tool-updates.yml` watches
-  that pin and nothing did; the watcher gains an aqtinstall row that opens an issue when a
-  release newer than 3.3.0 ships. TODO.md said the Linux presets build on the distribution's Qt
-  6, which the guide and CONTRIBUTING rightly call too old, and PANEL.md said the same; both say
-  Qt 6.11 now, and `find_package(Qt6 6.11 ...)` refuses an older Qt at configure rather than late.
-  Etape 3's record gains a note that the body has since become 204 vertices and 212 triangles on
-  a spike. The weekly link check gets the flagship's `--timeout 45` and its reason.
-- **Every code file carries its notice.** The twelve CMake files, the three `tools/` scripts and
-  the CI cache script open with the GPL notice the C++ sources carry, in their own comment syntax.
-- **The documents no longer describe the worm before Etape 8.** Read beside `docs/VISION.md`,
-  some "today" text still told of an older worm. The README's worm was "standing still for now"
-  and "USABLE at ABI version 6" (kept as the history it is, beside today's version 10), its chain
-  "the world's to place along the path the head walks", its body resting "on a face", its Qt
-  needed on the PATH "until Etape 4 settles deployment", and its window showed "the worm" what
-  the worm sees. `docs/BODY.md` called the chain a "kinematic trail, not articulation", and its
-  "Not yet" still owed the wave to Master Control and had `program_tick` answering zeroes.
-  `docs/PANEL.md` took "the three controls the ABI carries", said the ABI "carries three
-  numbers", called the User's word a "forward speed and turn rate", and said that when the worm
-  brakes "the body stops". `docs/FIRST_LIFE.md`'s keys drove the worm at "1 m/s" and turned it
-  "a right angle a second", and letting go of them braked it by the silence rule, which is for a
-  panel that stalls or dies: a live panel offers a fresh word every poll, and with the sliders at
-  zero that word is rest. Each now says what this changelog and the code say: a servo at every
-  pivot, the worm's own open-loop gait - the keys run its wave and bend the body, and a braked
-  worm relaxes the wave and comes to rest as the floor lets it - every segment meeting the floor
-  for itself, a spike underfoot, and `windeployqt` beside the library. `TODO.md`'s dated Etape 7
-  record stays as written, with a note beside it that Etape 8 superseded its trail and its
-  authored wave.
-- **CONTRIBUTING's documentation table lists this repository's documents.** It listed the
-  flagship's `docs/PERCEPTION.md`, `docs/RELATED_WORK.md` and `docs/TOPOLOGY.md` as if they lived
-  here, and none of this repository's own `docs/`. The three now point at the flagship, and
-  `docs/BODY.md`, `docs/PANEL.md`, `docs/FIRST_LIFE.md` and `docs/DEV_ENV_SETUP.md` are listed.
-- **The cache cleanup runs itself.** `cleanup_caches.yml` was manual-only and had never been
-  dispatched here, and its script knew only the Vulkan, markdownlint and CodeQL key families, so
-  every `cargo-*`, `npm-*-lock-*` and `qt-*` generation fell into the never-delete fail-safe: a
-  changed lock file, toolchain pin or SDK version left the old entry behind until GitHub's own
-  eviction. Now, after every green `CI - Main Branch` run, the script prunes `refs/heads/main`
-  to the newest entry per family - cargo, npm, npm-markdownlint, Qt (per kit), Vulkan SDK (per
-  platform), CodeQL overlay base - and only there, so an open pull request's newer cache can
-  never evict main's live one; a closed pull request's caches are reclaimed by a second job;
-  the manual dry run stays. The pattern is the owner's arm-dev-env workflow. Verified by a dry
-  run on the branch before merging; the same files land in all four repositories.
-- **The spikes themselves lie on the axis: the body is pitched 10.8°.** The owner's second
-  look (2026-08-28): with the stubs bent to meet on the axis the tips met, but the spikes jogged
-  9.4 cm at every joint - nose spike 4.7 cm above the axis, tail spike 4.7 cm below. The body is
-  now pitched about X by the waist's elevation, so nose and tail vertices lie exactly on -Z and
-  +Z, the stubs run straight along the axis, and two neighbours' spikes meet at one point: spike,
-  stub, tip, stub, spike, one line. The body no longer lies flat on a face - it stands on the one
-  spike the tilt leaves lowest, a sharp spike on the Grid floor as the ruling has it; the world
-  stands it by its lowest point as before. Spacing, eyes and ears unchanged. Master Control's
-  chain golden is re-recorded against this body.
-- **The joint tips lie on the axis, so two segments meet at one point.** The owner's report
-  (2026-08-28): the chain's neighbours were not touching. A waist vertex of an icosahedron
-  resting on a face sits 0.1876 circumradii off the horizontal axis, so a stub along the spike's
-  own direction ended 4.7 cm above the axis at the nose and 4.7 cm below it at the tail, and two
-  neighbours' tips stood 10.5 cm apart on a straight chain. The stub now runs from the spike to a
-  joint tip exactly on the axis, `JOINT_TIP_REACH` = 0.28 m out (`(0, 0, ∓0.28)`), kinking by
-  the waist's 10.8°; `SEGMENT_SPACING` is twice the reach and unchanged at 0.56 m, the posture
-  untouched. Master Control's companion places the chain as rigid rods sharing those tips.
-- **The feel's text no longer writes through the plan box.** The owner's report (2026-08-28):
-  the contact and vestibular rows ran straight under the body-from-above box. A row that shares
-  the box's height now stops at its edge with an ellipsis.
-- **The feel is no longer born clipped.** Its size hint (340) sat below its own minimum (420),
-  so the layout planned a column the minimum then pushed past the window's edge; and the window
-  opened at a fixed 1280 x 720 whatever its views asked for. The hint now exceeds the minimum,
-  the minimum is low enough to squeeze onto a narrow screen (the rows elide and the chain scales,
-  so nothing is lost when the layout presses), and the window opens at what its views ask for,
-  bounded by the screen.
-- `docs/FIRST_LIFE.md`, `TODO.md` and `tools/first_life.ps1` no longer say Master Control cannot
-  be asked to stop: master-control #31 was fixed the same day it was filed, and Ctrl+C in its
-  window (or closing it) now ends a life properly - the log ends, the Disk closes, Clu is
-  content. The rehearsal's finding stays in the record as what it was.
-- `tools/check_abi_vendor.py check --flagship PATH` reads only a checkout that lives beside this
-  repository: the path means what it always meant (relative to where the tool is run), but it
-  is normalised, resolved to its real place and refused in words unless it falls under the two
-  checkouts' common parent - the four repositories sit side by side by doctrine, so nothing is
-  lost. This closes CodeQL's two path-injection alerts on the
-  operator's path by code rather than by dismissal, in the same form as `tools/dll_imports.py`.
-
 ### Added
 
 - **Claude skills, shared across the org.** `.claude/skills/` gains live-world, windows-build and org-pr-flow - how to run, drive and stop a
   live world, how to build and check on the Windows desk, and the way from a change to a PR - each mirrored verbatim
   in every repo that uses it and improved every time it is used, so no session reinvents them.
-
 - **The README opens with a picture and a way in.** One plain sentence of what rc-worm is, the gait
   figure, and a "Start here" block - the build, test and deploy commands that exist, the good first
   issues and CONTRIBUTING.md - then a Mermaid diagram of the loop, derived from the code: the panel's
@@ -151,7 +40,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   keep the copyright of what they write - no contributor licence agreement, no assignment, contributions
   licensed under GPL-3.0-or-later like everything else. The copyright notices follow: every source
   file's header and the README's licence line name The AiQuokkaWannabe Authors, not one person.
-
 - **The long arc, in public: `docs/VISION.md`.** The owner's decision (2026-10-10): the
   organisation's full vision is told in every repository's vision doc and on its landing page.
   One persistent Grid where AI creatures live and human Users enter with avatars to meet them,
@@ -344,3 +232,141 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   build matrix arrives with the first code. `LICENSE` renamed to `LICENCE`, content untouched.
   The README says what the worm is and the doctrine it lives by; `TODO.md` stages the six
   etapes from the Program that loads to CI with Qt; `.claude/CLAUDE.md` carries the rules.
+
+### Changed
+
+- **The Long Arc has six copies.** The organisation's open research lab,
+  [iso-lab](https://github.com/ai-quokka-wannabe/iso-lab), carries the block in its own
+  `docs/VISION.md`, so the guard comment above the block in `docs/VISION.md` now says "Change all six
+  together". The block's words are unchanged.
+- **Qt 6.11.2** (the Tool Updates watcher's #21): `QT_VERSION` in both workflows, the presets'
+  kit paths and the guides move from 6.11.1. Built and tested on the desk on every Windows kit -
+  MSVC 2022, MinGW 13.1.0, LLVM-MinGW 17.0.6 - and, as a second toolchain against the same
+  `llvm-mingw_64` kit, LLVM-MinGW 22.1.7; Debug and Release, 9/9 each. The line the org rides is
+  the latest minor: Qt's LTS patch releases past the first are commercial-only, so for an
+  open-source Program the current minor is the supported one (6.12 LTS, due in the autumn, will
+  be just another latest).
+- **clang-format 23** (the Tool Updates watcher's #22): the pin moves from 22.1 in both workflows
+  and the guides. Under 23 the formatter reformats nothing in the tree - twenty-seven files
+  unchanged - so the gate moves and the code does not.
+- `docs/PANEL.md` and `docs/FIRST_LIFE.md` say what a dragging worm now hears: its own spikes on
+  the floor, in the ears' earliest bins with fading tails and an arrival count that stays at
+  zero (master-control #34 sounds the scrapes, tron-grid-lite #119 delivers them to creature
+  ears). What to look for, and what would be a finding, is written down for the first life.
+
+### Fixed
+
+- **The deep audit: what the logs hid, what the seam kept, and what the words said wrong.**
+  The panel's Qt Test wrote nothing to ctest's output on Windows: with no console attached Qt
+  sends its logging, the test log included, to the debugger, so `-o -,txt` alone left a failure
+  silent; `tst_panel` and `vtable_tests` now run with `QT_FORCE_STDERR_LOGGING`, and the comment
+  that promised otherwise says why. `windeployqt` shipped the DXC shader compiler
+  (`dxcompiler.dll`, `dxil.dll`) that nothing in a panel of labels and sliders loads; the install
+  now passes `--no-system-dxc-compiler`. The seam copied a view the Grid sent with a count and no
+  array by leaving last tick's samples, energy or arrivals in the worm's one snapshot; such a view
+  is now nothing that tick, counted as dropped, as a contact list without its array already was,
+  and `seam_tests` holds it. `check_abi_vendor.py` left the header open (a `ResourceWarning`
+  under `-X dev`); `check_deploy.py` died with a traceback on a truncated DLL rather than naming
+  it, and listed three system DLLs twice. An ear's "beyond the seam's capacity" line was drawn
+  over its "last arrival(s)" line; it now sits at the top of the histogram. New tests for what the
+  headers promise: the gait never past the declared swing, nothing asked of a joint the body
+  lacks, its phase bounded and the same words giving the same angles; a braked worm asking no
+  servo to bend; the body's extent at its joint tips. The words: `docs/BODY.md` put both eyes at
+  the nose and gave the extent as 0.25 m (the eyes and ears sit in pairs at both ends, and the
+  joint tips reach 0.28 m); the issue template's security and discussion links pointed at
+  master-control; the pull request template asked for Vulkan validation output and the bug
+  report for no Qt kit; DEV_ENV_SETUP's `python -m clang_format` does not run (the package has no
+  `__main__`) and its troubleshooting quoted a message `check_deploy.py` never prints;
+  `tools/README.md` listed one tool of five; the PR workflow's comment named rustfmt and both
+  workflows a distribution Qt nobody installs; comments in `worm.hpp`, `seam.hpp`, `window.hpp`,
+  `body.hpp`, `body.cpp` and `gait.hpp` still spoke of a body that stops, three ABI controls, a
+  lone segment and one wave per body length; `TODO.md` had no record of Etape 8; `.claude/CLAUDE.md`'s
+  CI summary missed lychee and the formatter gate; and this changelog's sections now run in Keep a
+  Changelog's order. Unused includes went and missing ones came. The gait figure is byte for byte
+  unchanged.
+- **The linter's regular expressions are the patched ones.** markdownlint 0.42.0 pins re2js 2.8.6, which has a
+  quadratic-time denial of service in lookbehind matching (Dependabot #9 in link, #8 in master-control and the
+  siblings' own); `package.json` overrides it to 2.8.7, the patch release. The linter passes as before.
+- **The linter's math renderer is the patched one.** markdownlint reaches KaTeX through
+  `micromark-extension-math`, whose `^0.16` range cannot reach the prototype-pollution fix in 0.18.2
+  (Dependabot #7), so `package.json` overrides it to 0.18.2. The linter loads it and passes as before.
+- **The month-end audit: the guide's Qt commands work, and the pin is watched.** DEV_ENV_SETUP
+  said its `pipx run aqtinstall` lines were "the way CI does it", but CI pins aqtinstall to the
+  commit that supports Qt 6.11's Windows layout, because no release past 3.3.0 carries it; the
+  guide now runs that same commit and says why. `setup-qt` claimed `tool-updates.yml` watches
+  that pin and nothing did; the watcher gains an aqtinstall row that opens an issue when a
+  release newer than 3.3.0 ships. TODO.md said the Linux presets build on the distribution's Qt
+  6, which the guide and CONTRIBUTING rightly call too old, and PANEL.md said the same; both say
+  Qt 6.11 now, and `find_package(Qt6 6.11 ...)` refuses an older Qt at configure rather than late.
+  Etape 3's record gains a note that the body has since become 204 vertices and 212 triangles on
+  a spike. The weekly link check gets the flagship's `--timeout 45` and its reason.
+- **Every code file carries its notice.** The twelve CMake files, the three `tools/` scripts and
+  the CI cache script open with the GPL notice the C++ sources carry, in their own comment syntax.
+- **The documents no longer describe the worm before Etape 8.** Read beside `docs/VISION.md`,
+  some "today" text still told of an older worm. The README's worm was "standing still for now"
+  and "USABLE at ABI version 6" (kept as the history it is, beside today's version 10), its chain
+  "the world's to place along the path the head walks", its body resting "on a face", its Qt
+  needed on the PATH "until Etape 4 settles deployment", and its window showed "the worm" what
+  the worm sees. `docs/BODY.md` called the chain a "kinematic trail, not articulation", and its
+  "Not yet" still owed the wave to Master Control and had `program_tick` answering zeroes.
+  `docs/PANEL.md` took "the three controls the ABI carries", said the ABI "carries three
+  numbers", called the User's word a "forward speed and turn rate", and said that when the worm
+  brakes "the body stops". `docs/FIRST_LIFE.md`'s keys drove the worm at "1 m/s" and turned it
+  "a right angle a second", and letting go of them braked it by the silence rule, which is for a
+  panel that stalls or dies: a live panel offers a fresh word every poll, and with the sliders at
+  zero that word is rest. Each now says what this changelog and the code say: a servo at every
+  pivot, the worm's own open-loop gait - the keys run its wave and bend the body, and a braked
+  worm relaxes the wave and comes to rest as the floor lets it - every segment meeting the floor
+  for itself, a spike underfoot, and `windeployqt` beside the library. `TODO.md`'s dated Etape 7
+  record stays as written, with a note beside it that Etape 8 superseded its trail and its
+  authored wave.
+- **CONTRIBUTING's documentation table lists this repository's documents.** It listed the
+  flagship's `docs/PERCEPTION.md`, `docs/RELATED_WORK.md` and `docs/TOPOLOGY.md` as if they lived
+  here, and none of this repository's own `docs/`. The three now point at the flagship, and
+  `docs/BODY.md`, `docs/PANEL.md`, `docs/FIRST_LIFE.md` and `docs/DEV_ENV_SETUP.md` are listed.
+- **The cache cleanup runs itself.** `cleanup_caches.yml` was manual-only and had never been
+  dispatched here, and its script knew only the Vulkan, markdownlint and CodeQL key families, so
+  every `cargo-*`, `npm-*-lock-*` and `qt-*` generation fell into the never-delete fail-safe: a
+  changed lock file, toolchain pin or SDK version left the old entry behind until GitHub's own
+  eviction. Now, after every green `CI - Main Branch` run, the script prunes `refs/heads/main`
+  to the newest entry per family - cargo, npm, npm-markdownlint, Qt (per kit), Vulkan SDK (per
+  platform), CodeQL overlay base - and only there, so an open pull request's newer cache can
+  never evict main's live one; a closed pull request's caches are reclaimed by a second job;
+  the manual dry run stays. The pattern is the owner's arm-dev-env workflow. Verified by a dry
+  run on the branch before merging; the same files land in all four repositories.
+- **The spikes themselves lie on the axis: the body is pitched 10.8°.** The owner's second
+  look (2026-08-28): with the stubs bent to meet on the axis the tips met, but the spikes jogged
+  9.4 cm at every joint - nose spike 4.7 cm above the axis, tail spike 4.7 cm below. The body is
+  now pitched about X by the waist's elevation, so nose and tail vertices lie exactly on -Z and
+  +Z, the stubs run straight along the axis, and two neighbours' spikes meet at one point: spike,
+  stub, tip, stub, spike, one line. The body no longer lies flat on a face - it stands on the one
+  spike the tilt leaves lowest, a sharp spike on the Grid floor as the ruling has it; the world
+  stands it by its lowest point as before. Spacing, eyes and ears unchanged. Master Control's
+  chain golden is re-recorded against this body.
+- **The joint tips lie on the axis, so two segments meet at one point.** The owner's report
+  (2026-08-28): the chain's neighbours were not touching. A waist vertex of an icosahedron
+  resting on a face sits 0.1876 circumradii off the horizontal axis, so a stub along the spike's
+  own direction ended 4.7 cm above the axis at the nose and 4.7 cm below it at the tail, and two
+  neighbours' tips stood 10.5 cm apart on a straight chain. The stub now runs from the spike to a
+  joint tip exactly on the axis, `JOINT_TIP_REACH` = 0.28 m out (`(0, 0, ∓0.28)`), kinking by
+  the waist's 10.8°; `SEGMENT_SPACING` is twice the reach and unchanged at 0.56 m, the posture
+  untouched. Master Control's companion places the chain as rigid rods sharing those tips.
+- **The feel's text no longer writes through the plan box.** The owner's report (2026-08-28):
+  the contact and vestibular rows ran straight under the body-from-above box. A row that shares
+  the box's height now stops at its edge with an ellipsis.
+- **The feel is no longer born clipped.** Its size hint (340) sat below its own minimum (420),
+  so the layout planned a column the minimum then pushed past the window's edge; and the window
+  opened at a fixed 1280 x 720 whatever its views asked for. The hint now exceeds the minimum,
+  the minimum is low enough to squeeze onto a narrow screen (the rows elide and the chain scales,
+  so nothing is lost when the layout presses), and the window opens at what its views ask for,
+  bounded by the screen.
+- `docs/FIRST_LIFE.md`, `TODO.md` and `tools/first_life.ps1` no longer say Master Control cannot
+  be asked to stop: master-control #31 was fixed the same day it was filed, and Ctrl+C in its
+  window (or closing it) now ends a life properly - the log ends, the Disk closes, Clu is
+  content. The rehearsal's finding stays in the record as what it was.
+- `tools/check_abi_vendor.py check --flagship PATH` reads only a checkout that lives beside this
+  repository: the path means what it always meant (relative to where the tool is run), but it
+  is normalised, resolved to its real place and refused in words unless it falls under the two
+  checkouts' common parent - the four repositories sit side by side by doctrine, so nothing is
+  lost. This closes CodeQL's two path-injection alerts on the
+  operator's path by code rather than by dismissal, in the same form as `tools/dll_imports.py`.

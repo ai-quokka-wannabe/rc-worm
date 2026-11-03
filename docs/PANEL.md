@@ -159,13 +159,15 @@ by the screen; the header states the declaration - the chain included - and
 ## The tests
 
 - `seam_tests` (deviceless, the flagship's `testing`): copies whole with drops counted, the
-  gut and every amphid's every receptor in its slot; every pump counted when only the newest
+  gut and every amphid's every receptor in its slot; a view with a count and no array counted as
+  dropped, never left holding last tick's values; every pump counted when only the newest
   tick is taken; the mailbox's latest-once and the latch; the worm's fresh / repeated x4 /
   braked sequence with the test playing the panel; two thousand offers from another thread
   never lose the newest word.
 - `tst_panel` (Qt Test, on Qt Test's own thread): the window draws the newest tick, offers what
-  the keys say, latches a call once; the smell view draws a saturated receptor in its own
-  amphid's half and nothing in the other's, and says the seam's pump count; two thousand
+  the keys say, latches a call once; the feel draws the declared chain before any tick; the
+  smell view draws a saturated receptor in its own amphid's half and nothing in the other's,
+  says the seam's pump count, and draws a reading below empty or not a number in magenta; two thousand
   publishes from another thread while it draws, the slowest under a generous bound with the
   measured value in the failure message. Shapes adopted from the owner's `claude-chats-browser`; a `QTRY_` re-evaluates once after it is
   satisfied, so a take that consumes is made to stick.
@@ -194,8 +196,8 @@ The Grid looks in `programs/`; the worm and what it needs land there:
 
 - `cmake --install <build> --prefix <where>` installs `rc_worm.dll` / `librc_worm.so` to
   `<where>/programs`. On Windows with the panel built, `windeployqt --compiler-runtime` is run
-  on the DLL there, without translations, software OpenGL, the D3D compiler and the plugin
-  families a panel of labels and sliders never loads.
+  on the DLL there, without translations, software OpenGL, the D3D and DXC shader compilers and
+  the plugin families a panel of labels and sliders never loads.
 - `tools/check_deploy.py <where>/programs` judges the result: starting from `rc_worm.dll` and
   every plugin under it, every import must be beside the worm or Windows' own (the Universal C
   and Visual C++ runtimes count as Windows' own - the redistributable is what

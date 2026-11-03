@@ -100,7 +100,8 @@ def strip_comments(text):
 
 def read_header(path):
     """The header's declared version, and the fingerprint of the declarations around it."""
-    text = io.open(path, encoding="utf-8", newline="").read()
+    with io.open(path, encoding="utf-8", newline="") as handle:
+        text = handle.read()
     versions = []
     kept = []
     for line in text.splitlines():

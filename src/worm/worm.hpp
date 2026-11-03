@@ -29,9 +29,10 @@
     the tick's side of that seam.
 
     Etape 4: the User is the brain. Every tick the worm publishes what it sensed and answers with
-    the newest intent the panel offered; a tick that finds no new intent repeats the last one for
-    PANEL_REPEAT_TICKS and then brakes - the panel's silence, like the network's, is a repeat and
-    then a stop. A worm nobody steers stands.
+    the newest intent the panel offered, which its gait turns into the angle each servo is asked
+    to hold; a tick that finds no new intent repeats the last one for PANEL_REPEAT_TICKS and then
+    brakes - the panel's silence, like the network's, is a repeat and then a brake. A braked worm
+    relaxes its wave and comes to rest as the floor lets it; a worm nobody steers stands.
 */
 namespace WormLib
 {
@@ -40,7 +41,7 @@ namespace WormLib
     enum class Applied : std::uint8_t {
         Fresh, //!< The newest intent the panel offered, taken this tick.
         Repeated, //!< No new intent; the last one re-applied within PANEL_REPEAT_TICKS.
-        Braked, //!< Silence past the budget, or nothing ever offered: zeroes, and the body stops.
+        Braked, //!< Silence past the budget, or nothing ever offered: a zero word, and the wave relaxes.
     };
 
     class Worm {
@@ -50,8 +51,9 @@ namespace WormLib
 
         /*!
             One tick: the senses in, the actions out. Never blocks, never throws. The Grid zeroes
-            `actions` before the call; the worm writes the intent the User asked for, or repeats,
-            or leaves them zeroed and stands.
+            `actions` before the call; the worm writes the joint targets its gait makes of the
+            User's word - fresh, repeated or braked - and the voice, and leaves at zero the
+            velocity actuators a chain does not have.
         */
         void tick(const TglSenses& senses, TglActions& actions) noexcept;
 

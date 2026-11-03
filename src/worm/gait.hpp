@@ -40,7 +40,7 @@ namespace WormLib
 
     /*!
         The wave's length along the body, in segments: four, so an eight-segment worm carries
-        two waves - the proportion of a lateral undulator, about one wavelength to a body length.
+        two whole waves along its length at once.
     */
     inline constexpr float GAIT_WAVELENGTH_SEGMENTS{4.0f};
 

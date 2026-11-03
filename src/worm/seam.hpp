@@ -48,7 +48,7 @@ namespace WormLib
         The panel's silence rule, in ticks: a tick that finds no new intent repeats the last one for
         this many ticks, then brakes. Four ticks is an eighth of a second at the Grid's 32 Hz - long
         enough to ride out the panel's poll landing between two ticks, short enough that a panel
-        that stalled or died stops the worm before it has gone anywhere. The wire's own rule is the
+        that stalled or died brakes the worm before it has gone anywhere. The wire's own rule is the
         same shape (LNK_ACTIONS_REPEAT_TICKS); this one is the panel's.
     */
     inline constexpr std::uint32_t PANEL_REPEAT_TICKS{4u};
@@ -177,7 +177,8 @@ namespace WormLib
     */
     void snapshotSenses(const TglSenses& senses, SensesSnapshot& out) noexcept;
 
-    //! What the User asks of the body: the three members of TglActions, and when they were asked.
+    //! What the User asks of the body - forward, turn and voice - and when it was asked. The gait
+    //! turns forward and turn into the joint targets TglActions carries; the voice is the voice.
     struct Intent {
         float forward_speed;
         float turn_rate;

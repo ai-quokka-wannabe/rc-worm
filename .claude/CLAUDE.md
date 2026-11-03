@@ -63,8 +63,9 @@ names only its repository); `link` - the wire (the library is **Link**).
 
 ## CI today
 
-`quick-checks` (markdown lint, stray carriage returns, the vendored ABI drift check, the Qt pin
-agreeing with the presets) feeding `Build, panel off (<preset>)` on windows-msvc,
+`quick-checks` (markdown lint, stray carriage returns, internal links and anchors with lychee,
+the pinned clang-format gate, the vendored ABI drift check, the Qt pin agreeing with the
+presets) feeding `Build, panel off (<preset>)` on windows-msvc,
 windows-clang-cl, windows-mingw, linux-gcc and linux-clang, `Build with Qt (<preset>)` on
 windows-msvc, windows-clang-cl, linux-gcc and linux-clang (Qt fetched by
 `.github/actions/setup-qt` - aqtinstall through pipx pinned to a commit, from Qt's own server,
