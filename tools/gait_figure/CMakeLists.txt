@@ -14,10 +14,11 @@
 # The gait figure: a small executable that ticks the worm's own gait (the `worm` library, not a
 # second model of it) and writes docs/figures/gait.svg by hand. Never installed - it is no part
 # of the Program - but built with everything else so it cannot rot, and run once as a test.
-# Regenerate: build the target, then run it with the figure's path:
-#   build/<preset>/bin/<config>/gait_figure docs/figures/gait.svg
+# Regenerate: build the target, then run it from docs/figures (it takes no arguments and writes
+# gait.svg into the working directory):
+#   cd docs/figures && ../../build/<preset>/bin/<config>/gait_figure
 
 add_executable(gait_figure gait_figure.cpp)
 target_link_libraries(gait_figure PRIVATE worm)
 target_compile_features(gait_figure PRIVATE cxx_std_20)
-add_test(NAME gait_figure COMMAND gait_figure "${CMAKE_CURRENT_BINARY_DIR}/gait.svg")
+add_test(NAME gait_figure COMMAND gait_figure WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")

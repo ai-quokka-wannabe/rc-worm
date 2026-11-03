@@ -20,7 +20,7 @@
     second time. The SVG is written by hand, coordinates rounded to a tenth of a pixel, so a rerun
     on the same build writes the same bytes.
 
-    Usage: gait_figure <output.svg>
+    Usage: gait_figure (no arguments; writes gait.svg into the working directory)
 */
 
 #include <body.hpp>
@@ -124,12 +124,11 @@ namespace
 
 } // namespace
 
-int main(const int argc, char** const argv)
+int main()
 {
-    if (argc != 2) {
-        std::cerr << "usage: gait_figure <output.svg>\n";
-        return 2;
-    }
+    // No arguments, on purpose: the figure always lands as gait.svg in the working directory, so
+    // nothing from outside the program ever names a file it writes.
+    constexpr const char* OUTPUT{"gait.svg"};
 
     // The run: the real gait, ticked as the Program ticks it, every target kept.
     std::vector<std::array<float, JOINTS>> targets(TICKS);
@@ -242,13 +241,13 @@ int main(const int argc, char** const argv)
 
     svg += "</svg>\n";
 
-    std::ofstream file{argv[1], std::ios::binary | std::ios::trunc};
+    std::ofstream file{OUTPUT, std::ios::binary | std::ios::trunc};
     file << svg;
     file.close();
     if (!file) {
-        std::cerr << "gait_figure: could not write " << argv[1] << "\n";
+        std::cerr << "gait_figure: could not write " << OUTPUT << "\n";
         return 1;
     }
-    std::cout << "gait_figure: wrote " << argv[1] << "\n";
+    std::cout << "gait_figure: wrote " << OUTPUT << "\n";
     return 0;
 }

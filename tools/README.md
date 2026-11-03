@@ -16,12 +16,13 @@ of a pixel, so a rerun on the same build writes the same bytes. It is built with
 and run once by `ctest` (into the build tree) so it cannot rot, and it is never installed: it is
 no part of the Program.
 
-After a change to the gait, regenerate the figure from the repository root and commit it with the
-change:
+After a change to the gait, regenerate the figure and commit it with the change. The tool takes no
+arguments and always writes `gait.svg` into the directory it runs in, so run it from `docs/figures`:
 
 ```text
 cmake --workflow --preset windows-msvc
-build/windows-msvc/bin/Release/gait_figure docs/figures/gait.svg
+cd docs/figures
+../../build/windows-msvc/bin/Release/gait_figure
 ```
 
-Any preset works the same way: `build/<preset>/bin/<config>/gait_figure docs/figures/gait.svg`.
+Any preset works the same way: `build/<preset>/bin/<config>/gait_figure`, run from `docs/figures`.
