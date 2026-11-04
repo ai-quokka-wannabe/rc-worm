@@ -116,8 +116,9 @@ Drawn from the seam's structs at the Qt side's edge, nothing more than the worm 
   spacings behind it - and the arrival count stays zero, because a scrape has no onset to
   range from. Energy without an arrival is a scrape; a column is a call.
 - **Feel**: the contacts where they happened on the body from above, each with its normal, and
-  the numbers - impulse, depth, slip - beside; the proprioceptive speeds, the specific force, the
-  angular velocity, the irradiance. A text row that shares its height with the plan box stops
+  the numbers - impulse, depth, slip - beside; the specific force, the
+  angular velocity, the irradiance. No speed over the ground: no animal feels one, so since Program
+  ABI 12 the worm does not either, and the User reads its motion as the worm does. A text row that shares its height with the plan box stops
   at the box's edge with an ellipsis rather than writing through it. A `joints` row gives every
   servo's own reading in radians - what each joint holds, not what the gait asked, which is
   the readback the gait has (Etape 8 movement 4: `TglSenses::joint_angles`, reported by the

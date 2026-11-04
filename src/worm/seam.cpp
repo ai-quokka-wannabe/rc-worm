@@ -93,9 +93,6 @@ namespace WormLib
     {
         out.tick = senses.tick;
         out.dt_seconds = senses.dt_seconds;
-        out.body_forward_speed = senses.body_forward_speed;
-        out.body_vertical_speed = senses.body_vertical_speed;
-        out.body_turn_rate = senses.body_turn_rate;
         for (std::size_t joint{0u}; joint < (TGL_SEGMENTS_MAX - 1u); ++joint) {
             out.joint_angles[joint] = senses.joint_angles[joint];
             out.joint_torques[joint] = senses.joint_torques[joint];
