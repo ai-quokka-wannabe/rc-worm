@@ -113,7 +113,6 @@ namespace
             senses.ear_count = 2u;
             senses.contact_count = 2u;
             senses.dt_seconds = 0.03125f;
-            senses.body_forward_speed = 0.5f;
             senses.specific_force[1] = 9.81f;
             senses.irradiance = 0.125f;
             senses.joint_angles[2] = 0.3f;

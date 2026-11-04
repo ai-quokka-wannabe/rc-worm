@@ -256,6 +256,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The worm no longer reads a speed over the ground (Program ABI 12).** The vendored header follows
+  tron-grid-lite#190: the Grid filled `body_forward_speed`, `body_vertical_speed` and `body_turn_rate` from the
+  world's exact velocity, a sense no animal has (tron-grid-lite#189). The seam and the panel drop them; the panel's
+  feel area shows the worm's motion as the worm feels it - the specific force and angular velocity of its inner ear,
+  its joints and its contacts.
+
 - **The shared skills learn the day's lessons.** `windows-build` says how to catch a stale CMake cache that turns
   Release into an unoptimised validation build, `org-pr-flow` how parallel PRs, self-filed dismissals and
   `temp_dir()` in tests go wrong, and `live-world` (where present) how to measure a life's timing - mirrored

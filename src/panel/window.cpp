@@ -409,13 +409,10 @@ namespace PanelLib
             painter.drawText(QPointF{8.0, at_y}, painter.fontMetrics().elidedText(text, Qt::ElideRight, room));
         }};
 
+        // No speed line: no animal feels its speed over the ground (Program ABI 12). The worm
+        // feels its motion in its inner ear - the specific force and angular velocity below - in
+        // its joints and its contacts, and the User at this panel reads the same and no more.
         painter.setPen(DIM);
-        write(y,
-            QStringLiteral("forward %1 m/s  vertical %2 m/s  turn %3 rad/s")
-                .arg(s.body_forward_speed, 0, 'f', 2)
-                .arg(s.body_vertical_speed, 0, 'f', 2)
-                .arg(s.body_turn_rate, 0, 'f', 2));
-        y += line;
         {
             // What every servo holds, in radians, and what it holds it with, in newton-metres:
             // the readback the gait has, and the load on it - a servo at its whole torque has

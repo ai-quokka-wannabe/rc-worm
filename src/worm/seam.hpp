@@ -142,9 +142,6 @@ namespace WormLib
         std::uint32_t ears_dropped;
         std::uint32_t contacts_dropped;
         float dt_seconds;
-        float body_forward_speed;
-        float body_vertical_speed;
-        float body_turn_rate;
         //! What every servo holds, radians, joint k between segments k and k + 1 - the encoder's
         //! reading the world reports, the joints the chain has and zero beyond.
         float joint_angles[TGL_SEGMENTS_MAX - 1u];

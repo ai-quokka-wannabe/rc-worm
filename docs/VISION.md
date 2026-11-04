@@ -119,7 +119,7 @@ is designed ahead of those decisions, and nothing is promised by a date.
 ## What Exists Today
 
 - **The Program.** `rc_worm.dll` / `librc_worm.so`, one exported symbol (`tglGetProgramVTable`),
-  built against the Program ABI vendored at version 11: vanilla C++20, with Qt in the panel and
+  built against the Program ABI vendored at version 12: vanilla C++20, with Qt in the panel and
   nowhere else. It builds with MSVC, clang-cl, MinGW, LLVM-MinGW, GCC and Clang; CI builds all
   but LLVM-MinGW, and the panel's MinGW and LLVM-MinGW kits are built locally.
 - **The body.** A chain of eight regular icosahedra, a quarter metre in circumradius, joined
